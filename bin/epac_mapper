@@ -14,6 +14,7 @@ import optparse
 import numpy as np
 from epac import conf, StoreFs, MapperSubtrees
 from epac.map_reduce.inputs import NodesInput
+from epac.map_reduce.engine import SomaWorkflowEngine
 
 def load_datasets(datasets_filepath):
     Xy = np.load(datasets_filepath)
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     # keys="fs:///tmp/tmpXyC_XE/ParPerm/Perm(nb=0)"
 
     Xy = load_datasets(datasets_filepath)
-    tree_root_relative_path = "./epac_tree"
+    tree_root_relative_path = SomaWorkflowEngine.tree_root_relative_path
     store_fs = StoreFs(tree_root_relative_path)
     tree = store_fs.load(key=conf.STORE_EXECUTION_TREE_PREFIX)
 

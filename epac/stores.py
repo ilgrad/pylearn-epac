@@ -9,11 +9,13 @@ Stores for EPAC
 
 import os
 import shutil
-import pickle
+# import pickle
+import dill as pickle
 import json
 import inspect
 import numpy as np
 from abc import abstractmethod
+
 
 class Store(object):
     """Abstract Store"""
@@ -49,6 +51,7 @@ class StoreMem(Store):
         except KeyError:
             return None
 
+
 class StoreFs(Store):
     """ Store based of file system"""
 
@@ -56,7 +59,7 @@ class StoreFs(Store):
         """
         dirpath: str
             Root directory within file system
-        
+
         clear: boolean
             If True clear (delete) everything under the root directory.
         """

@@ -178,12 +178,12 @@ class SomaWorkflowEngine(LocalEngine):
         nodesinput_list: list of NodesInput
             This is for parallel computing for each element in the list.
             All of them are saved separately in working_directory.
-            
+
         Example
         -------
         >>> from epac.map_reduce.engine import SomaWorkflowEngine
-        >>> nodesinput_list = [{'Perms/Perm(nb=0)': 'Perms/Perm(nb=0)'}, 
-        ...                    {'Perms/Perm(nb=1)': 'Perms/Perm(nb=1)'}, 
+        >>> nodesinput_list = [{'Perms/Perm(nb=0)': 'Perms/Perm(nb=0)'},
+        ...                    {'Perms/Perm(nb=1)': 'Perms/Perm(nb=1)'},
         ...                    {'Perms/Perm(nb=2)': 'Perms/Perm(nb=2)'}]
         >>> working_directory =  "/tmp"
         >>> swf_engine = SomaWorkflowEngine(None)
@@ -193,7 +193,7 @@ class SomaWorkflowEngine(LocalEngine):
         keysfile_list = list()
         jobi = 0
         for nodesinput in nodesinput_list:
-            keysfile = "."+os.path.sep+repr(jobi)+"."+conf.SUFFIX_JOB
+            keysfile = "." + os.path.sep + repr(jobi) + "." + conf.SUFFIX_JOB
             keysfile_list.append(keysfile)
             # print "in_working_directory="+in_working_directory
             # print "keysfile="+keysfile

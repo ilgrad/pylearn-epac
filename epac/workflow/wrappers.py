@@ -5,6 +5,7 @@ Created on Mon Jul 22 14:43:15 2013
 @author: jinpeng.li@cea.fr
 
 """
+import dill as pickle
 
 from epac.workflow.base import BaseNode
 from epac.utils import _func_get_args_names, train_test_merge, train_test_split
@@ -41,6 +42,7 @@ class Wrapper(BaseNode):
     def __init__(self, wrapped_node):
         super(Wrapper, self).__init__()
         self.wrapped_node = wrapped_node
+        self.dump_wrapped_node = None
 
     def get_signature(self):
         """Overload the base name method"""
@@ -54,6 +56,21 @@ class Wrapper(BaseNode):
 
     def get_parameters(self):
         return self.wrapped_node.__dict__
+
+    def dump_wrapped_node(self):
+        self.dump_wrapped_node = pickle.dumps(self.wrapped_node)
+        if self.children:
+            for child in self.children:
+                if hasattr(child, "dump_wrapped_node"):
+                    child.dump_wrapped_node()
+
+    def load_wrapped_node(self):
+        if self.dump_wrapped_node:
+            self.wrapped_node = pickle.loads(self.wrapped_node)
+        if self.children:
+            for child in self.children:
+                if hasattr(child, "load_wrapped_node"):
+                    child.load_wrapped_node()
 
 
 class TransformNode(Wrapper):
