@@ -553,7 +553,7 @@ class BaseNode(object):
         Store.load()
         """
         # dump wrapped_node definition
-        self.fn_top_down("dump_wrapped_node")
+        self.fn_top_down("dump_defintion")
         # Save execution tree without the stores
         stores = dict()
         for node in self.walk_true_nodes():

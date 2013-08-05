@@ -33,4 +33,3 @@ class MyReducer(Reducer):
                     precision_recall_fscore_support(res['y'], res['y/pred'])
             pred_list.append({res['key']: recall})
         return pred_list
-

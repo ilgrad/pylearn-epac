@@ -17,6 +17,8 @@ from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.engine import SomaWorkflowEngine
 
 
+# load all the class definition so that can be load classes, like methods
+
 def load_datasets(datasets_filepath):
     Xy = np.load(datasets_filepath)
     return {k: Xy[k] for k in Xy.keys()}

@@ -120,11 +120,11 @@ class StoreFs(Store):
         #prefix = os.path.join(path, conf.STORE_FS_NODE_PREFIX)
         if os.path.isfile(path + conf.STORE_FS_PICKLE_SUFFIX):
             loaded_node = self.load_pickle(path + conf.STORE_FS_PICKLE_SUFFIX)
-            loaded_node.fn_top_down("load_wrapped_node")
+            loaded_node.fn_top_down("load_defintion")
             return loaded_node
         if os.path.isfile(path + conf.STORE_FS_JSON_SUFFIX):
             loaded_node = self.load_pickle(path + conf.STORE_FS_JSON_SUFFIX)
-            loaded_node.fn_top_down("load_wrapped_node")
+            loaded_node.fn_top_down("load_defintion")
             return loaded_node
         if os.path.isdir(path):
             filepaths = []
@@ -167,7 +167,7 @@ class StoreFs(Store):
                             raise KeyError("Merge store with same keys")
                         node.store.dict.update(loaded[key1].dict)
                 loaded = tree
-            loaded.fn_top_down("load_wrapped_node")
+            loaded.fn_top_down("load_defintion")
             return loaded
 
     def save_pickle(self, file_path, obj):

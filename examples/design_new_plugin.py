@@ -10,6 +10,9 @@ from sklearn import datasets
 from epac.map_reduce.reducers import Reducer
 from epac import Methods
 from sklearn.metrics import precision_recall_fscore_support
+from epac import StoreFs
+import os
+
 
 
 ## 1) Build dataset
@@ -54,6 +57,7 @@ my_svc2 = MySVC(C=2.0)
 two_svc = Methods(my_svc1, my_svc2)
 two_svc.reducer = MyReducer()
 
+
 ## top-down process to call transform
 #two_svc.top_down(X=X, y=y)
 ## buttom-up process to compute scores
@@ -73,4 +77,4 @@ sfw_engine = SomaWorkflowEngine(
                     tree_root=two_svc,
                     num_processes=2)
 two_svc = sfw_engine.run(**dict(X=X, y=y))
-two_svc.reudce()
+two_svc.reduce()

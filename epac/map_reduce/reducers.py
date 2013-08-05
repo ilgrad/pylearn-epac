@@ -18,7 +18,7 @@ from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 ## ======================================================================== ##
 
 
-class Reducer(object):
+class Reducer:
     """ Reducer abstract class, called within the reduce method to process
     up-stream data flow of Result.
 

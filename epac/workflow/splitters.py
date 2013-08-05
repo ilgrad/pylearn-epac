@@ -248,6 +248,7 @@ class Methods(BaseNodeSplitter):
         return Xy
 
     def reduce(self, store_results=True):
+        print "Methods: reduce"
         # 1) Build sub-aggregates over children
         children_results = [child.reduce(store_results=False) for
             child in self.children]

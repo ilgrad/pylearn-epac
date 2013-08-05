@@ -66,7 +66,7 @@ class Wrapper(BaseNode):
         if hasattr(super(Wrapper, self), "load_defintion"):
             super(Wrapper, self).load_defintion()
         if self.dump_wrapped_node:
-            self.wrapped_node = pickle.loads(self.wrapped_node)
+            self.wrapped_node = pickle.loads(self.dump_wrapped_node)
 
 
 class TransformNode(Wrapper):
