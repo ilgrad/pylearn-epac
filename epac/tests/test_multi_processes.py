@@ -48,7 +48,6 @@ class EpacWorkflowTest(unittest.TestCase):
 #        wf.run(X=self.X, y=self.y)
 #        self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
 #        self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
-
         list_all_examples = get_wf_example_classes()
         for example in list_all_examples:
             # example = list_all_examples[0]

@@ -18,7 +18,7 @@ import subprocess
 from epac.errors import NoSomaWFError, NoEpacTreeRootError
 from epac.configuration import conf
 from epac.utils import which
-from epac.workflow.estimators import CVBestSearchRefit
+from epac.workflow.splitters import CVBestSearchRefit
 
 _classes_cannot_be_splicted = [CVBestSearchRefit.__class__.__name__]
 

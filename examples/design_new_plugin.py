@@ -10,10 +10,6 @@ from sklearn import datasets
 from epac.map_reduce.reducers import Reducer
 from epac import Methods
 from sklearn.metrics import precision_recall_fscore_support
-from epac import StoreFs
-import os
-
-
 
 ## 1) Build dataset
 ## ===========================================================================
@@ -59,20 +55,25 @@ two_svc = Methods(my_svc1, my_svc2)
 two_svc.reducer = MyReducer()
 
 
-## top-down process to call transform
-#two_svc.top_down(X=X, y=y)
-## buttom-up process to compute scores
-#two_svc.reduce()
-#
+# top-down process to call transform
+two_svc.run(X=X, y=y)
+# buttom-up process to compute scores
+two_svc.reduce()
+
 ### You can get below results:
 ### ===========================================================================
 ### [{'MySVC(C=1.0)': array([ 1.,  1.])}, {'MySVC(C=2.0)': array([ 1.,  1.])}]
-#
-#from epac.map_reduce.engine import LocalEngine
-#local_engine = LocalEngine(two_svc, "transform")
-#two_svc = local_engine.run(**dict(X=X, y=y))
-#two_svc.reduce()
 
+### 5) Run using local multi-processes
+### ===========================================================================
+from epac.map_reduce.engine import LocalEngine
+local_engine = LocalEngine(two_svc, num_processes=2)
+two_svc = local_engine.run(**dict(X=X, y=y))
+two_svc.reduce()
+
+
+### 6) Run using soma-workflow
+### ===========================================================================
 from epac.map_reduce.engine import SomaWorkflowEngine
 sfw_engine = SomaWorkflowEngine(
                     tree_root=two_svc,
