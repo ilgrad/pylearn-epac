@@ -16,6 +16,7 @@ from epac import conf, StoreFs, MapperSubtrees
 from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.engine import SomaWorkflowEngine
 
+
 def load_datasets(datasets_filepath):
     Xy = np.load(datasets_filepath)
     return {k: Xy[k] for k in Xy.keys()}

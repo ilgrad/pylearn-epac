@@ -57,20 +57,16 @@ class Wrapper(BaseNode):
     def get_parameters(self):
         return self.wrapped_node.__dict__
 
-    def dump_wrapped_node(self):
+    def dump_defintion(self):
+        if hasattr(super(Wrapper, self), "dump_defintion"):
+            super(Wrapper, self).dump_defintion()
         self.dump_wrapped_node = pickle.dumps(self.wrapped_node)
-        if self.children:
-            for child in self.children:
-                if hasattr(child, "dump_wrapped_node"):
-                    child.dump_wrapped_node()
 
-    def load_wrapped_node(self):
+    def load_defintion(self):
+        if hasattr(super(Wrapper, self), "load_defintion"):
+            super(Wrapper, self).load_defintion()
         if self.dump_wrapped_node:
             self.wrapped_node = pickle.loads(self.wrapped_node)
-        if self.children:
-            for child in self.children:
-                if hasattr(child, "load_wrapped_node"):
-                    child.load_wrapped_node()
 
 
 class TransformNode(Wrapper):

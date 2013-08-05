@@ -7,7 +7,6 @@ Created on Thu Jul 25 17:05:28 2013
 """
 
 from sklearn import datasets
-from sklearn.svm import SVC
 from epac.map_reduce.reducers import Reducer
 from epac import Methods
 from sklearn.metrics import precision_recall_fscore_support
@@ -27,6 +26,7 @@ class MySVC:
     def __init__(self, C=1.0):
         self.C = C
     def transform(self, X, y):
+        from sklearn.svm import SVC
         svc = SVC(C=self.C)
         svc.fit(X, y)
         # "transform" should return a dictionary
@@ -73,3 +73,4 @@ sfw_engine = SomaWorkflowEngine(
                     tree_root=two_svc,
                     num_processes=2)
 two_svc = sfw_engine.run(**dict(X=X, y=y))
+two_svc.reudce()

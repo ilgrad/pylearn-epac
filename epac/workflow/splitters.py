@@ -94,7 +94,7 @@ class CV(BaseNodeSplitter):
         Pseudo-random number generator state used for random sampling.
 
     reducer: Reducer
-        A Reducer should inmplement the reduce(node, key2, val) method.
+        A Reducer should implement the reduce(node, key2, val) method.
         Default ClassificationReport() with default arguments.
     """
 

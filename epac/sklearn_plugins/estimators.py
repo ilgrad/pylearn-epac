@@ -164,8 +164,8 @@ class Estimator(Wrapper):
             is_fit_predict = True
 
         if is_fit_transform:
-            if conf.KW_SPLIT_TRAIN_TEST in Xy:
-                Xy_train, Xy_test = train_test_split(Xy)
+            Xy_train, Xy_test = train_test_split(Xy)
+            if Xy_train is not Xy_test:
                 res = self.wrapped_node.fit(**_sub_dict(Xy_train,
                                                         self.in_args_fit))
                 Xy_out_tr = self._wrapped_node_transform(**Xy_train)
@@ -178,8 +178,8 @@ class Estimator(Wrapper):
             Xy.update(Xy_out)
             return Xy
         elif is_fit_predict:
-            if conf.KW_SPLIT_TRAIN_TEST in Xy:
-                Xy_train, Xy_test = train_test_split(Xy)
+            Xy_train, Xy_test = train_test_split(Xy)
+            if Xy_train is not Xy_test:
                 Xy_out = dict()
                 res = self.wrapped_node.fit(**_sub_dict(Xy_train,
                                             self.in_args_fit))
