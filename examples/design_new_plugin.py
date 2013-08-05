@@ -49,6 +49,7 @@ class MyReducer(Reducer):
             pred_list.append({res['key']: recall})
         return pred_list
 
+
 ## 4) run with Methods
 ## ===========================================================================
 my_svc1 = MySVC(C=1.0)

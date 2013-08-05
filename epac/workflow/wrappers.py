@@ -42,7 +42,6 @@ class Wrapper(BaseNode):
     def __init__(self, wrapped_node):
         super(Wrapper, self).__init__()
         self.wrapped_node = wrapped_node
-        self.dump_wrapped_node = None
 
     def get_signature(self):
         """Overload the base name method"""
@@ -56,17 +55,6 @@ class Wrapper(BaseNode):
 
     def get_parameters(self):
         return self.wrapped_node.__dict__
-
-    def dump_defintion(self):
-        if hasattr(super(Wrapper, self), "dump_defintion"):
-            super(Wrapper, self).dump_defintion()
-        self.dump_wrapped_node = pickle.dumps(self.wrapped_node)
-
-    def load_defintion(self):
-        if hasattr(super(Wrapper, self), "load_defintion"):
-            super(Wrapper, self).load_defintion()
-        if self.dump_wrapped_node:
-            self.wrapped_node = pickle.loads(self.dump_wrapped_node)
 
 
 class TransformNode(Wrapper):

@@ -413,19 +413,6 @@ class BaseNode(object):
         order = np.argsort([s[idx] for s in stat])[::-1]
         return [stat[i] for i in order]
 
-    def fn_top_down(self, function_name):
-        '''Top-down to execute function_name
-        '''
-        if hasattr(self, function_name):
-            function = getattr(self, function_name)
-            print "key=",self.get_key()
-            print function_name
-            if function:
-                function()
-        if self.children:
-            for child in self.children:
-                child.fn_top_down(function_name)
-
     # ------------------------------------------ #
     # -- Top-down data-flow operations        -- #
     # ------------------------------------------ #
@@ -552,8 +539,6 @@ class BaseNode(object):
         --------
         Store.load()
         """
-        # dump wrapped_node definition
-        self.fn_top_down("dump_defintion")
         # Save execution tree without the stores
         stores = dict()
         for node in self.walk_true_nodes():
