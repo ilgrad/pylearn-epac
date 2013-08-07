@@ -112,7 +112,6 @@ class LocalEngine(Engine):
     def run(self, **Xy):
         from functools import partial
         from multiprocessing import Pool
-
         from epac.map_reduce.mappers import MapperSubtrees
         from epac.map_reduce.mappers import map_process
 
@@ -131,6 +130,9 @@ class LocalEngine(Engine):
         ## Run map processes in parallel
         ## =============================
         partial_map_process = partial(map_process, mapper=mapper)
+#        res_tree_root_list = []
+#        for linput in input_list:
+#            res_tree_root_list.append(partial_map_process(linput))
         pool = Pool(processes=len(input_list))
         res_tree_root_list = pool.map(partial_map_process, input_list)
         for each_tree_root in res_tree_root_list:

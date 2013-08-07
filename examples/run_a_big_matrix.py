@@ -16,14 +16,9 @@ def convert2memmap(np_mat):
     mem_mat = np.memmap(filename,\
                      dtype='float32',\
                      mode='w+',\
-                     shape=(np_mat.shape[0], np_mat.shape[1]))
+                     shape=np_mat.shape)
     mem_mat[:] = np_mat[:]
     return mem_mat
-
-
-data = np.arange(12, dtype='float32')
-data.resize((3,4))
-
 
 ## 1) Build dataset
 ## ===========================================================================
@@ -34,11 +29,17 @@ X, y = datasets.make_classification(n_samples=12,
 X = convert2memmap(X)
 y = convert2memmap(y)
 
-
 from sklearn.svm import SVC
 from epac import CV, Methods
 cv_svm = CV(Methods(*[SVC(kernel="linear"),
                       SVC(kernel="rbf")]),
                       n_folds=3)
-cv_svm.run(X=X, y=y) # Top-down process: computing recognition rates, etc.
-cv_svm.reduce() # Bottom-up process: computing p-values, etc.
+#cv_svm.run(X=X, y=y) # Top-down process: computing recognition rates, etc.
+#for leaf in cv_svm.walk_leaves():
+#    print leaf.load_results()
+#cv_svm.reduce() # Bottom-up process: computing p-values, etc.
+
+from epac import LocalEngine
+local_engine = LocalEngine(cv_svm, num_processes=2)
+cv_svm = local_engine.run(X=X, y=y)
+cv_svm.reduce()
