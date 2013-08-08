@@ -53,7 +53,7 @@ class MemmapMatrix:
 
 class MPSafeData:
     """
-    Convert all the data to multi_process safe data    
+    Convert all the data to multiprocessing safe data
 
     Example
     -------
@@ -69,22 +69,33 @@ class MPSafeData:
     >>> dict_data["mem_mat"] = mem_mat
     >>> dict_data["test_int"] = int(5)
     >>> safe_dict = MPSafeData()
-    >>> safe_dict.copy_dict(dict_data)
-    >>> dict_data_cp = safe_dict.get_dict()
+    >>> safe_dict.encode(dict_data)
+    >>> dict_data_cp = safe_dict.decode()
     >>> for key in dict_data_cp:
     ...     print key, "=", dict_data_cp[key]
-    ... 
+    ...
     test_int = 5
     mem_mat = [[ 0.  0.  0.  0.]
      [ 0.  5.  0.  0.]
      [ 0.  0.  0.  0.]]
- 
-    """    
+
+    """
 
     def __init__(self):
         self.data = None
+        self.type = None
 
-    def copy_dict(self, data):
+    def encode(self, data):
+        if type(data) is dict:
+            self.type = dict
+            self._encode_dict(data)
+
+    def decode(self):
+        if self.type is dict:
+            return self._decode_dict()
+        return None
+
+    def _encode_dict(self, data):
         import numpy as np
         self.data = {}
         for key in data:
@@ -93,7 +104,7 @@ class MPSafeData:
             else:
                 self.data[key] = data[key]
 
-    def get_dict(self):
+    def _decode_dict(self):
         if not self.data:
             return None
         data = {}

@@ -48,12 +48,8 @@ cv_svm = local_engine.run(X=X, y=y)
 cv_svm.reduce()
 
 
-
 mmatrx = MemmapMatrix(X)
 X_cp = mmatrx.get()
-
-
-
 
 
 class EpacPool:
