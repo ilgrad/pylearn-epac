@@ -22,7 +22,7 @@ First of all, you need to install some softwares for epac:
     sudo apt-get install python-setuptools python-dev build-essential libatlas-dev python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
     pip install --user scikit-learn
     pip install --user soma-workflow
-
+    pip install --user dill
 
 Secondly, epac can be downloaded from github and you can run installation script for your local user.
 

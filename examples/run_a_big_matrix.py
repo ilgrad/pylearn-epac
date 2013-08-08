@@ -29,11 +29,13 @@ X, y = datasets.make_classification(n_samples=12,
 X = convert2memmap(X)
 y = convert2memmap(y)
 
+
 from sklearn.svm import SVC
 from epac import CV, Methods
 cv_svm = CV(Methods(*[SVC(kernel="linear"),
                       SVC(kernel="rbf")]),
                       n_folds=3)
+
 #cv_svm.run(X=X, y=y) # Top-down process: computing recognition rates, etc.
 #for leaf in cv_svm.walk_leaves():
 #    print leaf.load_results()
@@ -43,3 +45,13 @@ from epac import LocalEngine
 local_engine = LocalEngine(cv_svm, num_processes=2)
 cv_svm = local_engine.run(X=X, y=y)
 cv_svm.reduce()
+
+
+def test(X):
+    print X.filename
+    return 0
+
+from multiprocessing import Pool
+
+pool = Pool(processes=2)
+res = pool.map(test, [X, X])
