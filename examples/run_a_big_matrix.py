@@ -2,7 +2,7 @@
 """
 Created on Wed Aug  7 14:47:17 2013
 
-@author: jinpeng
+@author: jinpeng.li@cea.fr
 """
 
 import numpy as np
@@ -52,16 +52,6 @@ mmatrx = MemmapMatrix(X)
 X_cp = mmatrx.get()
 
 
-class EpacPool:
-    def __init__(self, processes):
-        self.processes = processes
-
-    def map(func, iterable):
-        pool = Pool(processes=2)
-        safe_iterable = []
-        for dict_elem in iterable:
-
-
 def test(X):
     print X.filename
     return 0
@@ -71,7 +61,6 @@ from multiprocessing import Pool
 pool = Pool(processes=2)
 res = pool.map(test, [X, X])
 pool.map()
-
 
 
 import dill as pickle

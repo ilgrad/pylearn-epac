@@ -4,6 +4,7 @@ Created on Thu Aug  8 12:07:22 2013
 
 @author: jinpeng.li@cea.fr
 """
+from multiprocessing import Pool
 
 
 class MemmapMatrix:
@@ -80,7 +81,6 @@ class MPSafeData:
      [ 0.  0.  0.  0.]]
 
     """
-
     def __init__(self):
         self.data = None
         self.type = None
@@ -114,6 +114,28 @@ class MPSafeData:
             else:
                 data[key] = self.data[key]
         return data
+
+
+def _safe_map(func, safe_element):
+    element = safe_element.decode()
+    if not element:
+        raise ValueError("cannot find correct decoder for _safe_map")
+    ret = func(safe_element)
+    safe_ret = MPSafeData(ret)
+    return safe_ret
+
+class SafePool:
+    def __init__(self, processes):
+        self.processes = processes
+
+    def map(func, iterable):
+        pool = Pool(processes=self.processes)
+        safe_elements = []
+        for dict_elem in iterable:
+            safe_element = MPSafeData(dict_elem)
+            safe_elements.append(safe_element)
+        
+        pool.map()
 
 if __name__ == "__main__":
     import doctest
