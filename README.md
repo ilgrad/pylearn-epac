@@ -120,7 +120,7 @@ ResultSet(
     #          /      \
     # MySVC(C=1.0)  MySVC(C=2.0) 
     # top-down process to call transform
-    two_svc.top_down(X=X, y=y)
+    two_svc.run(X=X, y=y)
     # buttom-up process to compute scores
     two_svc.reduce()
 
