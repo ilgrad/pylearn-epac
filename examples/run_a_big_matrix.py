@@ -36,4 +36,15 @@ cv_svm = CV(Methods(*[SVC(kernel="linear"),
 from epac import LocalEngine
 local_engine = LocalEngine(cv_svm, num_processes=2)
 cv_svm = local_engine.run(X=X, y=y)
-cv_svm.reduce()
+print cv_svm.reduce()
+
+cv_svm2 = CV(Methods(*[SVC(kernel="linear"),
+                      SVC(kernel="rbf")]),
+                      n_folds=3)
+cv_svm2.run(X=X, y=y)
+
+for leaf in cv_svm.walk_leaves():
+    print leaf.load_results()
+
+for leaf in cv_svm2.walk_leaves():
+    print leaf.load_results()
