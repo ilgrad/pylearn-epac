@@ -133,8 +133,13 @@ class LocalEngine(Engine):
 #        res_tree_root_list = []
 #        for linput in input_list:
 #            res_tree_root_list.append(partial_map_process(linput))
-        pool = Pool(processes=len(input_list))
-        res_tree_root_list = pool.map(partial_map_process, input_list)
+        # pool = Pool(processes=len(input_list))
+        # res_tree_root_list = pool.map(partial_map_process, input_list)
+        from joblib import Parallel, delayed
+        res_tree_root_list = \
+            Parallel(n_jobs=len(input_list))(delayed(partial_map_process)(i)
+                    for i in input_list)
+
         for each_tree_root in res_tree_root_list:
             self.tree_root.merge_tree_store(each_tree_root)
         return self.tree_root

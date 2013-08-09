@@ -124,6 +124,7 @@ def _safe_map(func, safe_element):
     safe_ret = MPSafeData(ret)
     return safe_ret
 
+
 class SafePool:
     def __init__(self, processes):
         self.processes = processes
@@ -134,7 +135,6 @@ class SafePool:
         for dict_elem in iterable:
             safe_element = MPSafeData(dict_elem)
             safe_elements.append(safe_element)
-        
         pool.map()
 
 if __name__ == "__main__":
