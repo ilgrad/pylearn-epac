@@ -11,12 +11,16 @@ Created on 20 June 2013
 """
 
 import unittest
+import numpy as np
 from epac.tests.wfexamples2test import get_wf_example_classes
 from epac import LocalEngine
 from epac import SomaWorkflowEngine
 
 from sklearn import datasets
 from epac.tests.utils import comp_2wf_reduce_res
+import copy
+
+
 
 
 class EpacWorkflowTest(unittest.TestCase):
@@ -34,32 +38,43 @@ class EpacWorkflowTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def _compare_two_node(self, node1, node2):
+        leaf_res1 = []
+        for leaf1 in node1.walk_leaves():
+            res = copy.copy(leaf1.load_results())
+            leaf_res1.append(res)
+        leaf_res2 = []
+        for leaf2 in node2.walk_leaves():
+            res = copy.copy(leaf2.load_results())
+            leaf_res2.append(res)
+        self._compare_leaf_res(leaf_res1, leaf_res2)
+
+    def _compare_leaf_res(self, leaf_res1, leaf_res2):
+        for i in range(len(leaf_res1)):
+            for key in leaf_res1[i][leaf_res1[i].keys()[0]].keys():
+                self.assertTrue(np.all(leaf_res1[i][leaf_res1[i].keys()[0]][key]
+                    == leaf_res2[i][leaf_res2[i].keys()[0]][key]))
+
     def test_examples_local_engine(self):
-#        list_all_examples = get_wf_example_classes()
-#        example = list_all_examples[3]
-#        wf = example().get_workflow()
-#        local_engine = LocalEngine(tree_root=wf,
-#                                   num_processes=self.n_cores)
-#        local_engine_wf = local_engine.run(X=self.X, y=self.y)
-#        sfw_engine = SomaWorkflowEngine(
-#                tree_root=wf,
-#                num_processes=self.n_cores)
-#        sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
-#        wf.run(X=self.X, y=self.y)
-#        self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
-#        self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
         list_all_examples = get_wf_example_classes()
         for example in list_all_examples:
             # example = list_all_examples[0]
             wf = example().get_workflow()
-            local_engine = LocalEngine(tree_root=wf,
+            local_engine_wf = example().get_workflow()
+            sfw_engine_wf = example().get_workflow()
+
+            wf.run(X=self.X, y=self.y)
+            local_engine = LocalEngine(tree_root=local_engine_wf,
                                        num_processes=self.n_cores)
             local_engine_wf = local_engine.run(X=self.X, y=self.y)
             sfw_engine = SomaWorkflowEngine(
-                    tree_root=wf,
+                    tree_root=sfw_engine_wf,
                     num_processes=self.n_cores)
             sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
-            wf.run(X=self.X, y=self.y)
+
+            self._compare_two_node(wf, local_engine_wf)
+            self._compare_two_node(wf, sfw_engine)
+
             self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
             self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
 
