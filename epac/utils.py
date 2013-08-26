@@ -326,3 +326,34 @@ def train_test_merge(Xy_train, Xy_test):
     Xy_test = {key_push(k, conf.TEST) : Xy_test[k] for k in Xy_test}
     Xy_train.update(Xy_test)
     return Xy_train
+
+
+def save_datasets(dataset_dir, **Xy):
+    '''Save a dictionary to a directory
+    Save a dictionary to a directory. This dictionary may contain
+    numpy array, numpy.memmap
+
+    Example
+    -------
+    from sklearn import datasets
+    from epac.utils import save_datasets
+    X, y = datasets.make_classification(n_samples=50,
+                                        n_features=10000,
+                                        n_informative=2,
+                                        random_state=1)
+    Xy = dict(X=X, y=y)
+    save_datasets("/tmp/save_datasets_data", **Xy)
+    '''
+    if not os.path.exists(dataset_dir):
+        os.makedirs(dataset_dir)
+    index_filepath = os.path.join(dataset_dir, "db_index.txt")
+    file_db_index = open(index_filepath, "w+")
+    file_db_index.write(repr(len(Xy)) + "\n")
+    for key in Xy:
+        filepath = os.path.join(dataset_dir, key + ".npy")
+        file_db_index.write(filepath)
+        file_db_index.write("\n")
+    file_db_index.close()
+    for key in Xy:
+        filepath = os.path.join(dataset_dir, key + ".npy")
+        np.save(filepath, Xy[key])

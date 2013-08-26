@@ -272,6 +272,7 @@ class SomaWorkflowEngine(LocalEngine):
                                         name="working directory")
         else:
             ft_working_directory = tmp_work_dir_path
+
         ## Save the database and tree to working directory
         ## ===============================================
         np.savez(os.path.join(tmp_work_dir_path,
