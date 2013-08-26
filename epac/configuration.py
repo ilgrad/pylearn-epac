@@ -32,6 +32,7 @@ class conf:
     RESULT_SET = "result_set"
     ML_CLASSIFICATION_MODE = None  # Set to True to force classification mode
     DICT_INDEX_FILE = "dict_index.txt"
+    MEMM_THRESHOLD = 500000000L
     
     @classmethod
     def init_ml(cls, **Xy):

@@ -337,8 +337,8 @@ def save_dictionary(dataset_dir, **Xy):
     -------
     from sklearn import datasets
     from epac.utils import save_dictionary
-    X, y = datasets.make_classification(n_samples=50,
-                                        n_features=10000,
+    X, y = datasets.make_classification(n_samples=500,
+                                        n_features=200000,
                                         n_informative=2,
                                         random_state=1)
     Xy = dict(X=X, y=y)
@@ -359,6 +359,13 @@ def save_dictionary(dataset_dir, **Xy):
     for key in Xy:
         filepath = os.path.join(dataset_dir, key + ".npy")
         np.save(filepath, Xy[key])
+
+
+def is_need_mem(filepath):
+    filesize = os.path.getsize(filepath)
+    if filesize > conf.MEMM_THRESHOLD:
+        return True
+    return False
 
 
 def load_dictionary(dataset_dir):
@@ -383,6 +390,9 @@ def load_dictionary(dataset_dir):
         key = key.strip("\n")
         filepath = file_dict_index.readline()
         filepath = filepath.strip("\n")
-        data = np.load(filepath)
+        if is_need_mem(filepath):
+            data = np.load(filepath, "r+")
+        else:
+            data = np.load(filepath)
         res[key] = data
     return res
