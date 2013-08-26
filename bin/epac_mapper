@@ -15,6 +15,7 @@ import numpy as np
 from epac import conf, StoreFs, MapperSubtrees
 from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.engine import SomaWorkflowEngine
+from epac.utils import load_dictionary
 
 
 # load all the class definition so that can be load classes, like methods
@@ -102,7 +103,9 @@ if __name__ == "__main__":
     # datasets_filepath ="/tmp/tmpO8D3dG_datasets.npz"
     # keys="fs:///tmp/tmpXyC_XE/ParPerm/Perm(nb=0)"
 
-    Xy = load_datasets(datasets_filepath)
+    # Xy = load_datasets(datasets_filepath)
+    Xy = load_dictionary(datasets_filepath)
+
     tree_root_relative_path = SomaWorkflowEngine.tree_root_relative_path
     store_fs = StoreFs(tree_root_relative_path)
     tree = store_fs.load(key=conf.STORE_EXECUTION_TREE_PREFIX)

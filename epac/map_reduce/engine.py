@@ -23,6 +23,8 @@ from epac.configuration import conf
 from epac.map_reduce.split_input import SplitNodesInput
 from epac.map_reduce.inputs import NodesInput
 
+from epac.utils import save_dictionary
+from epac.utils import load_dictionary
 
 class Engine(object):
     __metaclass__ = ABCMeta
@@ -148,7 +150,7 @@ class LocalEngine(Engine):
 class SomaWorkflowEngine(LocalEngine):
     '''Using soma-workflow to run epac tree in parallel
     '''
-    dataset_relative_path = "./dataset.npz"
+    dataset_relative_path = "./dataset"
     open_me_by_soma_workflow_gui = "open_me_by_soma_workflow_gui"
 
     def __init__(self,
@@ -275,8 +277,10 @@ class SomaWorkflowEngine(LocalEngine):
 
         ## Save the database and tree to working directory
         ## ===============================================
-        np.savez(os.path.join(tmp_work_dir_path,
-                 SomaWorkflowEngine.dataset_relative_path), **Xy)
+        # np.savez(os.path.join(tmp_work_dir_path,
+        # SomaWorkflowEngine.dataset_relative_path), **Xy)
+        save_dictionary(os.path.join(tmp_work_dir_path,
+            SomaWorkflowEngine.dataset_relative_path), **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
             SomaWorkflowEngine.tree_root_relative_path))
