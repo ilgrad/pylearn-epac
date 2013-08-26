@@ -31,6 +31,7 @@ class conf:
     BEST_PARAMS = "best_params"
     RESULT_SET = "result_set"
     ML_CLASSIFICATION_MODE = None  # Set to True to force classification mode
+    DICT_INDEX_FILE = "dict_index.txt"
     
     @classmethod
     def init_ml(cls, **Xy):

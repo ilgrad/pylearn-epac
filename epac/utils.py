@@ -328,7 +328,7 @@ def train_test_merge(Xy_train, Xy_test):
     return Xy_train
 
 
-def save_datasets(dataset_dir, **Xy):
+def save_dictionary(dataset_dir, **Xy):
     '''Save a dictionary to a directory
     Save a dictionary to a directory. This dictionary may contain
     numpy array, numpy.memmap
@@ -336,24 +336,53 @@ def save_datasets(dataset_dir, **Xy):
     Example
     -------
     from sklearn import datasets
-    from epac.utils import save_datasets
+    from epac.utils import save_dictionary
     X, y = datasets.make_classification(n_samples=50,
                                         n_features=10000,
                                         n_informative=2,
                                         random_state=1)
     Xy = dict(X=X, y=y)
-    save_datasets("/tmp/save_datasets_data", **Xy)
+    save_dictionary("/tmp/save_datasets_data", **Xy)
     '''
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
-    index_filepath = os.path.join(dataset_dir, "db_index.txt")
-    file_db_index = open(index_filepath, "w+")
-    file_db_index.write(repr(len(Xy)) + "\n")
+    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
+    file_dict_index = open(index_filepath, "w+")
+    file_dict_index.write(repr(len(Xy)) + "\n")
     for key in Xy:
         filepath = os.path.join(dataset_dir, key + ".npy")
-        file_db_index.write(filepath)
-        file_db_index.write("\n")
-    file_db_index.close()
+        file_dict_index.write(key)
+        file_dict_index.write("\n")
+        file_dict_index.write(filepath)
+        file_dict_index.write("\n")
+    file_dict_index.close()
     for key in Xy:
         filepath = os.path.join(dataset_dir, key + ".npy")
         np.save(filepath, Xy[key])
+
+
+def load_dictionary(dataset_dir):
+    '''Load a dictionary
+    Load a dictionary from save_dictionary
+
+    Example
+    -------
+    from epac.utils import load_dictionary
+    Xy = load_dictionary("/tmp/save_datasets_data")
+    '''
+    if not os.path.exists(dataset_dir):
+        return None
+    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
+    if not os.path.isfile(index_filepath):
+        return None
+    file_dict_index = open(index_filepath, "r")
+    len_dict = file_dict_index.readline()
+    res = {}
+    for i in range(int(len_dict)):
+        key = file_dict_index.readline()
+        key = key.strip("\n")
+        filepath = file_dict_index.readline()
+        filepath = filepath.strip("\n")
+        data = np.load(filepath)
+        res[key] = data
+    return res
