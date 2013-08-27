@@ -6,12 +6,13 @@ Created on Wed Aug  7 14:47:17 2013
 """
 
 import numpy as np
-import os
 import os.path as path
 from tempfile import mkdtemp
 from sklearn import datasets
 
 
+## 0) Convert an array matrix to memory mapping (np.memmap)
+## =======================================================
 def convert2memmap(np_mat):
     filename = path.join(mkdtemp(), 'newfile.dat')
     mem_mat = np.memmap(filename,\
@@ -21,8 +22,9 @@ def convert2memmap(np_mat):
     mem_mat[:] = np_mat[:]
     return mem_mat
 
-
-X, y = datasets.make_classification(n_samples=50,
+## 1) Build a dataset and convert to np.memmap
+## =======================================================
+X, y = datasets.make_classification(n_samples=500,
                                     n_features=10000,
                                     n_informative=2,
                                     random_state=1)
@@ -31,33 +33,29 @@ y = convert2memmap(y)
 
 Xy = dict(X=X, y=y)
 
-for k in Xy:
-    print k
-    print type(Xy[k]) is np.core.memmap
-    print Xy[k]
-
-
-np.savez("/tmp/data.dat", **Xy)
-
-
-def load_datasets(datasets_filepath):
-    Xy = np.load(datasets_filepath)
-    return {k: Xy[k] for k in Xy.keys()}
-
-Xy = load_datasets("/tmp/data.dat.npz")
+## 2) Build two workflows respectively
+## =======================================================
 
 from sklearn.svm import SVC
 from epac import CV, Methods
-cv_svm = CV(Methods(*[SVC(kernel="linear"),
+cv_svm_local = CV(Methods(*[SVC(kernel="linear"),
+                      SVC(kernel="rbf")]),
+                      n_folds=3)
+cv_svm_swf = CV(Methods(*[SVC(kernel="linear"),
                       SVC(kernel="rbf")]),
                       n_folds=3)
 
-#from epac import LocalEngine
-#local_engine = LocalEngine(cv_svm, num_processes=2)
-#cv_svm = local_engine.run(X=X, y=y)
-#print cv_svm.reduce()
+## 3) Run two workflows using local engine and soma-workflow
+## =========================================================
+
+from epac import LocalEngine
+local_engine = LocalEngine(cv_svm_local, num_processes=2)
+cv_svm = local_engine.run(X=X, y=y)
+print cv_svm.reduce()
 
 from epac import SomaWorkflowEngine
-swf_engine = SomaWorkflowEngine(cv_svm, num_processes=2)
-cv_svm = swf_engine.run(X=X, y=y)
+swf_engine = SomaWorkflowEngine(cv_svm_swf,
+                                num_processes=2,
+                                remove_finished_wf=False)
+cv_svm = swf_engine.run(**Xy)
 print cv_svm.reduce()
