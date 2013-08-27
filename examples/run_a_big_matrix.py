@@ -22,8 +22,8 @@ def convert2memmap(np_mat):
     mem_mat[:] = np_mat[:]
     return mem_mat
 
-## 1) Build a dataset and convert to np.memmap
-## =======================================================
+## 1) Build a dataset and convert to np.memmap (for big matrix)
+## ============================================================
 X, y = datasets.make_classification(n_samples=500,
                                     n_features=10000,
                                     n_informative=2,
