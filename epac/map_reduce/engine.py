@@ -268,6 +268,7 @@ class SomaWorkflowEngine(LocalEngine):
         if not  self.resource_id or self.resource_id == "":
             self.resource_id = socket.gethostname()
             is_run_local = True
+        print "is_run_local=", is_run_local
         if not is_run_local:
             ft_working_directory = FileTransfer(is_input=True,
                                         client_path=tmp_work_dir_path,
@@ -279,8 +280,7 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===============================================
         # np.savez(os.path.join(tmp_work_dir_path,
         # SomaWorkflowEngine.dataset_relative_path), **Xy)
-        save_dictionary(os.path.join(tmp_work_dir_path,
-            SomaWorkflowEngine.dataset_relative_path), **Xy)
+        save_dictionary(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
             SomaWorkflowEngine.tree_root_relative_path))

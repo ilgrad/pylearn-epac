@@ -67,6 +67,7 @@ def key_split(key, eval=False):
     eval_args: boolean
       If true "un-string" the parameters, and return (name, argument) tuples:
       [(item_name1, [[argname, value], ...]), ...]
+
     Examples
     --------
     >>> key_split(key='SelectKBest(k=1)/SVC(kernel=linear,C=1)')

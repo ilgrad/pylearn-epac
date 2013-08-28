@@ -13,9 +13,9 @@ from sklearn import datasets
 from sklearn.svm import SVC
 from sklearn.lda import LDA
 from sklearn.feature_selection import SelectKBest
-import sklearn.pipeline
 from sklearn.cross_validation import StratifiedKFold
 from sklearn import grid_search
+import sklearn.pipeline
 from epac import Pipe, Methods, CV, Perms, CVBestSearchRefit
 from epac import ClassificationReport
 from epac.sklearn_plugins import Permutations
