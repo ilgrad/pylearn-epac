@@ -10,6 +10,7 @@ Created on Thu May 23 10:04:34 2013
 ## ================================= ##
 import numpy as np
 
+
 class conf:
     TRACE_TOPDOWN = False
     STORE_FS_PICKLE_SUFFIX = ".pkl"
@@ -38,7 +39,8 @@ class conf:
     @classmethod
     def init_ml(cls, **Xy):
         ## Try to guess if ML tasl is of classification or regression
-        if cls.ML_CLASSIFICATION_MODE is None:  # try to guess classif or regression task
+        # try to guess classif or regression task
+        if cls.ML_CLASSIFICATION_MODE is None:
             if "y" in Xy:
                 y = Xy["y"]
                 y_int = y.astype(int)
@@ -47,7 +49,8 @@ class conf:
                 if np.min(np.bincount(y_int)) < 2:
                     cls.ML_CLASSIFICATION_MODE = False
                 cls.ML_CLASSIFICATION_MODE = True
-        ## 
+
+
 class debug:
     DEBUG = False
     current = None
