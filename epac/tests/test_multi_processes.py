@@ -21,8 +21,6 @@ from epac.tests.utils import comp_2wf_reduce_res
 import copy
 
 
-
-
 class EpacWorkflowTest(unittest.TestCase):
     def setUp(self):
         self.n_cores = 3
@@ -31,9 +29,9 @@ class EpacWorkflowTest(unittest.TestCase):
         self.n_samples = 100
         self.n_features = int(1E03)
         self.X, self.y = datasets.make_classification(
-        n_samples=self.n_samples,
-        n_features=self.n_features,
-        n_informative=5)
+            n_samples=self.n_samples,
+            n_features=self.n_features,
+            n_informative=5)
 
     def tearDown(self):
         pass
@@ -64,7 +62,7 @@ class EpacWorkflowTest(unittest.TestCase):
                 wf = example().get_workflow()
                 local_engine_wf = example().get_workflow()
                 sfw_engine_wf = example().get_workflow()
-    
+
                 wf.run(X=self.X, y=self.y)
                 local_engine = LocalEngine(tree_root=local_engine_wf,
                                            num_processes=self.n_cores)

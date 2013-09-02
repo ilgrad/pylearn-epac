@@ -7,7 +7,7 @@ Created on Wed Jan 23 13:58:21 2013
 """
 
 from epac.workflow.pipeline import Pipe
-from epac.workflow.splitters import Perms, Methods, CV, CVBestSearchRefit
+from epac.workflow.splitters import Perms, Methods, CV, CVBestSearchRefit, CVBestSearchRefit2
 from epac.workflow.base import BaseNode, key_pop, key_split
 from epac.configuration import conf, debug
 from epac.map_reduce.results import ResultSet, Result
@@ -26,6 +26,7 @@ __all__ = ['BaseNode',
            'Methods',
            'CV',
            'CVBestSearchRefit',
+           'CVBestSearchRefit2',
            'Estimator'
            'ClassificationReport', 'PvalPerms',
            'Result',
