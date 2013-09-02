@@ -483,7 +483,7 @@ class CVBestSearchRefit(Wrapper):
         return self.load_results()
 
 
-class ReducerBestSearchRefit2(Reducer):
+class CVBestSearchRefit2Reducer(Reducer):
     def __init__(self, NodeBestSearchRefit):
         self.NodeBestSearchRefit = NodeBestSearchRefit
 
@@ -529,24 +529,25 @@ class CVBestSearchRefit2(Wrapper):
     Example
     -------
 
-    from sklearn import datasets
-    from sklearn.svm import SVC
-    from epac import Methods
-    from epac.workflow.splitters import CVBestSearchRefit2
-    X, y = datasets.make_classification(
-        n_samples=12,
-        n_features=10,
-        n_informative=2,
-        random_state=1)
-    n_folds_nested = 2
-    C_values = [.1, 0.5, 1, 2, 5]
-    kernels = ["linear", "rbf"]
-    methods = Methods(*[SVC(C=C, kernel=kernel)
-        for C in C_values for kernel in kernels])
-    wf = CVBestSearchRefit2(methods, n_folds=n_folds_nested)
-    wf.transform(X=X, y=y)
-    wf.run(X=X, y=y)
-    wf.reduce()
+    >>> from sklearn import datasets
+    >>> from sklearn.svm import SVC
+    >>> from epac import Methods
+    >>> from epac.workflow.splitters import CVBestSearchRefit2
+    >>> X, y = datasets.make_classification(n_samples=12,
+    ...                                     n_features=10,
+    ...                                     n_informative=2,
+    ...                                     random_state=1)
+    >>> n_folds_nested = 2
+    >>> C_values = [.1, 0.5, 1, 2, 5]
+    >>> kernels = ["linear", "rbf"]
+    >>> methods = Methods(*[SVC(C=C, kernel=kernel)
+    ...     for C in C_values for kernel in kernels])
+    >>> wf = CVBestSearchRefit2(methods, n_folds=n_folds_nested)
+    >>> wf.run(X=X, y=y)
+    [[{'y/test/pred': array([ 0.,  0.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  0.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}], [{'y/test/pred': array([ 1.,  1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  1.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  0.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  0.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.,  0.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  1.,  1.,  0.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  1.,  1.,  0.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}]]
+    >>> wf.reduce()
+    ResultSet(
+    [{'key': CVBestSearchRefit2, 'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  0.  1.]}])
 
     """
 
@@ -567,7 +568,7 @@ class CVBestSearchRefit2(Wrapper):
         self.arg_max = arg_max
         self.refited = None
         self.best_params = None
-        self.reducer = ReducerBestSearchRefit2(self)
+        self.reducer = CVBestSearchRefit2Reducer(self)
 
     def get_signature(self):
         return self.__class__.__name__
@@ -601,7 +602,8 @@ class CVBestSearchRefit2(Wrapper):
             self.best_params = best_params
             out = self.refited.top_down(**Xy)
             out[conf.BEST_PARAMS] = best_params
-            return out
+            result = Result(key=self.get_signature(), **out)
+            return ResultSet(result)
         return results
 
 if __name__ == "__main__":
