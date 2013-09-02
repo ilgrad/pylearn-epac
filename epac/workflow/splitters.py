@@ -561,9 +561,10 @@ class CVBestSearchRefit2(Wrapper):
         arg_max = kwargs.pop("arg_max") if "arg_max" in kwargs else True
         from epac.workflow.splitters import CV
         # methods = Methods(*tasks)
-        self.children.append(CV(node=node,\
-                            reducer=ClassificationReport(keep=False),\
-                            **kwargs))
+        cv_node = CV(node=node,\
+                    reducer=ClassificationReport(keep=False),\
+                    **kwargs)
+        self.add_child(cv_node)
         self.score = score
         self.arg_max = arg_max
         self.refited = None
