@@ -497,6 +497,8 @@ class BaseNode(object):
             children_result_set = [child.reduce(store_results=False) for
                 child in self.children]
             result_set = ResultSet(*children_result_set)
+            if self.reducer:
+                return self.reducer.reduce(result_set)
             # Append node signature in the keys
             for result in result_set:
                 result["key"] = key_push(self.get_signature(), result["key"])
