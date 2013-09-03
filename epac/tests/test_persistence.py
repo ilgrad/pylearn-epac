@@ -60,7 +60,6 @@ class TestWorkFlow(unittest.TestCase):
         tree_fs_noresults.save_tree(store=store)
         tree_fs_withresults = store.load()
         res_fs_withresults = tree_fs_withresults.reduce().values()[0]
-        #
         # Compare
         comp = np.all([
             np.all(
