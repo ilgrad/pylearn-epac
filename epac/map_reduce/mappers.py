@@ -164,7 +164,6 @@ class MapperSubtrees(Mapper):
             # print "Save results"
             if self.store_fs:
                 curr_node.save_node(store=self.store_fs)
-        self.tree_root.store = StoreMem()
         self.tree_root.save_node(store=self.store_fs)
         return self.tree_root
 

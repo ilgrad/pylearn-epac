@@ -10,6 +10,7 @@ Created on Wed Apr 24 11:18:19 2013
 """
 
 import sys
+import os
 import optparse
 import numpy as np
 from epac import conf, StoreFs, MapperSubtrees
@@ -41,8 +42,9 @@ if __name__ == "__main__":
                       'represents a key node')
     parser.add_option('-x', '--function',
                       help='Function to execute. Default "fit_predict"')
-    #argv = ['epac_mapper', '--datasets=./dataset.npz', '--keysfile=./0.job']
-    #options, args = parser.parse_args(argv)
+    # argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./0.job']
+    # options, args = parser.parse_args(argv)
+    # os.chdir("/tmp/tmpctfq4n")
     options, args = parser.parse_args(sys.argv)
     # Set default values to parameters
     datasets_filepath = None

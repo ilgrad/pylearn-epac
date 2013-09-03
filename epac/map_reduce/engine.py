@@ -268,7 +268,7 @@ class SomaWorkflowEngine(LocalEngine):
         if not  self.resource_id or self.resource_id == "":
             self.resource_id = socket.gethostname()
             is_run_local = True
-        print "is_run_local=", is_run_local
+        # print "is_run_local=", is_run_local
         if not is_run_local:
             ft_working_directory = FileTransfer(is_input=True,
                                         client_path=tmp_work_dir_path,
