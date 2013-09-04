@@ -478,15 +478,7 @@ class CVBestSearchRefit2(Wrapper):
 
     def transform(self, **Xy):
         Xy_train, Xy_test = train_test_split(Xy)
-        cpXy = None
-        if Xy_train is Xy_test:
-            cpXy = copy.copy(Xy)
-        else:
-            cpXy = copy.copy(Xy_train)
-        for key in cpXy:
-            new_key = self.get_signature() + "_" + key
-            cpXy[new_key] = cpXy.pop(key)
-        result = Result(key=self.get_signature(), **cpXy)
+        result = Result(key=self.get_signature(), **Xy)
         self.save_results(ResultSet(result))
         if Xy_train is Xy_test:
             return Xy
@@ -497,8 +489,7 @@ class CVBestSearchRefit2(Wrapper):
         res_dict = {}
         for key in cpXy[self.get_signature()]:
             if not key == "key":
-                new_key = key.replace(self.get_signature() + "_", "")
-                res_dict[new_key] = cpXy[self.get_signature()][key]
+                res_dict[key] = cpXy[self.get_signature()][key]
         return res_dict
 
     def reduce(self, store_results=True):
@@ -507,8 +498,8 @@ class CVBestSearchRefit2(Wrapper):
         results = ResultSet(*children_results)
         if self.reducer:
             to_refit, best_params = self.reducer.reduce(results)
-            cpXy = self.load_results()
-            Xy = self._results2dict(**cpXy)
+            Xy = self.load_results()
+            Xy = self._results2dict(**Xy)
             self.refited = to_refit
             self.best_params = best_params
             out = self.refited.top_down(**Xy)
