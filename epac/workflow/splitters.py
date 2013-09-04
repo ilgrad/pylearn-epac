@@ -477,13 +477,21 @@ class CVBestSearchRefit2(Wrapper):
         return self.__class__.__name__
 
     def transform(self, **Xy):
-        cpXy = copy.copy(Xy)
-        for key in Xy:
+        Xy_train, Xy_test = train_test_split(Xy)
+        cpXy = None
+        if Xy_train is Xy_test:
+            cpXy = copy.copy(Xy)
+        else:
+            cpXy = copy.copy(Xy_train)
+        for key in cpXy:
             new_key = self.get_signature() + "_" + key
             cpXy[new_key] = cpXy.pop(key)
         result = Result(key=self.get_signature(), **cpXy)
         self.save_results(ResultSet(result))
-        return Xy
+        if Xy_train is Xy_test:
+            return Xy
+        else:
+            return Xy_train
 
     def _results2dict(self, **cpXy):
         res_dict = {}
