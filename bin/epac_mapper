@@ -44,7 +44,7 @@ if __name__ == "__main__":
                       help='Function to execute. Default "fit_predict"')
 #    argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./1.job']
 #    options, args = parser.parse_args(argv)
-#    os.chdir("/tmp/tmpm9Z_3u")
+#    os.chdir("/tmp/tmpqxcsqT")
     options, args = parser.parse_args(sys.argv)
     # Set default values to parameters
     datasets_filepath = None

@@ -48,7 +48,7 @@ def _export_nodes_recursively(
     node,
     num_processes,
     nodes_per_process_list,
-    max_depth=4,
+    max_depth=conf.MAX_DEPTH_SPLIT_TREE,
     cur_depth=0
 ):
     '''Allocate recursively the nodes for list
