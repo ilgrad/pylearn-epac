@@ -10,6 +10,7 @@ Created on Thu Jun 13 11:12:28 2013
 import os
 from abc import ABCMeta, abstractmethod
 from epac import key_pop, StoreMem
+from epac.utils import clean_tree_stores
 
 
 def map_process(map_input, mapper):
@@ -159,11 +160,13 @@ class MapperSubtrees(Mapper):
             curr_node = self.tree_root.get_node(curr_key)
             # print "Recursively run from root to current node"
             if self.store_fs:
+                clean_tree_stores(curr_node)
                 curr_node.store = StoreMem()
             curr_node.run(**cpXy)
             # print "Save results"
             if self.store_fs:
                 curr_node.save_node(store=self.store_fs)
+                clean_tree_stores(curr_node)
         if self.store_fs:
             self.tree_root.save_node(store=self.store_fs)
         return self.tree_root

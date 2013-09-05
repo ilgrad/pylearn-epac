@@ -41,6 +41,7 @@ def range_log2(n, add_n=True):
         rang.append(int(n))
     return rang
 
+
 ## =========== ##
 ## == Utils == ##
 ## =========== ##
@@ -299,3 +300,9 @@ def load_dictionary(dataset_dir):
             data = np.load(filepath)
         res[key] = data
     return res
+
+
+def clean_tree_stores(tree_root):
+    for each_node in tree_root.walk_true_nodes():
+        if each_node.store:
+            each_node.store = None

@@ -20,8 +20,8 @@ from epac.configuration import conf
 from epac.utils import which
 from epac.workflow.splitters import CVBestSearchRefit
 
+# _classes_cannot_be_splicted = [CVBestSearchRefit.__class__.__name__]
 _classes_cannot_be_splicted = [CVBestSearchRefit.__class__.__name__]
-
 
 def _is_cannot_be_splicted(signature):
     for _class_cannot_be_splicted in _classes_cannot_be_splicted:
