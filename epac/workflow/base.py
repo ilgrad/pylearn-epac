@@ -245,7 +245,9 @@ class BaseNode(object):
                 return self
             for child in self.children:
                 if key.find(child.get_key()) == 0:
-                    return child.get_node(key)
+                    key_node = child.get_node(key)
+                    if key_node:
+                        return key_node
             return None
         elif regexp:
             if isinstance(regexp, str):
