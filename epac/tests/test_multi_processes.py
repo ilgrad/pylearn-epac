@@ -87,31 +87,14 @@ class EpacWorkflowTest(unittest.TestCase):
                 local_engine_wf = local_engine.run(X=self.X, y=self.y)
                 sfw_engine = SomaWorkflowEngine(
                         tree_root=sfw_engine_wf,
-                        num_processes=self.n_cores)
+                        num_processes=self.n_cores
+                        #,resource_id="jl237561@gabriel",
+                        #login="jl237561"
+                        )
                 sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
                 self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
                 self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
-#        for example in list_all_examples:
-#            if example().__class__.__name__ == "WFExample3":
-#                # example = list_all_examples[0]
-##                wf = example().get_workflow()
-##                wf.run(X=self.X, y=self.y)
-##                print repr(wf.reduce())
-##                local_engine_wf = example().get_workflow()
-##                local_engine = LocalEngine(tree_root=local_engine_wf,
-##                                           num_processes=self.n_cores)
-##                local_engine_wf = local_engine.run(X=self.X, y=self.y)
-##                print repr(local_engine_wf.reduce())
-#                sfw_engine_wf = example().get_workflow()
-#                sfw_engine = SomaWorkflowEngine(
-#                        tree_root=sfw_engine_wf,
-#                        num_processes=self.n_cores,
-#                        remove_finished_wf=False,
-#                        remove_local_tree=False)
-#                sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
-#                print repr(sfw_engine_wf.reduce())
-##                self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
-##                self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
+
 
 if __name__ == '__main__':
     unittest.main()
