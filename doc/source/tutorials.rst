@@ -27,7 +27,8 @@ Basic units: Pipe and Methods
 
 In epac, there are two very basic elements, *Pipe* (sequential pipeline) and *Methods* (parallel methods). *Pipe* is used for running a sequence of nodes while *Methods* is designed for parallelly run sequences of nodes.
 
- 
+???need soma figures???
+
 Pipe
 ----
  
@@ -184,7 +185,8 @@ Model Selection using Cross-validation
 ======================================
 
 We have several classifiers and we need to select the best classifier using the cross-validation. 
- 
+
+??? need to add CVBestSearchRefitParallel ???
 ::
 
     >>> # Model selection using CV
