@@ -11,6 +11,7 @@ from abc import abstractmethod
 from epac.map_reduce.results import Result
 from epac.configuration import conf
 from epac.workflow.base import key_push, key_pop
+from epac.workflow.base import key_split
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 
 ## ======================================================================== ##
@@ -119,3 +120,29 @@ class PvalPerms(Reducer):
         if self.keep:
             out.update(result)
         return out
+
+
+class CVBestSearchRefitPReducer(Reducer):
+    def __init__(self, NodeBestSearchRefit):
+        self.NodeBestSearchRefit = NodeBestSearchRefit
+
+    def reduce(self, result):
+        from epac.workflow.pipeline import Pipe
+        #  Pump-up results
+        cv_result_set = result
+        key_val = [(result.key(), result[self.NodeBestSearchRefit.score]) \
+                for result in cv_result_set]
+        scores = np.asarray(zip(*key_val)[1])
+        scores_opt = np.max(scores)\
+            if self.NodeBestSearchRefit.arg_max else np.min(scores)
+        idx_best = np.where(scores == scores_opt)[0][0]
+        best_key = key_val[idx_best][0]
+        # Find nodes that match the best
+        nodes_dict = \
+            {n.get_signature(): \
+            n for n in self.NodeBestSearchRefit.children[0].walk_true_nodes() \
+            if n.get_signature() in key_split(best_key)}
+        to_refit = Pipe(*[nodes_dict[k].wrapped_node \
+            for k in key_split(best_key)])
+        best_params = [dict(sig) for sig in key_split(best_key, eval=True)]
+        return to_refit, best_params

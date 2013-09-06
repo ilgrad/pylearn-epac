@@ -15,8 +15,8 @@ import numpy as np
 from sklearn.svm import SVC
 from sklearn.feature_selection import SelectKBest
 from epac import ClassificationReport
-
 from epac import Pipe, CV, Perms, Methods, CVBestSearchRefit, range_log2
+from epac import CVBestSearchRefitParallel
 
 current_module = sys.modules[__name__]
 
@@ -95,8 +95,34 @@ class WFExample3(WorkflowExample):
                         random_state=random_state)
         return wf
 
-
 class WFExample4(WorkflowExample):
+
+    def get_workflow(self, n_features=int(1E03)):
+        random_state = 0
+        C_values = [1, 10]
+        k_values = 0
+        k_max = "auto"
+        n_folds_nested = 5
+        n_folds = 10
+        n_perms = 10
+        if k_max != "auto":
+            k_values = range_log2(np.minimum(int(k_max), n_features),
+                                  add_n=True)
+        else:
+            k_values = range_log2(n_features, add_n=True)
+        cls = Methods(*[Pipe(SelectKBest(k=k), SVC(C=C, kernel="linear"))
+                                   for C in C_values
+                                   for k in k_values])
+        pipeline = CVBestSearchRefitParallel(cls,
+                                     n_folds=n_folds_nested,
+                                     random_state=random_state)
+        wf = Perms(CV(pipeline, n_folds=n_folds),
+                        n_perms=n_perms,
+                        permute="y",
+                        random_state=random_state)
+        return wf
+
+class WFExample5(WorkflowExample):
 
     def get_workflow(self):
         ####################################################################
