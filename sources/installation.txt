@@ -45,9 +45,9 @@ On the other platforms which support python, you can manually install epac accor
 
 **soma-workflow** (optionally): you can install soma-workflow so that epac can run on the hpc (torque/pbs). To install soma-workflow, please goto http://brainvisa.info/soma/soma-workflow for documentation, and https://pypi.python.org/pypi/soma-workflow for installation.
 
-**epac**: download epac from github to ``$EPACDIR`` and set enviroment variable ``$PYTHONPATH`` that contains ``$EPACDIR`` (epac directory), and ``$PATH`` contains $EPACDIR/bin
-
 **joblib**: download and install **joblib** from https://github.com/joblib/joblib.
+
+**epac**: download epac from github to ``$EPACDIR`` and set enviroment variable ``$PYTHONPATH`` that contains ``$EPACDIR`` (epac directory), and ``$PATH`` contains $EPACDIR/bin
 
 .. code-block:: guess
 
