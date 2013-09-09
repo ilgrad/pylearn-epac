@@ -76,7 +76,8 @@ class EpacWorkflowTest(unittest.TestCase):
                 self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
         for example in list_all_examples:
             if example().__class__.__name__ == "WFExample3" or\
-                example().__class__.__name__ == "WFExample4":
+                example().__class__.__name__ == "WFExample4" or\
+                example().__class__.__name__ == "WFExample5":
                 # example = list_all_examples[0]
                 wf = example().get_workflow()
                 local_engine_wf = example().get_workflow()
@@ -94,6 +95,7 @@ class EpacWorkflowTest(unittest.TestCase):
                 sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
                 self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
                 self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
+
 
 
 if __name__ == '__main__':

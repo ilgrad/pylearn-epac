@@ -21,7 +21,7 @@ from sklearn import grid_search
 from epac import Pipe, Methods, CV, Perms
 from epac import ClassificationReport, PvalPerms
 from epac import StoreFs
-from epac import CVBestSearchRefit
+from epac import CVBestSearchRefitParallel
 from epac.sklearn_plugins import Permutations
 from epac.configuration import conf
 
@@ -41,7 +41,7 @@ class TestWorkFlow(unittest.TestCase):
                             for C in C_values]))
                             for k in k_values])
 
-        pipeline = CVBestSearchRefit(pipelines,
+        pipeline = CVBestSearchRefitParallel(pipelines,
                                      n_folds=n_folds_nested)
 
         tree_mem = CV(pipeline, n_folds=n_folds,
@@ -81,7 +81,7 @@ class TestWorkFlow(unittest.TestCase):
         # With EPAC
         methods = Methods(*[SVC(C=C, kernel=kernel)
             for C in C_values for kernel in kernels])
-        wf = CVBestSearchRefit(methods, n_folds=n_folds_nested)
+        wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
         # Save workflow
         # -------------
         import tempfile
@@ -108,10 +108,10 @@ class TestWorkFlow(unittest.TestCase):
 
         # - Comparisons
         comp = np.all(r_epac[key_y_pred] == r_sklearn[key_y_pred])
-        self.assertTrue(comp, u'Diff CVBestSearchRefit: prediction')
+        self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: prediction')
         comp = np.all([r_epac[conf.BEST_PARAMS][0][p] == r_sklearn[conf.BEST_PARAMS][p]
         for p in  r_sklearn[conf.BEST_PARAMS]])
-        self.assertTrue(comp, u'Diff CVBestSearchRefit: best parameters')
+        self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: best parameters')
 
 
 if __name__ == '__main__':

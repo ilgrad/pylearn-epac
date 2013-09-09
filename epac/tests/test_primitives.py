@@ -16,7 +16,7 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.cross_validation import StratifiedKFold
 from sklearn import grid_search
 import sklearn.pipeline
-from epac import Pipe, Methods, CV, Perms, CVBestSearchRefit
+from epac import Pipe, Methods, CV, Perms, CVBestSearchRefitParallel
 from epac import ClassificationReport
 from epac.sklearn_plugins import Permutations
 from epac.configuration import conf
@@ -142,7 +142,7 @@ class TestCVBestSearchRefit(unittest.TestCase):
         # With EPAC
         methods = Methods(*[SVC(C=C, kernel=kernel)
             for C in C_values for kernel in kernels])
-        wf = CVBestSearchRefit(methods, n_folds=n_folds_nested)
+        wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
         wf.run(X=X, y=y)
         r_epac = wf.reduce().values()[0]
         # - Without EPAC
@@ -156,13 +156,13 @@ class TestCVBestSearchRefit(unittest.TestCase):
         r_sklearn[conf.BEST_PARAMS] = gscv.best_params_
         # - Comparisons
         comp = np.all(r_epac[key_y_pred] == r_sklearn[key_y_pred])
-        self.assertTrue(comp, u'Diff CVBestSearchRefit: prediction')
+        self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: prediction')
         for key_param in r_epac[conf.BEST_PARAMS][0]:
             if key_param in r_sklearn[conf.BEST_PARAMS]:
                 comp = r_sklearn[conf.BEST_PARAMS][key_param] == \
                         r_epac[conf.BEST_PARAMS][0][key_param]
                 self.assertTrue(comp, \
-                    u'Diff CVBestSearchRefit: best parameters')
+                    u'Diff CVBestSearchRefitParallel: best parameters')
 
     def test_cvbestsearchrefit_select_k_best(self):
         list_C_value = range(2, 10, 1)
@@ -181,7 +181,7 @@ class TestCVBestSearchRefit(unittest.TestCase):
             methods = Methods(*[Pipe(SelectKBest(k=k),
                                      SVC(C=C_value, kernel="linear"))
                                      for k in k_values])
-            wf = CVBestSearchRefit(methods, n_folds=n_folds_nested)
+            wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
             wf.run(X=X, y=y)
             r_epac = wf.reduce().values()[0]
             # - Without EPAC
@@ -199,13 +199,13 @@ class TestCVBestSearchRefit(unittest.TestCase):
                 r_sklearn[conf.BEST_PARAMS]['anova__k']
             # - Comparisons
             comp = np.all(r_epac[key_y_pred] == r_sklearn[key_y_pred])
-            self.assertTrue(comp, u'Diff CVBestSearchRefit: prediction')
+            self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: prediction')
             for key_param in r_epac[conf.BEST_PARAMS][0]:
                 if key_param in r_sklearn[conf.BEST_PARAMS]:
                     comp = r_sklearn[conf.BEST_PARAMS][key_param] == \
                             r_epac[conf.BEST_PARAMS][0][key_param]
                     self.assertTrue(comp, \
-                        u'Diff CVBestSearchRefit: best parameters')
+                        u'Diff CVBestSearchRefitParallel: best parameters')
 
 
 class TestMethods(unittest.TestCase):

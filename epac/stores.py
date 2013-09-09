@@ -11,6 +11,7 @@ import os
 import shutil
 # import pickle
 import dill as pickle
+import joblib
 import json
 import inspect
 import numpy as np
@@ -130,7 +131,9 @@ class StoreFs(Store):
                 #print base, dirs, files
                 for filepath in [os.path.join(base, basename) for \
                     basename in files]:
-                    filepaths.append(filepath)
+                    _, ext = os.path.splitext(filepath)
+                    if not ext == ".npy":
+                        filepaths.append(filepath)
             loaded = dict()
             dirpath = os.path.join(self.dirpath, "")
             for filepath in filepaths:
@@ -144,6 +147,9 @@ class StoreFs(Store):
                     key1 = filepath.replace(dirpath, "").\
                         replace(conf.STORE_FS_PICKLE_SUFFIX, "")
                     loaded[key1] = self.load_pickle(filepath)
+                elif ext == ".npy":
+                    # joblib files
+                    pass
                 else:
                     raise IOError('File %s has an unkown extension: %s' %
                         (filepath, ext))
@@ -168,15 +174,17 @@ class StoreFs(Store):
             return loaded
 
     def save_pickle(self, file_path, obj):
-        output = open(file_path, 'wb')
-        pickle.dump(obj, output)
-        output.close()
+        joblib.dump(obj, file_path)
+#        output = open(file_path, 'wb')
+#        pickle.dump(obj, output)
+#        output.close()
 
     def load_pickle(self, file_path):
-        #u'/tmp/store/KFold-0/SVC/__node__NodeEstimator.pkl'
-        inputf = open(file_path, 'rb')
-        obj = pickle.load(inputf)
-        inputf.close()
+#        u'/tmp/store/KFold-0/SVC/__node__NodeEstimator.pkl'
+#        inputf = open(file_path, 'rb')
+#        obj = pickle.load(inputf)
+#        inputf.close()
+        obj = joblib.load(file_path)
         return obj
 
     def save_json(self, file_path,  obj):
