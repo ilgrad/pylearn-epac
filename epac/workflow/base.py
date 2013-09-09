@@ -549,13 +549,16 @@ class BaseNode(object):
         stores = dict()
         for node in self.walk_true_nodes():
             if node.store:
-                stores[node.get_key()] = node.store
+                for key_dict in node.store.dict:
+                    node_key, _ = key_pop(key_dict)
+                    stores[node_key] = StoreMem()
+                    stores[node_key].dict[key_dict] = node.store.dict[key_dict]
                 node.store = None
         store.save(key=conf.STORE_EXECUTION_TREE_PREFIX,
                    obj=self, protocol="bin")
-        for key1 in stores:
-            node = self.get_node(key1)
-            node.store = stores[key1]
+#        for key1 in stores:
+#            node = self.get_node(key1)
+#            node.store = stores[key1]
         # Save the stores
         for key1 in stores:
             # print key1, stores[key1]

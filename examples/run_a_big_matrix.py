@@ -56,8 +56,8 @@ print cv_svm.reduce()
 from epac import SomaWorkflowEngine
 swf_engine = SomaWorkflowEngine(cv_svm_swf,
                                 num_processes=2,
-                                resource_id="jl237561@gabriel",
-                                login="jl237561",
+                                #resource_id="jl237561@gabriel",
+                                #login="jl237561",
                                 remove_finished_wf=False)
 cv_svm = swf_engine.run(**Xy)
 print cv_svm.reduce()

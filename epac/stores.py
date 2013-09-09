@@ -99,6 +99,7 @@ class StoreFs(Store):
             file_path = path + conf.STORE_FS_PICKLE_SUFFIX
             self.save_pickle(file_path, obj)
 
+
     def load(self, key=""):
         """Load everything that is prefixed with key.
 
@@ -118,7 +119,7 @@ class StoreFs(Store):
         from epac.configuration import conf
         from epac.workflow.base import key_pop
         path = os.path.join(self.dirpath, key)
-        #prefix = os.path.join(path, conf.STORE_FS_NODE_PREFIX)
+        # prefix = os.path.join(path, conf.STORE_FS_NODE_PREFIX)
         if os.path.isfile(path + conf.STORE_FS_PICKLE_SUFFIX):
             loaded_node = self.load_pickle(path + conf.STORE_FS_PICKLE_SUFFIX)
             return loaded_node

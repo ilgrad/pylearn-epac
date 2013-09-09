@@ -454,6 +454,8 @@ class CVBestSearchRefitParallel(Wrapper):
     def transform(self, **Xy):
         Xy_train, Xy_test = train_test_split(Xy)
         result = Result(key=self.get_signature(), **Xy)
+        if not self.store:
+            self.store = StoreMem()
         self.save_results(ResultSet(result))
         if Xy_train is Xy_test:
             return Xy

@@ -168,7 +168,7 @@ class MapperSubtrees(Mapper):
                 curr_node.save_node(store=self.store_fs)
                 clean_tree_stores(curr_node)
         if self.store_fs:
-            self.tree_root.save_node(store=self.store_fs)
+            self.tree_root.save_tree(store=self.store_fs)
         return self.tree_root
 
 if __name__ == "__main__":

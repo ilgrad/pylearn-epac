@@ -17,13 +17,13 @@ from epac import conf, StoreFs, MapperSubtrees
 from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.engine import SomaWorkflowEngine
 from epac.utils import load_dictionary
-
+import joblib
 
 # load all the class definition so that can be load classes, like methods
 
-def load_datasets(datasets_filepath):
-    Xy = np.load(datasets_filepath)
-    return {k: Xy[k] for k in Xy.keys()}
+#def load_datasets(datasets_filepath):
+#    Xy = np.load(datasets_filepath)
+#    return {k: Xy[k] for k in Xy.keys()}
 
 
 if __name__ == "__main__":
@@ -42,9 +42,9 @@ if __name__ == "__main__":
                       'represents a key node')
     parser.add_option('-x', '--function',
                       help='Function to execute. Default "fit_predict"')
-#    argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./1.job']
-#    options, args = parser.parse_args(argv)
-#    os.chdir("/tmp/tmpqxcsqT")
+    # argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./1.job']
+    # options, args = parser.parse_args(argv)
+    # os.chdir("/tmp/tmpXr3yWs")
     options, args = parser.parse_args(sys.argv)
     # Set default values to parameters
     datasets_filepath = None
@@ -105,7 +105,6 @@ if __name__ == "__main__":
     # datasets_filepath ="/tmp/tmpO8D3dG_datasets.npz"
     # keys="fs:///tmp/tmpXyC_XE/ParPerm/Perm(nb=0)"
 
-    # Xy = load_datasets(datasets_filepath)
     Xy = load_dictionary(datasets_filepath)
 
     tree_root_relative_path = SomaWorkflowEngine.tree_root_relative_path

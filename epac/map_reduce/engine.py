@@ -23,8 +23,9 @@ from epac.configuration import conf
 from epac.map_reduce.split_input import SplitNodesInput
 from epac.map_reduce.inputs import NodesInput
 
+import joblib
 from epac.utils import save_dictionary
-from epac.utils import load_dictionary
+
 
 class Engine(object):
     __metaclass__ = ABCMeta
