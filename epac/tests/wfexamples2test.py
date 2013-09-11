@@ -122,6 +122,7 @@ class WFExample4(WorkflowExample):
                         random_state=random_state)
         return wf
 
+
 class WFExample5(WorkflowExample):
 
     def get_workflow(self):
@@ -149,6 +150,23 @@ class WFExample5(WorkflowExample):
         wf = CV(pipeline, n_folds=3, reducer=ClassificationReport(keep=True))
         return wf
 
+
+class WFExample6(WorkflowExample):
+
+    def get_workflow(self):
+        n_folds = 2
+        n_folds_nested = 3
+        k_values = [1, 2]
+        C_values = [1, 2]
+        pipelines = Methods(*[
+                            Pipe(SelectKBest(k=k),
+                            Methods(*[SVC(kernel="linear", C=C)
+                            for C in C_values]))
+                            for k in k_values])
+        pipeline = CVBestSearchRefitParallel(pipelines,
+                                     n_folds=n_folds_nested)
+        wf = CV(pipeline, n_folds=n_folds)
+        return wf
 
 def get_wf_example_classes(base_class="WorkflowExample"):
     list_sub_classes = []

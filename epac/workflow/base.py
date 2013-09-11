@@ -565,6 +565,15 @@ class BaseNode(object):
             store.save(key=key_push(key1, conf.STORE_STORE_PREFIX),
                        obj=stores[key1], protocol="bin")
 
+    def collect_save(self, store):
+        """
+        """
+        for node in self.walk_true_nodes():
+            if node.store:
+                self.get_store().dict.update(node.store.dict)
+        store.save(key=key_push(self.get_key(), conf.STORE_STORE_PREFIX),
+                       obj=self.store, protocol="bin")     
+                
     def save_node(self, store):
         """I/O (persistance) operation: save single node states ie.: store"""
         store.save(key=key_push(self.get_key(), conf.STORE_STORE_PREFIX),

@@ -42,9 +42,9 @@ if __name__ == "__main__":
                       'represents a key node')
     parser.add_option('-x', '--function',
                       help='Function to execute. Default "fit_predict"')
-    # argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./1.job']
+    # argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./0.job']
     # options, args = parser.parse_args(argv)
-    # os.chdir("/tmp/tmpXr3yWs")
+    # os.chdir("/tmp/tmp2HoBEk")
     options, args = parser.parse_args(sys.argv)
     # Set default values to parameters
     datasets_filepath = None
