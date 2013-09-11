@@ -27,7 +27,7 @@ setup(
               'epac.map_reduce',
               'epac.sklearn_plugins',
               'epac.workflow',
-              'epac.test'],
+              'epac.tests'],
     scripts=commands,
     long_description=read('README.md'),
     classifiers=[
