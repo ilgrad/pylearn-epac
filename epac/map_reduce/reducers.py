@@ -51,9 +51,11 @@ class ClassificationReport(Reducer):
     -------
     >>> from epac import ClassificationReport
     >>> reducer = ClassificationReport()
-    >>> reducer.reduce({'key': "SVC", 'y/test/pred': [0, 1, 1, 1], 'y/test/true': [0, 0, 1, 1]})
-    {'key': SVC, 'y/test/score_accuray': 0.75, 'y/test/score_precision': [ 1.          0.66666667], 'y/test/score_recall': [ 0.5  1. ], 'y/test/score_f1': [ 0.66666667  0.8       ], 'y/test/score_recall_mean': 0.75}
-
+    >>> result = reducer.reduce({'key': "SVC", 'y/test/pred': [0, 1, 1, 1], 'y/test/true': [0, 0, 1, 1]})
+    >>> result = result.items()
+    >>> result.sort()
+    >>> result
+    [('key', 'SVC'), ('y/test/score_accuracy', 0.75), ('y/test/score_f1', array([ 0.66666667,  0.8       ])), ('y/test/score_precision', array([ 1.        ,  0.66666667])), ('y/test/score_recall', array([ 0.5,  1. ])), ('y/test/score_recall_mean', 0.75)]
     """
     def __init__(self, select_regexp=conf.TEST,
                  keep=False):
@@ -98,7 +100,7 @@ class PvalPerms(Reducer):
       A string to select staitics (defaults ".*score.+"). on which to compute
       p-values.
     """
-    def __init__(self, select_regexp='.*score.+' ,
+    def __init__(self, select_regexp='.*score.+',
                  keep=False):
         self.select_regexp = select_regexp
         self.keep = keep

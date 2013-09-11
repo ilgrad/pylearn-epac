@@ -137,8 +137,10 @@ def _as_dict(v, keys):
 def _dict_prefix_keys(d, prefix):
     return {prefix + str(k): d[k] for k in d}
 
+
 def _dict_suffix_keys(d, suffix):
     return {str(k) + suffix: d[k] for k in d}
+
 
 def _func_get_args_names(f):
     """Return non defaults function args names
@@ -204,7 +206,7 @@ def train_test_split(Xy):
         return Xy, Xy
     if keys_train and keys_test:
         Xy_train = {key_pop(k)[0]: Xy[k] for k in keys_train}
-        Xy_test ={key_pop(k)[0]: Xy[k] for k in keys_test}
+        Xy_test = {key_pop(k)[0]: Xy[k] for k in keys_test}
         return Xy_train, Xy_test
     raise KeyError("data-flow could not be splitted")
 
@@ -223,11 +225,11 @@ def train_test_merge(Xy_train, Xy_test):
 
     Example
     -------
-    >>> train_test_merge(dict(a=1, b=2), dict(a=33, b=44, c=55))
-    {'a/test': 33, 'a/train': 1, 'b/test': 44, 'b/train': 2, 'c/test': 55}
+    >>> train_test_merge(dict(a=1, b=2), dict(a=33, b=44, c=55)) == {'a/test': 33, 'a/train': 1, 'b/test': 44, 'b/train': 2, 'c/test': 55}
+    True
     """
     Xy_train = {key_push(k, conf.TRAIN): Xy_train[k] for k in Xy_train}
-    Xy_test = {key_push(k, conf.TEST) : Xy_test[k] for k in Xy_test}
+    Xy_test = {key_push(k, conf.TEST): Xy_test[k] for k in Xy_test}
     Xy_train.update(Xy_test)
     return Xy_train
 

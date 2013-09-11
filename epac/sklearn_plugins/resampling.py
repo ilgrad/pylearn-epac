@@ -26,7 +26,7 @@ class Permutations(object):
         rng = check_random_state(self.random_state)
         if self.first_perm_is_id:
             yield np.arange(self.n)  # id permutation
-            for i in xrange(self.n_perms - 1): # n_perms-1 random Permutationss
+            for i in xrange(self.n_perms - 1):  # n_perms-1 random Permutationss
                 yield rng.permutation(self.n)
         else:
             for i in xrange(self.n_perms):  # n_perms random permutations
@@ -42,6 +42,7 @@ class Permutations(object):
     def __len__(self):
         return self.n_perms
 
+
 def _clean_nans(scores):
     """
     NaNs can't be properly compared, so change them to the
@@ -54,6 +55,7 @@ def _clean_nans(scores):
 
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
+
 
 class FeatureRanking():
 
@@ -68,16 +70,18 @@ class FeatureRanking():
 
         Example
         -------
-        from sklearn import datasets
-        import numpy as np
+        >>> from sklearn import datasets
+        >>> import numpy as np
+        
         # import some data to play with
-        iris = datasets.load_iris()
-        X = iris.data
-        y = iris.target
-        Xn = np.random.normal(size=X.shape[0]*100).reshape((X.shape[0], 100))
-        X = np.hstack((X, Xn))
-        filter = FeatureRanking()
-        filter.fit(X, y)
+        >>> iris = datasets.load_iris()
+        >>> X = iris.data
+        >>> y = iris.target
+        >>> Xn = np.random.normal(size=X.shape[0]*100).reshape((X.shape[0], 100))
+        >>> X = np.hstack((X, Xn))
+        >>> filter = FeatureRanking()
+        >>> filter.fit(X, y)  #doctest: +ELLIPSIS
+        <__main__.FeatureRanking instance at 0x...>
         """
         if not callable(score_func):
             raise TypeError(
@@ -102,3 +106,8 @@ class FeatureRanking():
 
     def toto(self):
         return dict(fscores=self.scores, pvalues=self.pvalues, ranks=self.ranks)
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)

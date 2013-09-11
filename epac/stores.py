@@ -214,7 +214,7 @@ class StoreFs(Store):
 def obj_to_dict(obj):
     # Composite objects (object, dict, list): recursive call
     if hasattr(obj, "__dict__") and hasattr(obj, "__class__")\
-        and hasattr(obj, "__module__") and not inspect.isfunction(obj): # object: rec call
+        and hasattr(obj, "__module__") and not inspect.isfunction(obj):  # object: rec call
         obj_dict = {k: obj_to_dict(obj.__dict__[k]) for k in obj.__dict__}
         obj_dict["__class_name__"] = obj.__class__.__name__
         obj_dict["__class_module__"] = obj.__module__

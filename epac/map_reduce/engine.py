@@ -173,7 +173,7 @@ class SomaWorkflowEngine(LocalEngine):
         self.login = login
         self.pw = pw
         self.remove_finished_wf = remove_finished_wf
-        self.remove_local_tree  = remove_local_tree
+        self.remove_local_tree = remove_local_tree
 
     def _save_job_list(self,
                         working_directory,
@@ -243,7 +243,7 @@ class SomaWorkflowEngine(LocalEngine):
         ...                                 function_name="transform",
         ...                                 num_processes=3)
         >>> tree_root_node = sfw_engine.run(**Xy)
-
+        light mode
         >>> ## Run reduce process
         >>> ## ==================
         >>> tree_root_node.reduce()
@@ -410,6 +410,7 @@ class SomaWorkflowEngine(LocalEngine):
             SomaWorkflowEngine.tree_root_relative_path))
         tree_root = store.load()
         return tree_root
+
 
 if __name__ == "__main__":
     import doctest

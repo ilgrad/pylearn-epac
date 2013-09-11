@@ -43,29 +43,23 @@ class Estimator(Wrapper):
     >>> Xy = dict(X=X, y=y)
     >>> lda_estimator = Estimator(LDA())
     >>> lda_estimator.transform(**Xy)
-    {'y/true': array([ 1.,  0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,
-            1.,  1.]), 'y/pred': array([ 1.,  1.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,
-            1.,  1.])}
+    {'y/true': array([1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1]), 'y/pred': array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1])}
     >>> pipe = Pipe(SelectKBest(k=7), lda_estimator)
     >>> pipe.run(**Xy)
-    {'y/true': array([ 1.,  0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,
-            1.,  1.]), 'y/pred': array([ 1.,  1.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,
-            1.,  1.])}
+    {'y/true': array([1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1]), 'y/pred': array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1])}
     >>> pipe2 = Pipe(lda_estimator, SVC())
     >>> pipe2.run(**Xy)
-    {'y/true': array([ 1.,  0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,
-            1.,  1.]), 'y/pred': array([ 1.,  1.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,
-            1.,  1.])}
+    {'y/true': array([1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1]), 'y/pred': array([1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1])}
     >>> cv = CV(Methods(pipe, SVC()), n_folds=3)
     >>> cv.run(**Xy)
-    [[{'y/test/pred': array([ 1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  1.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  1.]), 'y/train/pred': array([ 1.,  1.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  0.,  1.])}], [{'y/test/pred': array([ 1.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 1.,  1.,  1.,  0.,  0.,  0.,  0.,  1.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  0.,  1.]), 'y/train/pred': array([ 1.,  0.,  1.,  0.,  0.,  0.,  0.,  1.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  0.,  1.])}], [{'y/test/pred': array([ 0.,  0.,  0.,  0.,  1.]), 'y/train/pred': array([ 0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  1.])}]]
+    [[{'y/test/pred': array([1, 0, 1, 1, 1]), 'y/train/pred': array([1, 1, 0, 0, 0, 0, 1, 0, 1, 1]), 'y/test/true': array([0, 1, 0, 0, 1])}, {'y/test/pred': array([0, 0, 0, 1, 1]), 'y/train/pred': array([1, 1, 0, 0, 0, 0, 1, 0, 1, 1]), 'y/test/true': array([0, 1, 0, 0, 1])}], [{'y/test/pred': array([1, 0, 0, 1, 0]), 'y/train/pred': array([1, 1, 1, 0, 0, 0, 0, 1, 1, 1]), 'y/test/true': array([1, 0, 0, 0, 1])}, {'y/test/pred': array([1, 0, 0, 0, 1]), 'y/train/pred': array([1, 0, 1, 0, 0, 0, 0, 1, 1, 1]), 'y/test/true': array([1, 0, 0, 0, 1])}], [{'y/test/pred': array([0, 0, 0, 0, 1]), 'y/train/pred': array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1]), 'y/test/true': array([1, 0, 0, 1, 1])}, {'y/test/pred': array([0, 0, 0, 1, 0]), 'y/train/pred': array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1]), 'y/test/true': array([1, 0, 0, 1, 1])}]]
     >>> cv.reduce()
     ResultSet(
     [{'key': SelectKBest/LDA/SVC, 'y/test/score_precision': [ 0.5         0.42857143], 'y/test/score_recall': [ 0.5         0.42857143], 'y/test/score_accuracy': 0.466666666667, 'y/test/score_f1': [ 0.5         0.42857143], 'y/test/score_recall_mean': 0.464285714286},
      {'key': SVC, 'y/test/score_precision': [ 0.7  0.8], 'y/test/score_recall': [ 0.875       0.57142857], 'y/test/score_accuracy': 0.733333333333, 'y/test/score_f1': [ 0.77777778  0.66666667], 'y/test/score_recall_mean': 0.723214285714}])
     >>> cv2 = CV(Methods(pipe2, SVC()), n_folds=3)
     >>> cv2.run(**Xy)
-    [[{'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  1.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  1.]), 'y/train/pred': array([ 1.,  1.,  0.,  0.,  0.,  0.,  1.,  0.,  1.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  0.,  1.])}], [{'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  1.,  0.,  0.,  0.,  0.,  1.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  0.,  1.]), 'y/train/pred': array([ 1.,  0.,  1.,  0.,  0.,  0.,  0.,  1.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  0.,  1.])}], [{'y/test/pred': array([ 0.,  1.,  0.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  1.,  0.,  0.,  0.,  0.,  0.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  1.])}]]
+    [[{'y/test/pred': array([1, 1, 1, 1, 1]), 'y/train/pred': array([1, 1, 0, 0, 0, 0, 1, 0, 1, 1]), 'y/test/true': array([0, 1, 0, 0, 1])}, {'y/test/pred': array([0, 0, 0, 1, 1]), 'y/train/pred': array([1, 1, 0, 0, 0, 0, 1, 0, 1, 1]), 'y/test/true': array([0, 1, 0, 0, 1])}], [{'y/test/pred': array([1, 1, 1, 1, 1]), 'y/train/pred': array([1, 0, 1, 0, 0, 0, 0, 1, 1, 1]), 'y/test/true': array([1, 0, 0, 0, 1])}, {'y/test/pred': array([1, 0, 0, 0, 1]), 'y/train/pred': array([1, 0, 1, 0, 0, 0, 0, 1, 1, 1]), 'y/test/true': array([1, 0, 0, 0, 1])}], [{'y/test/pred': array([0, 1, 0, 0, 0]), 'y/train/pred': array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1]), 'y/test/true': array([1, 0, 0, 1, 1])}, {'y/test/pred': array([0, 0, 0, 1, 0]), 'y/train/pred': array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1]), 'y/test/true': array([1, 0, 0, 1, 1])}]]
     >>> cv2.reduce()
     ResultSet(
     [{'key': LDA/SVC, 'y/test/score_precision': [ 0.25        0.36363636], 'y/test/score_recall': [ 0.125       0.57142857], 'y/test/score_accuracy': 0.333333333333, 'y/test/score_f1': [ 0.16666667  0.44444444], 'y/test/score_recall_mean': 0.348214285714},
@@ -214,4 +208,4 @@ class Estimator(Wrapper):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(verbose=True)

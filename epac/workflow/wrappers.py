@@ -74,7 +74,7 @@ class TransformNode(Wrapper):
     ...
     >>> node = TransformNode(Node2Wrap())
     >>> node.transform(x=1, y=2)
-    {'y': 2, 'x': 1, 'res': 5}
+    {'res': 5}
     >>> from epac.configuration import conf
     >>> from epac.utils import train_test_merge
     >>> train_test_merged = train_test_merge(dict(x=1, y=2), dict(x=33, y=44))
@@ -82,7 +82,7 @@ class TransformNode(Wrapper):
     {'x/test': 33, 'x/train': 1, 'y/train': 2, 'y/test': 44}
     >>> train_test_merged[conf.KW_SPLIT_TRAIN_TEST] = True
     >>> node.transform(**train_test_merged)
-    {'x/test': 33, 'x/train': 1, 'y/train': 2, 'res/train': 5, 'split_train_test': True, 'y/test': 44, 'res/test': 121}
+    {'res/train': 5, 'res/test': 121}
 
     '''
 

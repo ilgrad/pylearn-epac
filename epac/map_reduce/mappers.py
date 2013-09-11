@@ -171,6 +171,7 @@ class MapperSubtrees(Mapper):
             self.tree_root.save_tree(store=self.store_fs)
         return self.tree_root
 
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

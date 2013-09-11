@@ -66,7 +66,7 @@ class ResultSet(Set):
             if cpt < len(self.results):
                 s += ",\n"
             cpt += 1
-        return s+"])"
+        return s + "])"
 
     def add(self, result):
         if result in self:
@@ -90,7 +90,7 @@ class Result(ReduceInput):
 
     Example
     -------
-    >>> from epac import Result
+    >>> from epac import Result, conf
     >>> r1 = Result('SVC(C=1)', **dict(a=1, b=2))
     >>> r2 = Result(key='SVC(C=10)', a=1, b=2)
     >>> r1["foo"] = "bar"
@@ -163,6 +163,7 @@ class Result(ReduceInput):
         stacked["key"] = key
         return Result(**stacked)
 
+
 def _order_from_regexp(items, order_regexps):
     """Re-order list given regular expression listed by priorities
 
@@ -174,9 +175,14 @@ def _order_from_regexp(items, order_regexps):
     import re
     ordered = list()
     for order_regexp in order_regexps:
-        matched =  [item for item in items if re.search(order_regexp, item)]
+        matched = [item for item in items if re.search(order_regexp, item)]
         for item in matched:
             ordered.append(item)
             items.remove(item)
     ordered += items
     return ordered
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)

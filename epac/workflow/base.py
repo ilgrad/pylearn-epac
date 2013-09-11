@@ -73,8 +73,7 @@ def key_split(key, eval=False):
     >>> key_split(key='SelectKBest(k=1)/SVC(kernel=linear,C=1)')
     ['SelectKBest(k=1)', 'SVC(kernel=linear,C=1)']
     >>> key_split(key='SelectKBest(k=1)/SVC(kernel=linear,C=1)', eval=True)
-    [[('name', 'SelectKBest'), ('k', 1)], [('name', 'SVC'),
-      ('kernel', 'linear'), ('C', 1)]]
+    [[('name', 'SelectKBest'), ('k', 1)], [('name', 'SVC'), ('kernel', 'linear'), ('C', 1)]]
     """
     signatures = [signature for signature in key.split(conf.SEP)]
     if eval:
@@ -208,24 +207,26 @@ class BaseNode(object):
 
         Example
         -------
-        >>> from epac import CV, Grid, Pipe
+        >>> from epac import CV, Methods, Pipe
         >>> from sklearn.svm import SVC
         >>> from sklearn.lda import LDA
         >>> from sklearn.feature_selection import SelectKBest
         >>> y = [1, 1, 2, 2]
-        >>> wf = CV(Grid(*[Pipe(SelectKBest(k=k), SVC()) \
-        ...     for k in [1, 5]]), n_folds=2, y=y)
+        >>> wf = CV(Methods(*[Pipe(SelectKBest(k=k), SVC())
+        ... for k in [1, 5]]), n_folds=2, y=y)
+
         # List all leaves keys
-        >>> for n in wf:
+        >>> for n in wf.walk_leaves():
         ...     print n.get_key()
-        ...
-        CV/CV(nb=0)/Grid/SelectKBest(k=1)/SVC
-        CV/CV(nb=0)/Grid/SelectKBest(k=5)/SVC
-        CV/CV(nb=1)/Grid/SelectKBest(k=1)/SVC
-        CV/CV(nb=1)/Grid/SelectKBest(k=5)/SVC
+        CV/CV(nb=0)/Methods/SelectKBest(k=1)/SVC
+        CV/CV(nb=0)/Methods/SelectKBest(k=5)/SVC
+        CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC
+        CV/CV(nb=1)/Methods/SelectKBest(k=5)/SVC
+
         # Get a single node using excat key match
-        >>> wf.get_node(key="CV/CV(nb=0)/Grid/SelectKBest(k=1)").get_key()
-        'CV/CV(nb=0)/Grid/SelectKBest(k=1)'
+        >>> wf.get_node(key="CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC").get_key()
+        'CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC'
+
         # Get several nodes using wild cards
         >>> for n in wf.get_node(regexp="CV/*"):
         ...         print n.get_key()
@@ -235,10 +236,10 @@ class BaseNode(object):
         >>> for n in wf.get_node(regexp="*CV/CV(*)/*/*/SVC"):
         ...     print n.get_key()
         ...
-        CV/CV(nb=0)/Grid/SelectKBest(k=1)/SVC
-        CV/CV(nb=0)/Grid/SelectKBest(k=5)/SVC
-        CV/CV(nb=1)/Grid/SelectKBest(k=1)/SVC
-        CV/CV(nb=1)/Grid/SelectKBest(k=5)/SVC
+        CV/CV(nb=0)/Methods/SelectKBest(k=1)/SVC
+        CV/CV(nb=0)/Methods/SelectKBest(k=5)/SVC
+        CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC
+        CV/CV(nb=1)/Methods/SelectKBest(k=5)/SVC
         """
         if key:
             if key == self.get_key():
@@ -458,7 +459,7 @@ class BaseNode(object):
         ...                                     random_state=1)
         >>> methods = Methods(*[SVC(C=1), SVC(C=2)])
         >>> methods.top_down(X=X, y=y)
-        [{'y/true': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), 'y/pred': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.])}, {'y/true': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), 'y/pred': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.])}]
+        [{'y/true': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), 'y/pred': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1])}, {'y/true': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), 'y/pred': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1])}]
 
         """
         if conf.TRACE_TOPDOWN:
@@ -587,38 +588,37 @@ class BaseNode(object):
         >>> from epac.tests.wfexamples2test import WFExample1
         >>> from sklearn import datasets
 
-        >>> ## Build dataset
-        >>> ## =============
+        ## Build dataset
+        ## =============
         >>> X, y = datasets.make_classification(n_samples=10,
         ...                                     n_features=20,
         ...                                     n_informative=5,
         ...                                     random_state=1)
         >>> Xy = {'X':X, 'y':y}
-        >>> ## Build Tree and compute results
-        >>> ## ==============================
+
+        ## Build Tree and compute results
+        ## ==============================
         >>> tree_root_node = WFExample1().get_workflow()
         >>> tree_root_node.run(**Xy)
-        [array([1, 0, 1, 0, 1, 1, 1, 0, 0, 0]), array([1, 0, 1, 0, 1, 1, 1, 0, 0, 0])]
+        [{'y/true': array([1, 0, 1, 0, 1, 1, 1, 0, 0, 0]), 'y/pred': array([1, 0, 1, 0, 1, 1, 1, 0, 0, 0])}, {'y/true': array([1, 0, 1, 0, 1, 1, 1, 0, 0, 0]), 'y/pred': array([1, 0, 1, 0, 1, 1, 1, 0, 0, 0])}]
         >>> if tree_root_node.store:
         ...     print repr(tree_root_node.store.dict)
-        ... 
         {'Methods/SVC(C=1)/result_set': ResultSet(
-        [{'key': SVC(C=1), 'score_te': 1.0, 'score_tr': 1.0, 'true_te': [1 0 1 0 1 1 1 0 0 0], 'pred_te': [1 0 1 0 1 1 1 0 0 0]}]), 'Methods/SVC(C=3)/result_set': ResultSet(
-        [{'key': SVC(C=3), 'score_te': 1.0, 'score_tr': 1.0, 'true_te': [1 0 1 0 1 1 1 0 0 0], 'pred_te': [1 0 1 0 1 1 1 0 0 0]}])}
+        [{'key': SVC(C=1), 'y/true': [1 0 1 0 1 1 1 0 0 0], 'y/pred': [1 0 1 0 1 1 1 0 0 0]}]), 'Methods/SVC(C=3)/result_set': ResultSet(
+        [{'key': SVC(C=3), 'y/true': [1 0 1 0 1 1 1 0 0 0], 'y/pred': [1 0 1 0 1 1 1 0 0 0]}])}
 
-        >>> ## Build another tree to copy results in store
-        >>> ## ===========================================
+        ## Build another tree to copy results in store
+        ## ===========================================
         >>> tree_root_node2 = WFExample1().get_workflow()
         >>> print tree_root_node2.store
         None
-        >>> 
         >>> tree_root_node2.merge_tree_store(tree_root_node)
         >>> if tree_root_node2.store:
         ...     print repr(tree_root_node.store.dict)
-        ... 
         {'Methods/SVC(C=1)/result_set': ResultSet(
-        [{'key': SVC(C=1), 'score_te': 1.0, 'score_tr': 1.0, 'true_te': [1 0 1 0 1 1 1 0 0 0], 'pred_te': [1 0 1 0 1 1 1 0 0 0]}]), 'Methods/SVC(C=3)/result_set': ResultSet(
-        [{'key': SVC(C=3), 'score_te': 1.0, 'score_tr': 1.0, 'true_te': [1 0 1 0 1 1 1 0 0 0], 'pred_te': [1 0 1 0 1 1 1 0 0 0]}])}
+        [{'key': SVC(C=1), 'y/true': [1 0 1 0 1 1 1 0 0 0], 'y/pred': [1 0 1 0 1 1 1 0 0 0]}]), 'Methods/SVC(C=3)/result_set': ResultSet(
+        [{'key': SVC(C=3), 'y/true': [1 0 1 0 1 1 1 0 0 0], 'y/pred': [1 0 1 0 1 1 1 0 0 0]}])}
+
         '''
         if not self.store:
             self.store = StoreMem()

@@ -114,13 +114,13 @@ def _gen_keysfile_list_from_nodes_list(
 ):
     '''Generating a list of files where each file contains a set of keys.
     Generating a list of files where each file contains a set of keys.
-    A key means a node which can be considered as a job. All node's leaves 
+    A key means a node which can be considered as a job. All node's leaves
     should be computed in a job.
     '''
     keysfile_list = list()
     jobi = 0
     for npp_key in nodes_per_process_list.keys():
-        keysfile = "."+os.path.sep+repr(jobi)+"."+conf.SUFFIX_JOB
+        keysfile = "." + os.path.sep + repr(jobi) + "." + conf.SUFFIX_JOB
         keysfile_list.append(keysfile)
         # print "in_working_directory="+in_working_directory
         # print "keysfile="+keysfile
@@ -131,3 +131,8 @@ def _gen_keysfile_list_from_nodes_list(
         f.close()
         jobi = jobi + 1
     return keysfile_list
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)

@@ -650,14 +650,14 @@ class CVBestSearchRefit(Wrapper):
     /home/jinpeng/github/pylearn-epac/epac/workflow/splitters.py:543: DeprecationWarning: CVBestSearchRefit is deprecated. Please use CVBestSearchRefitParallel instead.
       category=DeprecationWarning)
     >>> wf.transform(X=X, y=y)
-    {'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), 'y/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.,  1.])}
+    {'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), 'y/pred': array([0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1])}
     >>> wf.reduce()
     >>> wf.run(X=X, y=y)   
-    {'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), 'y/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.,  1.])}
+    {'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), 'y/pred': array([0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1])}
     >>> wf.reduce()
     ResultSet(
-    [{'key': CVBestSearchRefit, 'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  0.  1.]}])
-
+    [{'key': CVBestSearchRefit, 'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': [1 0 0 1 0 0 1 0 1 1 0 1], 'y/pred': [0 0 0 1 0 0 1 0 1 0 0 1]}])
+    
     """
 
     def __init__(self, node, **kwargs):
@@ -720,4 +720,4 @@ class CVBestSearchRefit(Wrapper):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.testmod(verbose=True)
