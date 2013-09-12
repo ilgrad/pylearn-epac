@@ -31,6 +31,19 @@ class Mapper(object):
 class MapperSubtrees(Mapper):
     '''The mapper runs function (usually as "transform") for NodesInput
     which is a dictionary of nodes.
+    
+    Parameters
+    ----------
+    Xy:X matrix and y vertor
+
+    tree_root: epac.BaseNode
+        the root node of the epac tree
+
+    store_fs:
+        where the node want to save
+
+    function:
+        function of node
 
     Example
     -------
@@ -49,7 +62,7 @@ class MapperSubtrees(Mapper):
     >>> from epac.map_reduce.mappers import MapperSubtrees
     >>> from epac.map_reduce.mappers import map_process
     >>> from sklearn import datasets
-
+    >>>
     >>> ## Build dataset
     >>> ## =============
     >>> X, y = datasets.make_classification(n_samples=10,
@@ -74,7 +87,7 @@ class MapperSubtrees(Mapper):
     >>> partial_map_process = partial(map_process,mapper=mapper)
     >>> pool = Pool(processes=num_processes)
     >>> res_tree_root_list = pool.map(partial_map_process, input_list)
-
+    >>>
     >>> ## Merge results from pool
     >>> for each_tree_root in res_tree_root_list:
     ...     tree_root_node.merge_tree_store(each_tree_root)
@@ -89,28 +102,14 @@ class MapperSubtrees(Mapper):
     ResultSet(
     [{'key': SelectKBest/SVC(C=1), 'y/test/score_f1': [ 0.8  0.8], 'y/test/score_recall_mean/pval': [ 0.], 'y/test/score_recall/pval': [ 0.  0.], 'y/test/score_accuracy/pval': [ 0.], 'y/test/score_f1/pval': [ 0.  0.], 'y/test/score_precision/pval': [ 0.  0.], 'y/test/score_precision': [ 0.8  0.8], 'y/test/score_recall': [ 0.8  0.8], 'y/test/score_accuracy': 0.8, 'y/test/score_recall_mean': 0.8},
      {'key': SelectKBest/SVC(C=3), 'y/test/score_f1': [ 0.8  0.8], 'y/test/score_recall_mean/pval': [ 0.], 'y/test/score_recall/pval': [ 0.  0.], 'y/test/score_accuracy/pval': [ 0.], 'y/test/score_f1/pval': [ 0.  0.], 'y/test/score_precision/pval': [ 0.  0.], 'y/test/score_precision': [ 0.8  0.8], 'y/test/score_recall': [ 0.8  0.8], 'y/test/score_accuracy': 0.8, 'y/test/score_recall_mean': 0.8}])
-     
+
     '''
     def __init__(self,
                  Xy,
                  tree_root,
                  store_fs=None,
                  function="transform"):
-        """Initialization for the mapper
 
-        Parameters
-        ----------
-        Xy:X matrix and y vertor
-
-        tree_root: epac.BaseNode
-            the root node of the epac tree
-
-        store_fs:
-            where the node want to save
-
-        function:
-            function of node
-        """
         self.Xy = Xy
         self.tree_root = tree_root
         self.store_fs = store_fs
