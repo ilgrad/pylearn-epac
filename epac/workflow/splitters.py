@@ -320,6 +320,132 @@ class Slicer(BaseNode):
         return results
 
 
+class ColumnSlicer(Slicer):
+    """Collum-sampling
+    """
+
+    def __init__(self, signature_name, nb, apply_on):
+        """
+        Parameters
+        ----------
+        signature_name: string
+
+        nb: integer
+            nb is used for the key value that distinguishs thier sibling node
+
+        apply_on: string or list of strings (or None)
+            The name(s) of the downstream blocs to be re-slicing. If
+            None, all downstream blocs are sampling (slicing).
+        """
+        super(self.__class__, self).__init__(signature_name, nb)
+        self.slices = None
+        if not apply_on:  # None is an acceptable value here
+            self.apply_on = apply_on
+        elif isinstance(apply_on, list):
+            self.apply_on = apply_on
+        elif isinstance(apply_on, str):
+            self.apply_on = [apply_on]
+        else:
+            raise ValueError("apply_on must be a string or a "\
+                "list of strings or None")
+
+    def set_sclices(self, slices):
+        """
+        """
+        # convert as a list if required
+        if isinstance(slices, dict):
+            self.slices =\
+                {k: slices[k].tolist() if isinstance(slices[k], np.ndarray)
+                else slices[k] for k in slices}
+        else:
+            self.slices = \
+                slices.tolist() if isinstance(slices, np.ndarray) else slices
+
+    def transform(self, **Xy):
+        if not self.slices:
+            raise ValueError("Slicing hasn't been initialized. "
+            "Slicers constructors such as CV or Perm should be called "
+            "with a sample. Ex.: CV(..., y=y), Perm(..., y=y)")
+        data_keys = self.apply_on if self.apply_on else Xy.keys()
+        for data_key in data_keys:  # slice input data
+            dat = Xy.pop(data_key)
+            if len(dat.shape) == 2:
+                Xy[data_key] = dat[:, self.slices[data_key]]
+            else:
+                Xy[data_key] = dat[self.slices[data_key]]
+        return Xy
+
+
+class ColumnSplitter(BaseNodeSplitter):
+    """Column Splitter parallelization.
+
+    Parameters
+    ----------
+    node: Node | Estimator
+        Estimator: should implement fit/predict/score function
+        Node: Pipe | Par*
+
+    x_group_indices: integer list
+        gourp index of X matrix
+
+    y_group_indices: integer list
+        gourp index of Y matrix
+
+    """
+
+    def __init__(self, node, x_group_indices, y_group_indices):
+        super(self.__class__, self).__init__()
+        self.x_group_indices = x_group_indices
+        self.y_group_indices = y_group_indices
+        self.slicer = ColumnSlicer(
+            signature_name=self.__class__.__name__,\
+            nb=0,\
+            apply_on=None)
+        self.x_uni_group_indices = set(x_group_indices)
+        self.y_uni_group_indices = set(y_group_indices)
+        self.size = len(self.x_uni_group_indices) * \
+                    len(self.y_uni_group_indices)
+        self.children = VirtualList(size=self.size, parent=self)
+        self.slicer.parent = self
+        subtree = NodeFactory.build(node)
+        # subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)
+        self.slicer.add_child(subtree)
+
+    def move_to_child(self, nb):
+        self.slicer.set_nb(nb)
+        cpt = 0
+        cp_x_uni_group_indice = None
+        cp_y_uni_group_indice = None
+        for x_uni_group_indice in self.x_uni_group_indices:
+            if (not cp_x_uni_group_indice == None)\
+                or (not cp_y_uni_group_indice == None):
+                break
+            for y_uni_group_indice in self.y_uni_group_indices:
+                if cpt == nb:
+                    cp_x_uni_group_indice = x_uni_group_indice
+                    cp_y_uni_group_indice = y_uni_group_indice
+                    break
+                cpt += 1
+        if (not cp_x_uni_group_indice == None)\
+                or (not cp_y_uni_group_indice == None):
+            x_indices = np.nonzero(np.asarray(self.x_group_indices) == \
+                            np.asarray(cp_x_uni_group_indice))
+            x_indices = x_indices[0]
+            y_indices = np.nonzero(np.asarray(self.y_group_indices) == \
+                            np.asarray(cp_y_uni_group_indice))
+            y_indices = y_indices[0]
+            self.slicer.set_sclices({"X": x_indices,
+                                     "Y": y_indices})
+        return self.slicer
+
+    def transform(self, **Xy):
+        self._sclices = None
+        return Xy
+
+    def get_parameters(self):
+        return dict(size=self.size)
+
+
 class RowSlicer(Slicer):
     """Row-wise reslicing of the downstream blocs.
 
