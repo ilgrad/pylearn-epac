@@ -54,16 +54,20 @@ class StoreMem(Store):
 
 
 class StoreFs(Store):
-    """ Store based of file system"""
+    """ Store based of file system
+
+    Parameters
+    ----------
+    dirpath: str
+        Root directory within file system
+
+    clear: boolean
+        If True clear (delete) everything under the root directory.
+
+    """
 
     def __init__(self, dirpath, clear=False):
-        """
-        dirpath: str
-            Root directory within file system
 
-        clear: boolean
-            If True clear (delete) everything under the root directory.
-        """
         self.dirpath = dirpath
         if clear:
             shutil.rmtree(self.dirpath)
