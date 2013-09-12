@@ -203,7 +203,8 @@ class BaseNode(object):
         key: str
 
         regexp: str
-            string with wild-cards: "*" to allow several matches.
+            string with wild-cards: "*" to allow several matches. 
+            It return KEY STRING LIST instead of nodes.
 
         Example
         -------
@@ -213,11 +214,12 @@ class BaseNode(object):
         >>> from sklearn.feature_selection import SelectKBest
         >>> y = [1, 1, 2, 2]
         >>> wf = CV(Methods(*[Pipe(SelectKBest(k=k), SVC())
-        ... for k in [1, 5]]), n_folds=2, y=y)
+        ...     for k in [1, 5]]), n_folds=2, y=y)
 
         # List all leaves keys
         >>> for n in wf.walk_leaves():
         ...     print n.get_key()
+        ...
         CV/CV(nb=0)/Methods/SelectKBest(k=1)/SVC
         CV/CV(nb=0)/Methods/SelectKBest(k=5)/SVC
         CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC
@@ -228,18 +230,21 @@ class BaseNode(object):
         'CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC'
 
         # Get several nodes using wild cards
+        # Attention, only key strings are returned.
         >>> for n in wf.get_node(regexp="CV/*"):
-        ...         print n.get_key()
+        ...     print n
         ...
         CV/CV(nb=0)
         CV/CV(nb=1)
+
         >>> for n in wf.get_node(regexp="*CV/CV(*)/*/*/SVC"):
-        ...     print n.get_key()
+        ...     print n
         ...
         CV/CV(nb=0)/Methods/SelectKBest(k=1)/SVC
         CV/CV(nb=0)/Methods/SelectKBest(k=5)/SVC
         CV/CV(nb=1)/Methods/SelectKBest(k=1)/SVC
         CV/CV(nb=1)/Methods/SelectKBest(k=5)/SVC
+
         """
         if key:
             if key == self.get_key():
@@ -255,7 +260,7 @@ class BaseNode(object):
                 regexp = re.compile(regexp.replace("*", ".*").\
                              replace("(", "\(").replace(")", "\)"))
             if regexp.match(self.get_key()):
-                return [self]
+                return [self.get_key()]
             nodes = list()
             for child in self.children:
                 node = child.get_node(key=None, regexp=regexp,
