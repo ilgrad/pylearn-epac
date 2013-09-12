@@ -48,7 +48,18 @@ class Engine(object):
 
 
 class LocalEngine(Engine):
-    '''LocalEninge run function for each node of epac tree in parallel
+    '''LocalEngine run function for each node of epac tree in parallel
+
+    Parameters
+    ----------
+    tree_root: BaseNode
+
+    function_name: string
+        The name of function need to be executed through all nodes in
+        epac tree
+
+    num_processes: integer
+        Run map process in #processes
 
     Example
     -------
@@ -90,19 +101,7 @@ class LocalEngine(Engine):
                  tree_root,
                  function_name="transform",
                  num_processes=-1):
-        """Initialization for the LocalEngine
 
-        Parameters
-        ----------
-        tree_root: BaseNode
-
-        function_name: string
-            The name of function need to be executed through all nodes in
-            epac tree
-
-        num_processes: integer
-            Run map process in #processes
-        """
         self.tree_root = tree_root
         self.function_name = function_name
         if num_processes == 0:
