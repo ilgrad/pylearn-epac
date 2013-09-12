@@ -39,6 +39,9 @@ class Reducer:
 class ClassificationReport(Reducer):
     """Reducer that computes classification statistics.
 
+    Parameters
+    ----------
+    
     select_regexp: srt
       A string to select items (defaults "test"). It must match two items:
       "true/test" and "pred/test".
@@ -57,6 +60,7 @@ class ClassificationReport(Reducer):
     >>> result
     [('key', 'SVC'), ('y/test/score_accuracy', 0.75), ('y/test/score_f1', array([ 0.66666667,  0.8       ])), ('y/test/score_precision', array([ 1.        ,  0.66666667])), ('y/test/score_recall', array([ 0.5,  1. ])), ('y/test/score_recall_mean', 0.75)]
     """
+    
     def __init__(self, select_regexp=conf.TEST,
                  keep=False):
         self.select_regexp = select_regexp
