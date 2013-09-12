@@ -24,6 +24,13 @@ class SplitInput(object):
 
 class SplitNodesInput(SplitInput):
     """ Split NodesInput into a list of epac.map_reduce.NodesInput
+    
+    Parameters
+    ----------
+    
+    num_processes: integer
+       Building a list of num_processes node_inputs.
+       if num_processes is equal to -1, num_processes is set to #CPU
 
     Examples
     --------
@@ -40,13 +47,7 @@ class SplitNodesInput(SplitInput):
 
     """
     def __init__(self, tree_root_node, num_processes=-1):
-        '''
-        Parameters
-        ----------
-        num_processes: integer
-        Building a list of num_processes node_inputs.
-        if num_processes is equal to -1, num_processes is set to #CPU
-        '''
+
         super(SplitNodesInput, self).__init__()
         self.tree_root_node = tree_root_node
         if num_processes != -1:
