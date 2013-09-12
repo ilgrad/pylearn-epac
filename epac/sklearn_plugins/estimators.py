@@ -26,6 +26,24 @@ class Estimator(Wrapper):
     """Estimator Wrapper: Automatically connect wrapped_node.fit and
     wrapped_node.transform to BaseNode.transform
 
+    Parameters
+    ----------
+    wrapped_node: any class containing fit and transform or fit and predict functions
+        any class implementing fit and transform
+        or implementing fit and predict
+
+    in_args_fit: list of strings
+        names of input arguments of the fit method. If missing,
+        discover it automatically.
+
+    in_args_transform: list of strings
+        names of input arguments of the transform method. If missing,
+        discover it automatically.
+
+    in_args_predict: list of strings
+        names of input arguments of the predict method. If missing,
+        discover it automatically
+
     Example
     -------
     >>> from sklearn.lda import LDA
@@ -72,27 +90,14 @@ class Estimator(Wrapper):
                  in_args_transform=None,
                  in_args_predict=None,
                  out_args_predict=None):
-        """
-        Parameters
-        ----------
-        wrapped_node: any class contains fit and transform functions
-            any class implements fit and transform
 
-        in_args_fit: list of strings
-            names of input arguments of the fit method. If missing discover
-            discover it automatically.
-
-        in_args_transform: list of strings
-            names of input arguments of the tranform method. If missing,
-            discover it automatically.
-        """
         is_fit_estimator = False
         if hasattr(wrapped_node, "fit") and hasattr(wrapped_node, "transform"):
             is_fit_estimator = True
         elif hasattr(wrapped_node, "fit") and hasattr(wrapped_node, "predict"):
             is_fit_estimator = True
         if not is_fit_estimator:
-            raise ValueError("%s should implement fit and transform" %
+            raise ValueError("%s should implement fit and transform or fit and predict" %
                             wrapped_node.__class__.__name__)
         super(Estimator, self).__init__(wrapped_node=wrapped_node)
         if in_args_fit:
