@@ -59,6 +59,12 @@ class Wrapper(BaseNode):
 
 class TransformNode(Wrapper):
     '''Wrapping a class has a "transform" method
+    
+    Parameters
+    ----------
+    in_args_transform: list of strings
+        names of input arguments of the tranform method. If missing,
+        discover it automatically.
 
     Example
     -------
@@ -87,13 +93,7 @@ class TransformNode(Wrapper):
     '''
 
     def __init__(self, wrapped_node, in_args_transform=None):
-        '''
-        Parameters
-        ----------
-        in_args_transform: list of strings
-            names of input arguments of the tranform method. If missing,
-            discover it automatically.
-        '''
+
         if not hasattr(wrapped_node, "transform"):
             raise ValueError("wrapped_node should implement transform")
         super(TransformNode, self).__init__(wrapped_node=wrapped_node)
