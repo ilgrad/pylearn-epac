@@ -58,31 +58,31 @@ from sklearn.feature_selection import f_classif
 
 
 class FeatureRanking():
+    """
+    Parameters
+    ----------
+    score_func : callable
+        Function taking two arrays X and y, and returning a pair of arrays
+        (scores, pvalues).
+
+    Example
+    -------
+    >>> from sklearn import datasets
+    >>> import numpy as np
+    
+    # import some data to play with
+    >>> iris = datasets.load_iris()
+    >>> X = iris.data
+    >>> y = iris.target
+    >>> Xn = np.random.normal(size=X.shape[0]*100).reshape((X.shape[0], 100))
+    >>> X = np.hstack((X, Xn))
+    >>> filter = FeatureRanking()
+    >>> filter.fit(X, y)  #doctest: +ELLIPSIS
+    <...FeatureRanking instance at 0x...>
+    """
 
     def __init__(self, score_func=f_classif):
-        """ Initialize the univariate feature ranking.
 
-        Parameters
-        ----------
-        score_func : callable
-            Function taking two arrays X and y, and returning a pair of arrays
-            (scores, pvalues).
-
-        Example
-        -------
-        >>> from sklearn import datasets
-        >>> import numpy as np
-        
-        # import some data to play with
-        >>> iris = datasets.load_iris()
-        >>> X = iris.data
-        >>> y = iris.target
-        >>> Xn = np.random.normal(size=X.shape[0]*100).reshape((X.shape[0], 100))
-        >>> X = np.hstack((X, Xn))
-        >>> filter = FeatureRanking()
-        >>> filter.fit(X, y)  #doctest: +ELLIPSIS
-        <__main__.FeatureRanking instance at 0x...>
-        """
         if not callable(score_func):
             raise TypeError(
                 "The score function should be a callable, %s (%s) "
