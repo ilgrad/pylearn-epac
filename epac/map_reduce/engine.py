@@ -365,8 +365,9 @@ class SomaWorkflowEngine(LocalEngine):
                                         name="working directory")
         ## Save the database and tree to working directory
         ## ===============================================
-        np.savez(os.path.join(tmp_work_dir_path,
-                 SomaWorkflowEngine.dataset_relative_path), **Xy)
+#        np.savez(os.path.join(tmp_work_dir_path,
+#                 SomaWorkflowEngine.dataset_relative_path), **Xy)
+        save_dictionary(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
             SomaWorkflowEngine.tree_root_relative_path))
@@ -406,7 +407,7 @@ class SomaWorkflowEngine(LocalEngine):
         '''
         store = StoreFs(dirpath=os.path.join(
             soma_workflow_dirpath,
-            LocalEngine.tree_root_relative_path))
+            SomaWorkflowEngine.tree_root_relative_path))
         tree_root = store.load()
         return tree_root
 

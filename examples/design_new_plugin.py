@@ -36,6 +36,7 @@ class MySVC:
 ## ===========================================================================
 class MyReducer(Reducer):
     def reduce(self, result):
+        print result
         pred_list = []
         # iterate all the results of each classifier
         # then you can design you own reducer!
@@ -53,6 +54,8 @@ my_svc2 = MySVC(C=2.0)
 
 two_svc = Methods(my_svc1, my_svc2)
 two_svc.reducer = MyReducer()
+for leaf in two_svc.walk_leaves():
+    print leaf.get_key()
 
 # top-down process to call transform
 two_svc.run(X=X, y=y)
