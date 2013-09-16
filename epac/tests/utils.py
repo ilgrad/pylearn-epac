@@ -65,6 +65,8 @@ def comp_2wf_reduce_res(wf1, wf2):
 
 def displayres(d, indent=0):
     print repr(d)
+
+
 #    for key, value in d.iteritems():
 #        print '\t' * indent + str(key)
 #        if isinstance(value, dict):
