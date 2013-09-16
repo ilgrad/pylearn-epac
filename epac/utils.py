@@ -410,8 +410,3 @@ def clean_tree_stores(tree_root):
     for each_node in tree_root.walk_true_nodes():
         if each_node.store:
             each_node.store = None
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

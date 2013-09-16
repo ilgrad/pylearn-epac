@@ -26,6 +26,7 @@ from epac.workflow.wrappers import Wrapper
 from epac.stores import StoreMem
 from epac.utils import train_test_split
 from epac.utils import _list_indices, dict_diff, _sub_dict
+from epac.utils import get_list_from_lists
 from epac.map_reduce.results import Result, ResultSet
 from epac.map_reduce.reducers import CVBestSearchRefitPReducer
 from epac.map_reduce.reducers import ClassificationReport, PvalPerms
@@ -376,6 +377,145 @@ class ColumnSlicer(Slicer):
         return Xy
 
 
+class CRSlicer(Slicer):
+    """Collum-sampling
+    """
+
+    def __init__(self, signature_name, nb, apply_on, col_or_row=True):
+        """
+        Parameters
+        ----------
+        signature_name: string
+
+        nb: integer
+            nb is used for the key value that distinguishs thier sibling node
+
+        apply_on: string or list of strings (or None)
+            The name(s) of the downstream blocs to be re-slicing. If
+            None, all downstream blocs are sampling (slicing).
+
+        col_or_row: boolean value
+            If col_or_row is True means that column splitter,
+            If col_or_row is False means that row splitter
+        """
+        super(self.__class__, self).__init__(signature_name, nb)
+        self.slices = None
+        self.col_or_row = col_or_row
+        if not apply_on:  # None is an acceptable value here
+            self.apply_on = apply_on
+        elif isinstance(apply_on, list):
+            self.apply_on = apply_on
+        elif isinstance(apply_on, str):
+            self.apply_on = [apply_on]
+        else:
+            raise ValueError("apply_on must be a string or a "\
+                "list of strings or None")
+
+    def set_sclices(self, slices):
+        """
+        """
+        # convert as a list if required
+        if isinstance(slices, dict):
+            self.slices =\
+                {k: slices[k].tolist() if isinstance(slices[k], np.ndarray)
+                else slices[k] for k in slices}
+        else:
+            self.slices = \
+                slices.tolist() if isinstance(slices, np.ndarray) else slices
+
+    def transform(self, **Xy):
+        if not self.slices:
+            raise ValueError("Slicing hasn't been initialized. ")
+        data_keys = self.apply_on if self.apply_on else Xy.keys()
+        for data_key in data_keys:  # slice input data
+            if data_key in self.slices.keys():
+                dat = Xy.pop(data_key)
+                if len(dat.shape) == 2:
+                    if self.col_or_row:
+                        Xy[data_key] = dat[:, self.slices[data_key]]
+                    else:
+                        Xy[data_key] = dat[self.slices[data_key], :]
+                else:
+                    Xy[data_key] = dat[self.slices[data_key]]
+        return Xy
+
+
+class CRSplitter(BaseNodeSplitter):
+    """Column or Row Splitter parallelization.
+
+    Parameters
+    ----------
+    node: Node | Estimator
+        Estimator: should implement fit/predict/score function
+        Node: Pipe | Par*
+
+    indices_of_groups: dictionary
+        gourp index of X matrix
+
+    col_or_row: boolean value
+        If col_or_row is True means that column splitter,
+        If col_or_row is False means that row splitter
+
+    Example
+    -------
+
+    """
+
+    def __init__(self, node, indices_of_groups, col_or_row=True):
+        super(self.__class__, self).__init__()
+        self.indices_of_groups = indices_of_groups
+        self.slicer = CRSlicer(
+            signature_name=self.__class__.__name__,\
+            nb=0,\
+            apply_on=None,
+            col_or_row=col_or_row)
+
+        self.uni_indices_of_groups = {}
+        for key_indices_of_groups in indices_of_groups:
+            self.uni_indices_of_groups[key_indices_of_groups] = \
+                list(set(indices_of_groups[key_indices_of_groups]))
+
+        self.size = 1
+        for key_indices_of_groups in self.uni_indices_of_groups:
+            tmp_data = list(self.uni_indices_of_groups[key_indices_of_groups])
+            self.size = self.size * len(tmp_data)
+
+        self.children = VirtualList(size=self.size, parent=self)
+        self.slicer.parent = self
+        subtree = NodeFactory.build(node)
+        # subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)
+        self.slicer.add_child(subtree)
+
+    def convert_dict2list(self, dict_data):
+        list_data = []
+        for key in dict_data:
+            list_data.append(dict_data[key])
+        return list_data
+
+    def move_to_child(self, nb):
+        self.slicer.set_nb(nb)
+        lists = self.convert_dict2list(self.uni_indices_of_groups)
+        list_data = get_list_from_lists(lists, nb)
+        i = 0
+        slices = {}
+        for key in self.uni_indices_of_groups:
+            indices = np.nonzero(np.asarray(self.indices_of_groups[key]) == \
+                        np.asarray(list_data[i]))
+            indices = indices[0]
+            slices[key] = indices
+            i += 1
+
+        self.slicer.set_sclices(slices)
+        return self.slicer
+
+    def transform(self, **Xy):
+        self._sclices = None
+        return Xy
+
+    def get_parameters(self):
+        return dict(size=self.size)
+
+
 class ColumnSplitter(BaseNodeSplitter):
     """Column Splitter parallelization.
 
@@ -385,7 +525,7 @@ class ColumnSplitter(BaseNodeSplitter):
         Estimator: should implement fit/predict/score function
         Node: Pipe | Par*
 
-    x_group_indices: integer list
+    indices_of_groups: dictionary
         gourp index of X matrix
 
     y_group_indices: integer list
@@ -393,14 +533,17 @@ class ColumnSplitter(BaseNodeSplitter):
 
     """
 
-    def __init__(self, node, x_group_indices, y_group_indices):
+    def __init__(self, node, indices_of_groups):
         super(self.__class__, self).__init__()
-        self.x_group_indices = x_group_indices
-        self.y_group_indices = y_group_indices
+        self.indices_of_groups = indices_of_groups
+
         self.slicer = ColumnSlicer(
             signature_name=self.__class__.__name__,\
             nb=0,\
             apply_on=None)
+        for key_indices_of_groups in indices_of_groups:
+            indices_of_groups[key_indices_of_groups]
+        
         self.x_uni_group_indices = set(x_group_indices)
         self.y_uni_group_indices = set(y_group_indices)
         self.size = len(self.x_uni_group_indices) * \
@@ -717,5 +860,37 @@ class CVBestSearchRefit(Wrapper):
 
 
 if __name__ == "__main__":
+    import random
+    from epac import CRSplitter
+
+    class Tester:
+        def transform(self, X, Y):
+            print "================================="
+            print "X=", X.shape
+            print "Y=", Y.shape
+            return {"X": X, "Y": Y}
+
+    n_samples = 10
+    n_xfeatures = 20
+    n_yfeatures = 15
+    x_n_groups = 3
+    y_n_groups = 2
+
+    X = np.random.randn(n_samples, n_xfeatures)
+    Y = np.random.randn(n_samples, n_yfeatures)
+    x_group_indices = np.array([random.randint(0, x_n_groups)\
+        for i in xrange(n_xfeatures)])
+#    y_group_indices = np.array([random.randint(0, y_n_groups)\
+#        for i in xrange(n_yfeatures)])
+    y_group_indices = np.zeros(n_yfeatures)
+
+    # 1) Prediction for each X block return a n_samples x n_yfeatures
+    mulm = CRSplitter(Tester(), {"X": x_group_indices}, col_or_row=True)
+    mulm = CRSplitter(Tester(), {"X": x_group_indices,
+                      "Y": y_group_indices}, 
+                      col_or_row=True)
+    mulm.run(X=X, Y=Y)
+
+    
     import doctest
     doctest.testmod()
