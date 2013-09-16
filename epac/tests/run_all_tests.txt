@@ -1,0 +1,7 @@
+To run all the tests  and doctests of pylearn-epac:
+
+-> download nosetests at : http://pypi.python.org/pypi/nose/1.3.0
+
+-> unzip and install nosetests with : python setup.py install --user
+
+-> in the pylearn-epac directory, run : nosetests -v --with-doctest
