@@ -210,7 +210,7 @@ class Perms(BaseNodeSplitter):
         if not self.permute in Xy:
             raise ValueError('"%s" should be provided' % self.permute)
         from epac.sklearn_plugins import Permutations
-        self._sclices = Permutations(n=Xy[self.permute].shape[0],n_perms=self.n_perms,
+        self._sclices = Permutations(n=Xy[self.permute].shape[0], n_perms=self.n_perms,
                                 random_state=self.random_state)
         return Xy
 
@@ -462,7 +462,7 @@ class RowSlicer(Slicer):
         super(RowSlicer, self).__init__(signature_name, nb)
         self.slices = None
         self.n = 0  # the dimension of that array in ds should respect
-        if not apply_on: # None is an acceptable value here
+        if not apply_on:  # None is an acceptable value here
             self.apply_on = apply_on
         elif isinstance(apply_on, list):
             self.apply_on = apply_on
@@ -547,10 +547,10 @@ class CVBestSearchRefitParallel(Wrapper):
     ...     for C in C_values for kernel in kernels])
     >>> wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
     >>> wf.run(X=X, y=y)
-    [[{'y/test/pred': array([ 0.,  0.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  0.,  1.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  0.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 0.,  1.,  1.,  1.,  1.,  0.]), 'y/train/pred': array([ 0.,  1.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 1.,  0.,  0.,  1.,  0.,  1.])}], [{'y/test/pred': array([ 1.,  1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  1.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  0.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  0.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  1.,  1.,  1.,  0.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  1.,  1.,  0.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  1.,  0.,  1.,  1.,  1.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}, {'y/test/pred': array([ 1.,  0.,  0.,  1.,  1.,  0.]), 'y/train/pred': array([ 1.,  0.,  0.,  1.,  0.,  1.]), 'y/test/true': array([ 0.,  1.,  0.,  1.,  0.,  1.])}]]
+    [[{'y/test/pred': array([0, 0, 0, 0, 1, 0]), 'y/train/pred': array([0, 1, 0, 0, 1, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 1, 1, 1, 0, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 0, 0, 0, 1, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 1, 1, 1, 0, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 0, 0, 1, 0, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 1, 1, 1, 0, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 0, 0, 1, 0, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 1, 1, 1, 1, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 0, 0, 1, 0, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}, {'y/test/pred': array([0, 1, 1, 1, 1, 0]), 'y/train/pred': array([0, 1, 0, 1, 0, 1]), 'y/test/true': array([1, 0, 0, 1, 0, 1])}], [{'y/test/pred': array([1, 1, 0, 1, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 1, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 1, 1, 1, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 0, 0, 1, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 0, 0]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 1, 1, 1, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 0, 0, 0, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 1, 1, 1, 1, 0]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 1, 0, 1, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 0, 0, 1, 1, 0]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 1, 0, 1, 1, 1]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}, {'y/test/pred': array([1, 0, 0, 1, 1, 0]), 'y/train/pred': array([1, 0, 0, 1, 0, 1]), 'y/test/true': array([0, 1, 0, 1, 0, 1])}]]
     >>> wf.reduce()
     ResultSet(
-    [{'key': CVBestSearchRefitParallel, 'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  0.  1.]}])
+    [{'key': CVBestSearchRefitParallel, 'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': [1 0 0 1 0 0 1 0 1 1 0 1], 'y/pred': [0 0 0 1 0 0 1 0 1 0 0 1]}])
 
     """
 
@@ -647,17 +647,15 @@ class CVBestSearchRefit(Wrapper):
     >>> methods = Methods(*[SVC(C=C, kernel=kernel)
     ...     for C in C_values for kernel in kernels])
     >>> wf = CVBestSearchRefit(methods, n_folds=n_folds_nested)
-    /home/jinpeng/github/pylearn-epac/epac/workflow/splitters.py:543: DeprecationWarning: CVBestSearchRefit is deprecated. Please use CVBestSearchRefitParallel instead.
-      category=DeprecationWarning)
     >>> wf.transform(X=X, y=y)
     {'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), 'y/pred': array([0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1])}
     >>> wf.reduce()
-    >>> wf.run(X=X, y=y)   
+    >>> wf.run(X=X, y=y)
     {'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), 'y/pred': array([0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1])}
     >>> wf.reduce()
     ResultSet(
     [{'key': CVBestSearchRefit, 'best_params': [{'kernel': 'linear', 'C': 2, 'name': 'SVC'}], 'y/true': [1 0 0 1 0 0 1 0 1 1 0 1], 'y/pred': [0 0 0 1 0 0 1 0 1 0 0 1]}])
-    
+
     """
 
     def __init__(self, node, **kwargs):
@@ -720,4 +718,4 @@ class CVBestSearchRefit(Wrapper):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=True)
+    doctest.testmod()
