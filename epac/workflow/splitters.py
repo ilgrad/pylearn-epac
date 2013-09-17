@@ -177,20 +177,29 @@ class Perms(BaseNodeSplitter):
 
     reducer: Reducer
         A Reducer should inmplement the reduce(key2, val) method.
+
+    col_or_row: boolean value
+            If col_or_row is True means that column permutation,
+            If col_or_row is False means that row permutation
     """
     def __init__(self, node, n_perms=100, permute="y", random_state=None,
-                 reducer=PvalPerms(), **kwargs):
+                 reducer=PvalPerms(), col_or_row=False, **kwargs):
         super(Perms, self).__init__()
         self.n_perms = n_perms
         self.permute = permute  # the name of the bloc to be permuted
         self.random_state = random_state
         self.reducer = reducer
-        self.slicer = RowSlicer(signature_name="Perm", nb=0, apply_on=permute)
-        self.children = VirtualList(size=n_perms, parent=self)
+        self.slicer = CRSlicer(signature_name="Perm",
+                               nb=0,
+                               apply_on=permute,
+                               col_or_row=col_or_row)
+        self.children = VirtualList(size=n_perms,
+                                    parent=self)
         self.slicer.parent = self
         subtree = NodeFactory.build(node)
         # subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)
         self.slicer.add_child(subtree)
+        self.col_or_row = col_or_row
 
     def move_to_child(self, nb):
         self.slicer.set_nb(nb)
@@ -200,7 +209,7 @@ class Perms(BaseNodeSplitter):
                 if cpt == nb:
                     break
                 cpt += 1
-            self.slicer.set_sclices(perm)
+            self.slicer.set_sclices({self.permute: perm})
         return self.slicer
 
     def get_parameters(self):
@@ -211,8 +220,19 @@ class Perms(BaseNodeSplitter):
         if not self.permute in Xy:
             raise ValueError('"%s" should be provided' % self.permute)
         from epac.sklearn_plugins import Permutations
-        self._sclices = Permutations(n=Xy[self.permute].shape[0], n_perms=self.n_perms,
-                                random_state=self.random_state)
+        if len(Xy[self.permute].shape) == 2:
+            if not self.col_or_row:
+                self._sclices = Permutations(n=Xy[self.permute].shape[0],
+                                             n_perms=self.n_perms,
+                                             random_state=self.random_state)
+            else:
+                self._sclices = Permutations(n=Xy[self.permute].shape[1],
+                                             n_perms=self.n_perms,
+                                             random_state=self.random_state)
+        else:
+            self._sclices = Permutations(n=Xy[self.permute].shape[0],
+                                         n_perms=self.n_perms,
+                                         random_state=self.random_state)
         return Xy
 
 

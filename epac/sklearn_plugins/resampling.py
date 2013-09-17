@@ -11,7 +11,21 @@ from sklearn.utils import check_random_state
 
 
 class Permutations(object):
-
+    """
+    
+    Example
+    -------
+    >>> from epac.sklearn_plugins.resampling import Permutations
+    >>> permutations = Permutations(10, 5)
+    >>> for pdata in permutations:
+    ...     print pdata
+    ... 
+    [0 1 2 3 4 5 6 7 8 9]
+    [9 4 1 2 3 5 6 0 7 8]
+    [0 3 8 6 1 7 5 9 2 4]
+    [1 7 3 6 2 0 4 8 5 9]
+    [4 3 5 8 1 0 9 6 7 2]
+    """
     def __init__(self, n, n_perms, first_perm_is_id=True, random_state=None):
         self.random_state = random_state
         self.first_perm_is_id = first_perm_is_id
