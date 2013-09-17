@@ -22,16 +22,16 @@ if __name__ == '__main__':
 
     if V(dill.__version__) < V("0.2a"):
         raise ValueError("dill version is too old to use, please use version "\
-                "on https://github.com/uqfoundation")
+                "on https://github.com/uqfoundation/dill")
     if V(joblib.__version__) < V("0.7.1"):
         raise ValueError("joblib version is too old to use, please use version "\
                 "on https://github.com/joblib/joblib")
+
     tmp_work_dir_path = tempfile.mkdtemp()
     cur_work_dir = os.getcwd()
     cur_file_dir = os.path.dirname(os.path.abspath(__file__))
     test_filepath = u"./onlytest.txt"
     test_bash_script = u"./testbs.sh"
-
     os.chdir(tmp_work_dir_path)
     fileout = open(test_bash_script, "w+")
     filecontent = """#!/bin/bash
