@@ -180,11 +180,25 @@ def export_csv(result_set, filename):
 
     Parameters
     ----------
-    result_set: Result_set to export
+    result_set: ResultSet to export
 
     filename: Relative or absolute path to the CSV file
         If the file doesn't exist, create it
 
+    Example
+    -------
+    >>> from epac import Result, ResultSet
+    >>> from epac.utils import export_csv
+    >>> r1 = Result('SVC(C=1)', **dict(a=1, b=2))
+    >>> r2 = Result('SVC(C=2)', **dict(a=1, b=2))
+    >>> set = ResultSet(r1, r2)
+    >>> export_csv(set, 'results.csv')
+    >>> with open('results.csv', 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    ...     print csvfile.read()
+    a,b,key
+    1,2,SVC(C=1)
+    1,2,SVC(C=2)
+    <BLANKLINE>
     '''
     with open(filename, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
@@ -334,3 +348,8 @@ def clean_tree_stores(tree_root):
     for each_node in tree_root.walk_true_nodes():
         if each_node.store:
             each_node.store = None
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
