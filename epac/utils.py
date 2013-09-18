@@ -6,6 +6,7 @@ Created on Thu Mar 14 16:13:26 2013
 """
 import numpy as np
 import os
+import csv
 import dill as pickle
 from epac.configuration import conf
 from epac.workflow.base import key_push, key_pop
@@ -36,7 +37,7 @@ def get_next_number(str_value):
 
 def range_log2(n, add_n=True):
     """Return log2 range starting from 1"""
-    rang = (2**np.arange(int(np.floor(np.log2(n)))+1)).tolist()
+    rang = (2**np.arange(int(np.floor(np.log2(n))) + 1)).tolist()
     if add_n:
         rang.append(int(n))
     return rang
@@ -172,6 +173,31 @@ def which(program):
             if is_exe(exe_file):
                 return exe_file
     return None
+
+
+def export_csv(result_set, filename):
+    '''Export the results to a CSV file
+
+    Parameters
+    ----------
+    result_set: Result_set to export
+
+    filename: Relative or absolute path to the CSV file
+        If the file doesn't exist, create it
+
+    '''
+    with open(filename, 'wb') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        result_keys = result_set.values()[0].keys()
+        result_keys.sort()
+        spamwriter.writerow(result_keys)
+        for result in result_set.values():
+            temp_list = []
+            for key in result_keys:
+                temp_list.append(result[key])
+            spamwriter.writerow(temp_list)
+
 
 ## ============================================== ##
 ## == down-stream data-flow manipulation utils == ##
