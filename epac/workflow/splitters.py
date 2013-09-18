@@ -49,8 +49,9 @@ class BaseNodeSplitter(BaseNode):
     They split the downstream data-flow to their children.
     They agregate upstream data-flow from their children.
     """
-    def __init__(self):
+    def __init__(self, need_group_key=True):
         super(BaseNodeSplitter, self).__init__()
+        self.need_group_key = need_group_key
 
     def reduce(self, store_results=True):
         # Terminaison (leaf) node return results
@@ -62,6 +63,12 @@ class BaseNodeSplitter(BaseNode):
         result_set = ResultSet(*children_results)
         if not self.reducer:
             return result_set
+
+        if not self.need_group_key:
+            reduced = ResultSet()
+            reduced.add(self.reducer.reduce(result_set))
+            return reduced
+
         # Group by key, without consideration of the fold/permutation number
         # which is the head of the key
         # use OrderedDict to preserve runing order
@@ -107,7 +114,7 @@ class CV(BaseNodeSplitter):
 
     def __init__(self, node, n_folds=5, random_state=None,
                  cv_type="stratified", reducer=ClassificationReport(), **kwargs):
-        super(CV, self).__init__()
+        super(CV, self).__init__(**kwargs)
         self.n_folds = n_folds
         self.random_state = random_state
         self.cv_type = cv_type
@@ -184,7 +191,7 @@ class Perms(BaseNodeSplitter):
     """
     def __init__(self, node, n_perms=100, permute="y", random_state=None,
                  reducer=PvalPerms(), col_or_row=False, **kwargs):
-        super(Perms, self).__init__()
+        super(Perms, self).__init__(**kwargs)
         self.n_perms = n_perms
         self.permute = permute  # the name of the bloc to be permuted
         self.random_state = random_state
@@ -418,7 +425,7 @@ class CRSlicer(Slicer):
             If col_or_row is True means that column splitter,
             If col_or_row is False means that row splitter
         """
-        super(self.__class__, self).__init__(signature_name, nb)
+        super(CRSlicer, self).__init__(signature_name, nb)
         self.slices = None
         self.col_or_row = col_or_row
         if not apply_on:  # None is an acceptable value here
@@ -482,7 +489,7 @@ class CRSplitter(BaseNodeSplitter):
     """
 
     def __init__(self, node, indices_of_groups, col_or_row=True):
-        super(self.__class__, self).__init__()
+        super(CRSplitter, self).__init__()
         self.indices_of_groups = indices_of_groups
         self.slicer = CRSlicer(
             signature_name=self.__class__.__name__,\
@@ -554,7 +561,7 @@ class ColumnSplitter(BaseNodeSplitter):
     """
 
     def __init__(self, node, indices_of_groups):
-        super(self.__class__, self).__init__()
+        super(ColumnSplitter, self).__init__()
         self.indices_of_groups = indices_of_groups
 
         self.slicer = ColumnSlicer(
@@ -880,36 +887,36 @@ class CVBestSearchRefit(Wrapper):
 
 
 if __name__ == "__main__":
-    import random
-    from epac import CRSplitter
-
-    class Tester:
-        def transform(self, X, Y):
-            print "================================="
-            print "X=", X.shape
-            print "Y=", Y.shape
-            return {"X": X, "Y": Y}
-
-    n_samples = 10
-    n_xfeatures = 20
-    n_yfeatures = 15
-    x_n_groups = 3
-    y_n_groups = 2
-
-    X = np.random.randn(n_samples, n_xfeatures)
-    Y = np.random.randn(n_samples, n_yfeatures)
-    x_group_indices = np.array([random.randint(0, x_n_groups)\
-        for i in xrange(n_xfeatures)])
-#    y_group_indices = np.array([random.randint(0, y_n_groups)\
-#        for i in xrange(n_yfeatures)])
-    y_group_indices = np.zeros(n_yfeatures)
-
-    # 1) Prediction for each X block return a n_samples x n_yfeatures
-    mulm = CRSplitter(Tester(), {"X": x_group_indices}, col_or_row=True)
-    mulm = CRSplitter(Tester(), {"X": x_group_indices,
-                      "Y": y_group_indices}, 
-                      col_or_row=True)
-    mulm.run(X=X, Y=Y)
+#    import random
+#    from epac import CRSplitter
+#
+#    class Tester:
+#        def transform(self, X, Y):
+#            print "================================="
+#            print "X=", X.shape
+#            print "Y=", Y.shape
+#            return {"X": X, "Y": Y}
+#
+#    n_samples = 10
+#    n_xfeatures = 20
+#    n_yfeatures = 15
+#    x_n_groups = 3
+#    y_n_groups = 2
+#
+#    X = np.random.randn(n_samples, n_xfeatures)
+#    Y = np.random.randn(n_samples, n_yfeatures)
+#    x_group_indices = np.array([random.randint(0, x_n_groups)\
+#        for i in xrange(n_xfeatures)])
+##    y_group_indices = np.array([random.randint(0, y_n_groups)\
+##        for i in xrange(n_yfeatures)])
+#    y_group_indices = np.zeros(n_yfeatures)
+#
+#    # 1) Prediction for each X block return a n_samples x n_yfeatures
+#    mulm = CRSplitter(Tester(), {"X": x_group_indices}, col_or_row=True)
+#    mulm = CRSplitter(Tester(), {"X": x_group_indices,
+#                      "Y": y_group_indices}, 
+#                      col_or_row=True)
+#    mulm.run(X=X, Y=Y)
 
     
     import doctest
