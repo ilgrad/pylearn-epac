@@ -21,9 +21,30 @@ class ResultSet(Set):
     >>> r3 = Result('SVC(C=3)', **dict(a=1, b=2))
     >>> r4 = Result('SVC(C=4)', **dict(a=1, b=2))
     >>> set1 = ResultSet(r1, r2)
+    >>> print set1
+    ResultSet(
+    [{'key': SVC(C=1), 'a': 1, 'b': 2},
+     {'key': SVC(C=2), 'a': 1, 'b': 2}])
     >>> set2 = ResultSet(r3, r4)
+    >>> print set2
+    ResultSet(
+    [{'key': SVC(C=3), 'a': 1, 'b': 2},
+     {'key': SVC(C=4), 'a': 1, 'b': 2}])
     >>> set3 = ResultSet(set1, set2)
+    >>> print set3
+    ResultSet(
+    [{'key': SVC(C=1), 'a': 1, 'b': 2},
+     {'key': SVC(C=2), 'a': 1, 'b': 2},
+     {'key': SVC(C=3), 'a': 1, 'b': 2},
+     {'key': SVC(C=4), 'a': 1, 'b': 2}])
     >>> set3.add(Result('SVC(C=5)', **dict(a=1, b=2)))
+    >>> print set3
+    ResultSet(
+    [{'key': SVC(C=1), 'a': 1, 'b': 2},
+     {'key': SVC(C=2), 'a': 1, 'b': 2},
+     {'key': SVC(C=3), 'a': 1, 'b': 2},
+     {'key': SVC(C=4), 'a': 1, 'b': 2},
+     {'key': SVC(C=5), 'a': 1, 'b': 2}])
     """
     def __init__(self, *args):
         self.results = list()
