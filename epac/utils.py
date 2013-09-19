@@ -189,11 +189,13 @@ def export_csv(result_set, filename):
     -------
     >>> from epac import Result, ResultSet
     >>> from epac.utils import export_csv
+    >>> import tempfile
+    >>> _, filename = tempfile.mkstemp(suffix=".csv")
     >>> r1 = Result('SVC(C=1)', **dict(a=1, b=2))
     >>> r2 = Result('SVC(C=2)', **dict(a=1, b=2))
     >>> set = ResultSet(r1, r2)
-    >>> export_csv(set, 'results.csv')
-    >>> with open('results.csv', 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    >>> export_csv(set, filename)
+    >>> with open(filename, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
     ...     print csvfile.read()
     a,b,key
     1,2,SVC(C=1)
