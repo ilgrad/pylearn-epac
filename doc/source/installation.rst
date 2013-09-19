@@ -20,12 +20,21 @@ First of all, you need to install some softwares for epac:
 
     sudo apt-get install python-pip
     sudo apt-get install python-setuptools python-dev build-essential libatlas-dev python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
-    pip install --user scikit-learn
-    pip install --user soma-workflow
-    pip install --user dill
+    sudo pip install scikit-learn
+    sudo pip install soma-workflow
 
 
-Secondly, download and install **joblib** from https://github.com/joblib/joblib. epac needs the latest code of joblib.
+Download and install **dill** from https://github.com/uqfoundation/dill. epac needs the latest code of dill.
+
+.. code-block:: guess
+   
+    git clone https://github.com/uqfoundation/dill
+    cd dill
+    python setup.py build
+    sudo python setup.py install
+                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                            
+Download and install **joblib** from https://github.com/joblib/joblib. epac needs the latest code of joblib.
 
 Finally, epac can be downloaded from github and you can run installation script for your local user.
 
@@ -33,7 +42,7 @@ Finally, epac can be downloaded from github and you can run installation script 
 
     git clone https://github.com/neurospin/pylearn-epac.git
     cd pylearn-epac
-    python setup.py install --user
+    sudo python setup.py install
 
 
 Other platforms
