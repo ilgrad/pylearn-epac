@@ -36,11 +36,13 @@ Now, we first introduce *Pipe*, which executes a sequential of BaseNode. These n
 
 either as non-leaf node (non-termianl node),
 
-- fit and transform, e.g. *SelectKBest(k=2)*
+- fit and transform, e.g. *SelectKBest(k=2)*,
 
 or as leaf node (terminal node)
 
-- fit and predict, e.g. *SVM()*
+- fit and predict, e.g. *SVM()*,
+
+or as any nodes with only transform function.
 
 For example, we want to build a sequential machine learning process as ``{X, y} -> SelectKBest(k=2) -> SVM -> y``. Without using epac, we can write below codes to implement these processes. 
 
@@ -69,7 +71,7 @@ You can find that the output of ``SelectKBest(k=2)`` becomes the input of ``SVM(
 
     >>> # Build sequential Pipeline
     >>> # -------------------------
-    >>> # 2  SelectKBest (Estimator)
+    >>> # SelectKBest (Transformer)
     >>> # |
     >>> # SVM Classifier (Estimator)
     >>> from epac import Pipe
@@ -103,6 +105,18 @@ In this section, ``Methods`` will be described to run several classifiers in par
     [{'key': LinearSVC(C=1), 'y/true': [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.], 'y/pred': [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.]},
      {'key': LinearSVC(C=10), 'y/true': [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.], 'y/pred': [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.]}])
 
+
+Saving computing resource.
+
+::
+
+   >>> pipe_methods = Pipe(SelectKBest(k=2), Methods(SVM(C=1), SVM(C=2)))
+   >>> pipe_methods.run(X=X, y=y)
+   [{'y/true': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), 'y/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  1.,  1.])}, {'y/true': array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), 'y/pred': array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  1.,  1.])}]
+   >>> pipe_methods.reduce()
+   ResultSet(
+   [{'key': SelectKBest/LinearSVC(C=1), 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  1.  1.]},
+    {'key': SelectKBest/LinearSVC(C=2), 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  1.  1.]}])
 
 In these codes, ``Methods`` set the input of dictionary ``{X=X, y=y}`` to ``SVM(C=1)`` and to ``SVM(C=10)`` respectively. ``multi.reduce()`` outputs into "ResultSet" which is a dict-like structure which contains the "keys" of the methods that as been used. In epac, **run** means the top-down process, and **reduce** means bottom-up process. For this moment, the **reduce** process returen only the collection of results from classifiers. We will show more meaningful examples using **reduce** later.  A more complicated ``Methods`` example using two arguments is shown as below.
 
