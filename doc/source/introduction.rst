@@ -1,9 +1,9 @@
 .. _introduction:
 
-Building epac tree
+Building EPAC tree
 ==================
 
-Easily building machine learning workflow that can be executed in sequential or in parallel.
+Easily building machine learning workflow that can be executed in sequential order or in parallel.
 
 To quick start with eapc, here is a simple example to do an embarrassing machine learning computing:
 permutation, cross-validation, and LDA classification.
@@ -29,12 +29,12 @@ We will introduce more details and examples in :doc:`examples.rst`.
    from epac import Perms, CV
    perms_cv_lda = Perms(CV(LDA(), n_folds=3),
                           n_perms=3, permute="y")
-   # Run: Top-down process
+   # run: Top-down process
    #   1: Permutations (shuffling X and y)
    #   2: CV (Splitting X and y into training and test parts)
    #   3: LDA (Classifilication process)
    perms_cv_lda.run(X=X, y=y)
-   # Reduce: Bottom-up process
+   # reduce: Bottom-up process
    #   1: CV (computing recognition scores from its leaves)
    #   2: Permutations (computing p values)
    perms_cv_lda.reduce()
