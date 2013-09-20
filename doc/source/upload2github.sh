@@ -2,15 +2,19 @@
 
 # This script has only been test on ubuntu
 
+# build html page on your machine
 make html
 epydoc -v --html epac -o ./_build/html/epydoc_api
 
 
+# build tmp directory
 outdir="$(mktemp -d)"
 curdir="$(pwd)"
 
+# download the epac from github to upload pages
 git clone git@github.com:neurospin/pylearn-epac.git $outdir
 
+# checkout gh-pages which are the epac webpage on github and commit them to github
 cd $outdir
 git fetch origin
 git checkout -b gh-pages origin/gh-pages
