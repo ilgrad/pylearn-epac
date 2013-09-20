@@ -19,10 +19,11 @@ from epac.utils import train_test_merge, train_test_split, dict_diff, range_log2
 from epac.stores import StoreFs, StoreMem
 from epac.map_reduce.mappers import MapperSubtrees
 from epac.map_reduce.engine import SomaWorkflowEngine, LocalEngine
-
 from epac.map_reduce.reducers import ClassificationReport, PvalPerms
 
 import sklearn_plugins
+
+import __check_build
 
 __all__ = ['BaseNode',
            'Pipe',
@@ -33,8 +34,8 @@ __all__ = ['BaseNode',
            'CVBestSearchRefitParallel',
            'ColumnSlicer',
            'ColumnSplitter',
-           'Estimator'
-           'ClassificationReport', 'PvalPerms',
+           'ClassificationReport',
+           'PvalPerms',
            'Result',
            'ResultSet',
            'sklearn_plugins',
