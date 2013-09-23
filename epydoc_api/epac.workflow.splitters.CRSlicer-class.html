@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>epac.workflow.splitters.RowSlicer</title>
+  <title>epac.workflow.splitters.CRSlicer</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -40,7 +40,7 @@
         <a href="epac-module.html">Package&nbsp;epac</a> ::
         <a href="epac.workflow-module.html" onclick="show_private();">Package&nbsp;workflow</a> ::
         <a href="epac.workflow.splitters-module.html">Module&nbsp;splitters</a> ::
-        Class&nbsp;RowSlicer
+        Class&nbsp;CRSlicer
       </span>
     </td>
     <td>
@@ -50,14 +50,14 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="epac.workflow.splitters.RowSlicer-class.html"
+            >]&nbsp;|&nbsp;<a href="epac.workflow.splitters.CRSlicer-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class RowSlicer</h1><p class="nomargin-top"><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSlicer">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class CRSlicer</h1><p class="nomargin-top"><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#CRSlicer">source&nbsp;code</a></span></p>
 <pre class="base-tree">
    object --+        
             |        
@@ -65,22 +65,11 @@
                 |    
            <a href="epac.workflow.splitters.Slicer-class.html">Slicer</a> --+
                     |
-                   <strong class="uidshort">RowSlicer</strong>
+                   <strong class="uidshort">CRSlicer</strong>
 </pre>
 
 <hr />
-<pre class="literalblock">
-Row-wise reslicing of the downstream blocs.
-
-Parameters
-----------
-name: string
-
-apply_on: string or list of strings (or None)
-    The name(s) of the downstream blocs to be rescliced. If
-    None, all downstream blocs are rescliced.
-
-</pre>
+<p>Collum-sampling</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -105,13 +94,16 @@ apply_on: string or list of strings (or None)
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="epac.workflow.splitters.RowSlicer-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="epac.workflow.splitters.CRSlicer-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">signature_name</span>,
         <span class="summary-sig-arg">nb</span>,
-        <span class="summary-sig-arg">apply_on</span>)</span><br />
-      x.__init__(...) initializes x; see help(type(x)) for signature</td>
+        <span class="summary-sig-arg">apply_on</span>,
+        <span class="summary-sig-arg">col_or_row</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Parameters
+----------
+signature_name: string</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSlicer.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#CRSlicer.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -128,7 +120,7 @@ apply_on: string or list of strings (or None)
           <td><span class="summary-sig"><a name="set_sclices"></a><span class="summary-sig-name">set_sclices</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">slices</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSlicer.set_sclices">source&nbsp;code</a></span>
+            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#CRSlicer.set_sclices">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -142,10 +134,10 @@ apply_on: string or list of strings (or None)
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="epac.workflow.splitters.RowSlicer-class.html#transform" class="summary-sig-name">transform</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="epac.workflow.splitters.CRSlicer-class.html#transform" class="summary-sig-name">transform</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">**Xy</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSlicer.transform">source&nbsp;code</a></span>
+            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#CRSlicer.transform">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -260,19 +252,36 @@ apply_on: string or list of strings (or None)
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">signature_name</span>,
         <span class="sig-arg">nb</span>,
-        <span class="sig-arg">apply_on</span>)</span>
+        <span class="sig-arg">apply_on</span>,
+        <span class="sig-arg">col_or_row</span>=<span class="sig-default">True</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSlicer.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#CRSlicer.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
+  <pre class="literalblock">
+
+Parameters
+----------
+signature_name: string
+
+nb: integer
+    nb is used for the key value that distinguishs thier sibling node
+
+apply_on: string or list of strings (or None)
+    The name(s) of the downstream blocs to be re-slicing. If
+    None, all downstream blocs are sampling (slicing).
+
+col_or_row: boolean value
+    If col_or_row is True means that column splitter,
+    If col_or_row is False means that row splitter
+
+</pre>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -288,7 +297,7 @@ apply_on: string or list of strings (or None)
         <span class="sig-arg">**Xy</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSlicer.transform">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#CRSlicer.transform">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   

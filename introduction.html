@@ -55,7 +55,7 @@
   <div class="section" id="building-epac-tree">
 <span id="introduction"></span><h1>Building EPAC tree<a class="headerlink" href="#building-epac-tree" title="Permalink to this headline">¶</a></h1>
 <p>Easily building machine learning workflow that can be executed in sequential order or in parallel.</p>
-<p>To quick start with eapc, here is a simple example to do an embarrassing machine learning computing:
+<p>To quick start with epac, here is a simple example to do an embarrassing machine learning computing:
 permutation, cross-validation, and LDA classification. We will introduce more details and examples in <a class="reference external" href="./tutorials.html">tutorials</a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
@@ -89,7 +89,7 @@ permutation, cross-validation, and LDA classification. We will introduce more de
 </div>
 <div class="section" id="run-in-parallel">
 <h1>Run in parallel<a class="headerlink" href="#run-in-parallel" title="Permalink to this headline">¶</a></h1>
-<p>Run epac tree in parallel on local multi-core machine or on Distributed Resource Management (DRM) system which implements Distributed Resource Management Application API (DRMAA) by soma-workflow.</p>
+<p>Run EPAC tree in parallel on local multi-core machine or on Distributed Resource Management (DRM) system which implements Distributed Resource Management Application API (DRMAA) by soma-workflow.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Run epac tree on a multi-core machine</span>
 <span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">SomaWorkflowEngine</span>
 <span class="n">sfw_engine</span> <span class="o">=</span> <span class="n">SomaWorkflowEngine</span><span class="p">(</span>
@@ -111,17 +111,13 @@ permutation, cross-validation, and LDA classification. We will introduce more de
 <div class="section" id="design-your-own-plug-in">
 <h1>Design your own plug-in<a class="headerlink" href="#design-your-own-plug-in" title="Permalink to this headline">¶</a></h1>
 <p>Design your own machine learning algorithm as a plug-in in epac tree.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">precision_recall_fscore_support</span>
-<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
-<span class="kn">from</span> <span class="nn">epac.map_reduce.reducers</span> <span class="kn">import</span> <span class="n">Reducer</span>
-<span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Methods</span>
-
-<span class="c">## 1) Design your classifier</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">## 1) Design your classifier</span>
 <span class="c">## =========================</span>
 <span class="k">class</span> <span class="nc">MySVC</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">C</span>
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
         <span class="n">svc</span> <span class="o">=</span> <span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
         <span class="n">svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="c"># &quot;transform&quot; should return a dictionary</span>
@@ -129,8 +125,10 @@ permutation, cross-validation, and LDA classification. We will introduce more de
 
 <span class="c">## 2) Design your reducer which recall rate</span>
 <span class="c">## ========================================</span>
+<span class="kn">from</span> <span class="nn">epac.map_reduce.reducers</span> <span class="kn">import</span> <span class="n">Reducer</span>
 <span class="k">class</span> <span class="nc">MyReducer</span><span class="p">(</span><span class="n">Reducer</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">precision_recall_fscore_support</span>
         <span class="n">pred_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c"># iterate all the results of each classifier</span>
         <span class="c"># then you can design you own reducer!</span>
@@ -142,6 +140,7 @@ permutation, cross-validation, and LDA classification. We will introduce more de
 
 <span class="c">## 3) Build a tree, and then compute results</span>
 <span class="c">## =========================================</span>
+<span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Methods</span>
 <span class="n">my_svc1</span> <span class="o">=</span> <span class="n">MySVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="n">my_svc2</span> <span class="o">=</span> <span class="n">MySVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="n">two_svc</span> <span class="o">=</span> <span class="n">Methods</span><span class="p">(</span><span class="n">my_svc1</span><span class="p">,</span> <span class="n">my_svc2</span><span class="p">)</span>
@@ -150,7 +149,7 @@ permutation, cross-validation, and LDA classification. We will introduce more de
 <span class="c">#          /      \</span>
 <span class="c"># MySVC(C=1.0)  MySVC(C=2.0)</span>
 <span class="c"># top-down process to call transform</span>
-<span class="n">two_svc</span><span class="o">.</span><span class="n">top_down</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">two_svc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="c"># buttom-up process to compute scores</span>
 <span class="n">two_svc</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 </pre></div>
