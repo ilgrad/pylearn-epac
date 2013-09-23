@@ -80,18 +80,13 @@ ResultSet(
 
 ```python
 
-    from sklearn.metrics import precision_recall_fscore_support
-    from sklearn.svm import SVC
-    from epac.map_reduce.reducers import Reducer 
-    from epac import Methods
-    
-
     ## 1) Design your classifier
     ## =========================
     class MySVC:
         def __init__(self, C=1.0):
             self.C = C
         def transform(self, X, y):
+            from sklearn.svm import SVC 
             svc = SVC(C=self.C)
             svc.fit(X, y)
             # "transform" should return a dictionary
@@ -99,8 +94,10 @@ ResultSet(
 
     ## 2) Design your reducer which recall rate
     ## ========================================
+    from epac.map_reduce.reducers import Reducer  
     class MyReducer(Reducer):
         def reduce(self, result):
+            from sklearn.metrics import precision_recall_fscore_support 
             pred_list = []
             # iterate all the results of each classifier
             # then you can design you own reducer!
@@ -112,6 +109,7 @@ ResultSet(
 
     ## 3) Build a tree, and then compute results 
     ## =========================================
+    from epac import Methods 
     my_svc1 = MySVC(C=1.0)
     my_svc2 = MySVC(C=2.0)
     two_svc = Methods(my_svc1, my_svc2)
