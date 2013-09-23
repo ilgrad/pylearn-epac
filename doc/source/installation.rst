@@ -4,16 +4,23 @@
 Introduction
 ------------
 
-epac depends on scikit-learn and soma-workflow (optionally run on hpc and torque/pbs has been tested).
-epac has been tested on python 2.7 so that we recommand that run epac on python 2.7
+EPAC depends on scikit-learn, dill, joblib, and soma-workflow (optionally run on DRM system and torque/pbs has been tested). The figure below shows EPAC's dependencies.
+EPAC has been tested on python 2.7 so that we recommand that run EPAC on python 2.7
 or its latest version, but not with python 3.0.
-In this section, we will present how to install epac on ubuntu and manually on the other platforms.
+In this section, we will present how to install EPAC on ubuntu and manually on the other platforms.
+
+.. img_dependencies:: ./images/dependencies.png
+
+.. figure:: ./images/dependencies.png
+   :scale: 50 %
+   :align: center
+   :alt: EPAC's dependencies
 
 
 Ubuntu
 ------
 
-First of all, you need to install some softwares for epac:
+First of all, you need to install some softwares for EPAC:
 
 
 .. code-block:: guess
@@ -24,7 +31,7 @@ First of all, you need to install some softwares for epac:
     sudo pip install soma-workflow
 
 
-Download and install **dill** from https://github.com/uqfoundation/dill. epac needs the latest code of dill.
+Download and install **dill** from https://github.com/uqfoundation/dill. EPAC needs the latest code of dill.
 
 .. code-block:: guess
    
@@ -34,9 +41,9 @@ Download and install **dill** from https://github.com/uqfoundation/dill. epac ne
     sudo python setup.py install
                                                                                                                                                                                                                                             
                                                                                                                                                                                                                                             
-Download and install **joblib** from https://github.com/joblib/joblib. epac needs the latest code of joblib.
+Download and install **joblib** from https://github.com/joblib/joblib. EPAC needs the latest code of joblib.
 
-Finally, epac can be downloaded from github and you can run installation script for your local user.
+Finally, EPAC can be downloaded from github and you can run installation script for your local user.
 
 .. code-block:: guess
 
@@ -48,15 +55,17 @@ Finally, epac can be downloaded from github and you can run installation script 
 Other platforms
 ---------------
 
-On the other platforms which support python, you can manually install epac according to your system configuration.
+On the other platforms which support python, you can manually install EPAC according to your system configuration.
 
-**scikit-learn**: epac depends on scikit-learn which is a manchine learning libary. To use epac, scikit-learn should be installed on your computer. Please goto http://scikit-learn.org/ to install scikit-learn.
+**scikit-learn**: EPAC depends on scikit-learn which is a manchine learning libary. To use EPAC, scikit-learn should be installed on your computer. Please goto http://scikit-learn.org/ to install scikit-learn.
 
-**soma-workflow** (optionally): you can install soma-workflow so that epac can run on the hpc (torque/pbs). To install soma-workflow, please goto http://brainvisa.info/soma/soma-workflow for documentation, and https://pypi.python.org/pypi/soma-workflow for installation.
+**soma-workflow** (optionally): you can install soma-workflow so that EPAC can run on the DRM system (torque/pbs). To install soma-workflow, please goto http://brainvisa.info/soma/soma-workflow for documentation, and https://pypi.python.org/pypi/soma-workflow for installation.
+
+**dill**: Download and install **dill** from https://github.com/uqfoundation/dill. EPAC needs the latest code of dill.
 
 **joblib**: download and install **joblib** from https://github.com/joblib/joblib.
 
-**epac**: download epac from github to ``$EPACDIR`` and set enviroment variable ``$PYTHONPATH`` that contains ``$EPACDIR`` (epac directory), and ``$PATH`` contains $EPACDIR/bin
+**EPAC**: download EPAC from github to ``$EPACDIR`` and set enviroment variable ``$PYTHONPATH`` that contains ``$EPACDIR`` (EPAC directory), and ``$PATH`` contains $EPACDIR/bin
 
 .. code-block:: guess
 
@@ -66,5 +75,5 @@ On the other platforms which support python, you can manually install epac accor
     export PATH=$EPACDIR/bin:$PATH
 
 
-Now, you can start to use epac for machine learning.
+Now, you can start to use EPAC for machine learning.
 

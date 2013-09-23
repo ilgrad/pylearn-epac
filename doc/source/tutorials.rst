@@ -4,20 +4,20 @@
 Building Dataset
 ================
 
-In this section, we start with small examples to understand how to use epac libary. The source code of this tutorial is avaible in **./pylearn-epac/examples/small_toy.py**
+In this section, we start with small examples to understand how to use EPAC libary. The source code of this tutorial is avaible in **./pylearn-epac/examples/small_toy.py**
 
-In order to build the epac tree, we first need a dataset. Let's build *X* matrix (samples) and *y* vector (labels) as below.
+In order to build the EPAC tree, we first need a dataset. Let's build *X* matrix (samples) and *y* vector (labels) as below.
 
-::
+.. code-block:: python
 
-    >>> from sklearn import datasets
-    >>> from sklearn.svm import LinearSVC as SVM
-    >>> from sklearn.lda import LDA
-    >>> from sklearn.feature_selection import SelectKBest
-    >>> X, y = datasets.make_classification(n_samples=12, 
-    ...                                     n_features=10,
-    ...                                     n_informative=2,    
-    ...                                     random_state=1)    
+    from sklearn import datasets
+    from sklearn.svm import LinearSVC as SVM
+    from sklearn.lda import LDA
+    from sklearn.feature_selection import SelectKBest
+    X, y = datasets.make_classification(n_samples=12, 
+                                        n_features=10,
+                                        n_informative=2,    
+                                        random_state=1)    
 
 
 In the next section, we can use *X* and *y* to run machine learning algorithm.
@@ -25,7 +25,7 @@ In the next section, we can use *X* and *y* to run machine learning algorithm.
 Basic units: Pipe and Methods
 =============================
 
-In epac, there are two very basic elements, *Pipe* (sequential pipeline) and *Methods* (parallel methods). *Pipe* is used for running a sequence of nodes while *Methods* is designed for parallelly run sequences of nodes.
+In EPAC, there are two very basic elements, *Pipe* (sequential pipeline) and *Methods* (parallel methods). *Pipe* is used for running a sequence of nodes while *Methods* is designed for parallelly run sequences of nodes.
 
 ???need soma figures???
 
@@ -44,7 +44,7 @@ or as leaf node (terminal node)
 
 or as any nodes with only transform function.
 
-For example, we want to build a sequential machine learning process as ``{X, y} -> SelectKBest(k=2) -> SVM -> y``. Without using epac, we can write below codes to implement these processes. 
+For example, we want to build a sequential machine learning process as ``{X, y} -> SelectKBest(k=2) -> SVM -> y``. Without using EPAC, we can write below codes to implement these processes. 
 
 :: 
 
@@ -65,7 +65,7 @@ For example, we want to build a sequential machine learning process as ``{X, y} 
     [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.]
 
 
-You can find that the output of ``SelectKBest(k=2)`` becomes the input of ``SVM()``. It is a sequential process. Using epac, the codes are much more simple as shown below. After building epac tree, we can call *run* which is a top-down process. The input *X* and *y* will pass from *SelectKBest* to SVM. The output of *SelectKBest* will become the input of *SVM* automatically. All the input and output are a dictionary. For example, we want to run  
+You can find that the output of ``SelectKBest(k=2)`` becomes the input of ``SVM()``. It is a sequential process. Using EPAC, the codes are much more simple as shown below. After building EPAC tree, we can call *run* which is a top-down process. The input *X* and *y* will pass from *SelectKBest* to SVM. The output of *SelectKBest* will become the input of *SVM* automatically. All the input and output are a dictionary. For example, we want to run  
 
 ::
 
@@ -118,7 +118,7 @@ Saving computing resource.
    [{'key': SelectKBest/LinearSVC(C=1), 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  1.  1.]},
     {'key': SelectKBest/LinearSVC(C=2), 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  1.  1.]}])
 
-In these codes, ``Methods`` set the input of dictionary ``{X=X, y=y}`` to ``SVM(C=1)`` and to ``SVM(C=10)`` respectively. ``multi.reduce()`` outputs into "ResultSet" which is a dict-like structure which contains the "keys" of the methods that as been used. In epac, **run** means the top-down process, and **reduce** means bottom-up process. For this moment, the **reduce** process returen only the collection of results from classifiers. We will show more meaningful examples using **reduce** later.  A more complicated ``Methods`` example using two arguments is shown as below.
+In these codes, ``Methods`` set the input of dictionary ``{X=X, y=y}`` to ``SVM(C=1)`` and to ``SVM(C=10)`` respectively. ``multi.reduce()`` outputs into "ResultSet" which is a dict-like structure which contains the "keys" of the methods that as been used. In EPAC, **run** means the top-down process, and **reduce** means bottom-up process. For this moment, the **reduce** process returen only the collection of results from classifiers. We will show more meaningful examples using **reduce** later.  A more complicated ``Methods`` example using two arguments is shown as below.
 
  
 ::    
@@ -138,7 +138,7 @@ In these codes, ``Methods`` set the input of dictionary ``{X=X, y=y}`` to ``SVM(
 
 
 
-This example illustrates how to iterate two argument arrays using epac. We can computes all the results from all the combinations. In the next section, we will show how to combine ``Pipe`` and ``Methods``.
+This example illustrates how to iterate two argument arrays using EPAC. We can computes all the results from all the combinations. In the next section, we will show how to combine ``Pipe`` and ``Methods``.
 
 Pipe and Methods Combination
 ----------------------------
@@ -163,7 +163,7 @@ An example is shown in this section to combine ``Methods`` and ``Pipe``.
      {'key': SelectKBest(k=5)/LinearSVC, 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  1.  1.]},
      {'key': SelectKBest(k=10)/LinearSVC, 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  0.  1.]}])
 
-Therefore, two basic units have been presented in this section. You can start to construct your own epac for many machine learning processes. 
+Therefore, two basic units have been presented in this section. You can start to construct your own EPAC for many machine learning processes. 
 In the next section, we will introduce reducers, for instance, Cross-validation.
 
 Cross-validation
@@ -241,7 +241,7 @@ This example shows how to select model from several classifiers. ``wf.run(X=X, y
     ResultSet(
     [{'key': CVBestSearchRefit, 'best_params': [{'k': 1, 'name': 'SelectKBest'}, {'name': 'LDA'}], 'y/true': [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], 'y/pred': [ 1.  0.  1.  1.  0.  0.  1.  0.  0.  0.  1.  1.]}])
 
-We can use epac like playing "lego". ``best_cv`` can be put in cross-validation as shown below.   
+We can use EPAC like playing "lego". ``best_cv`` can be put in cross-validation as shown below.   
 
 ::
  
@@ -257,7 +257,7 @@ We can use epac like playing "lego". ``best_cv`` can be put in cross-validation 
 Running in Parallel
 ===================
 
-In order to take advantage of multi-cores machine, epac can be run in parallel. We can first create a epac tree as below
+In order to take advantage of multi-cores machine, EPAC can be run in parallel. We can first create a EPAC tree as below
 
 ::
 
@@ -310,7 +310,7 @@ You can run your algorithms even on HPC on which DRMAA has been installed.
 Design your own plug-in
 =======================
 
-Design your own machine learning algorithm as a plug-in in epac tree.
+Design your own machine learning algorithm as a plug-in in EPAC tree.
 
 ::
 
