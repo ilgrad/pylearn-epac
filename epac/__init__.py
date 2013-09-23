@@ -21,6 +21,8 @@ from epac.map_reduce.mappers import MapperSubtrees
 from epac.map_reduce.engine import SomaWorkflowEngine, LocalEngine
 from epac.map_reduce.reducers import ClassificationReport, PvalPerms
 
+__version__ = '0.10-git'
+
 import sklearn_plugins
 
 import __check_build

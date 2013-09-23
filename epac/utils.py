@@ -410,3 +410,111 @@ def clean_tree_stores(tree_root):
     for each_node in tree_root.walk_true_nodes():
         if each_node.store:
             each_node.store = None
+
+
+def get_list_from_lists(lists, nb):
+    '''
+    Parameters
+    ----------
+    lists: list of list
+        list
+
+    nb: integer
+        to get the list with the index nb
+
+    Example
+    -------
+    >>> from epac.utils import get_list_from_lists
+    >>> alist = [1]
+    >>> blist = [2, 3, 4, 5, 6]
+    >>> clist = [3, 4, 5]
+    >>> dlist = [3, 4, 5, 6]
+    >>> lists = []
+    >>> lists.append(alist)
+    >>> lists.append(blist)
+    >>> lists.append(clist)
+    >>> lists.append(dlist)
+    >>> for nb in xrange(0, 7):
+    ...     print "nb=", nb
+    ...     print get_list_from_lists(lists, nb)
+    ... 
+    nb= 0
+    [1, 2, 3, 3]
+    nb= 1
+    [1, 3, 3, 3]
+    nb= 2
+    [1, 4, 3, 3]
+    nb= 3
+    [1, 5, 3, 3]
+    nb= 4
+    [1, 6, 3, 3]
+    nb= 5
+    [1, 2, 4, 3]
+    nb= 6
+    [1, 3, 4, 3]
+    '''
+    base_list = []
+    mbase_list = []
+    for i in xrange(len(lists)):
+        base_list.append(len(lists[i]))
+        if i == 0:
+            mbase_list.append(0)
+        elif i == 1:
+            mbase_list.append(base_list[0])
+        else:
+            mbase_list.append(base_list[i - 1] * mbase_list[i - 1])
+    # alist = [1]
+    # blist = [2, 3, 4, 5, 6]
+    # clist = [3, 4, 5]
+    # dlist = [3, 4, 5, 6]
+    #
+    # lists = []
+    # lists.append(alist)
+    # lists.append(blist)
+    # lists.append(clist)
+    # lists.append(dlist)
+    # nb = 0 => pos_indices = [0, 0, 0, 0]
+    # nb = 1 => pos_indices = [0, 1, 0, 0]
+    # nb = 2 => pos_indices = [0, 2, 0, 0]
+    # nb = 3 => pos_indices = [0, 3, 0, 0]
+    # nb = 4 => pos_indices = [0, 4, 0, 0]
+    # nb = 5 => pos_indices = [0, 0, 1, 0]
+    # nb = 6 => pos_indices = [0, 1, 1, 0]
+    # nb = 7 => pos_indices = [0, 2, 1, 0]
+    # nb = 8 => pos_indices = [0, 3, 1, 0]
+    pos_indices = []
+    for i in xrange(len(lists)):
+        pos_indices.append(0)
+    nbt = nb
+    for i in xrange(len(mbase_list) - 1, -1, -1):
+        if not i == 0:
+            while nbt >= mbase_list[i]:
+                nbt = nbt - mbase_list[i]
+                pos_indices[i] += 1
+        else:
+            pos_indices[i] = nbt
+
+    # reconstruct the new list
+    ret_list = []
+    for i in xrange(len(pos_indices)):
+        ret_list.append(lists[i][pos_indices[i]])
+    return ret_list
+
+if __name__ == "__main__":
+#    from epac.utils import get_list_from_lists
+#    alist = [1]
+#    blist = [2, 3, 4, 5, 6]
+#    clist = [3, 4, 5]
+#    dlist = [3, 4, 5, 6]
+#
+#    lists = []
+#    lists.append(alist)
+#    lists.append(blist)
+#    lists.append(clist)
+#    lists.append(dlist)
+#
+#    for nb in xrange(0, 7):
+#        print "nb=", nb
+#        print get_list_from_lists(lists, nb)
+    import doctest
+    doctest.testmod()

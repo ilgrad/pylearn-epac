@@ -15,7 +15,7 @@ def read(fname):
 
 setup(
     name="epac",
-    version="0.0.4",
+    version='0.10-git',
     author="Check contributors on https://github.com/neurospin/pylearn-epac",
     author_emai="edouard.duchesnay@cea.fr",
     description=("Embarrassingly Parallel Array Computing: EPAC is a machine learning workflow builder."),
