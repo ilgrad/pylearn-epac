@@ -9,8 +9,6 @@ EPAC has been tested on python 2.7 so that we recommand that run EPAC on python 
 or its latest version, but not with python 3.0.
 In this section, we will present how to install EPAC on ubuntu and manually on the other platforms.
 
-.. img_dependencies:: ./images/dependencies.png
-
 .. figure:: ./images/dependencies.png
    :scale: 50 %
    :align: center
@@ -39,8 +37,8 @@ Download and install **dill** from https://github.com/uqfoundation/dill. EPAC ne
     cd dill
     python setup.py build
     sudo python setup.py install
-                                                                                                                                                                                                                                            
-                                                                                                                                                                                                                                            
+
+
 Download and install **joblib** from https://github.com/joblib/joblib. EPAC needs the latest code of joblib.
 
 Finally, EPAC can be downloaded from github and you can run installation script for your local user.
