@@ -192,7 +192,7 @@ def _loop_for(results, depth):
 
 def export_csv(tree, results, filename):
     '''Export the results to a CSV file
-    
+
     Export the results of a top-down(run) or
     bottom-up(reduce) operation to a CSV file
 
@@ -229,22 +229,24 @@ def export_csv(tree, results, filename):
     >>> export_csv(multi, result_reduce, filename2)
     >>> with open(filename2, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
     ...     print csvfile.read()
-    key;y/pred;y/true
-    LinearSVC(C=1);[0 0 0 1 0 0 1 0 1 0 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+    key;y/true;y/pred
+    LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
     LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
     <BLANKLINE>
     '''
-
     if isinstance(results, ResultSet):
         with open(filename, 'wb') as csvfile:
             spamwriter = csv.writer(csvfile, delimiter=';',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            keys = ["key"]
             result_keys = results.values()[0].keys()
-            result_keys.sort()
-            spamwriter.writerow(result_keys)
+            if "key" in keys:
+                result_keys.remove("key")
+            keys.extend(result_keys)
+            spamwriter.writerow(keys)
             for result in results.values():
                 temp_list = []
-                for key in result_keys:
+                for key in keys:
                     temp_list.append(result[key])
                 spamwriter.writerow(temp_list)
     else:
@@ -253,7 +255,7 @@ def export_csv(tree, results, filename):
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
             keys = []
             for leaf in tree.walk_leaves():
-                key = leaf.get_key().replace('CV/', '').replace('Methods/', '')
+                key = leaf.get_key().replace('CV/', '').replace('Methods/', '').replace('Perms/','')
                 keys.append(key)
             result_keys = ["key"]
             list_res = results
@@ -261,7 +263,7 @@ def export_csv(tree, results, filename):
             while not (hasattr(list_res, 'keys')):
                 depth += 1
                 list_res = list_res[0]
-            result_keys += list_res.keys()
+            result_keys.extend(list_res.keys())
             spamwriter.writerow(result_keys)
             list_res = _loop_for(results, depth)
             count = 0
