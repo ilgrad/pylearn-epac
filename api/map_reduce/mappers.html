@@ -65,6 +65,15 @@
 <em class="property">class </em><tt class="descclassname">epac.map_reduce.mappers.</tt><tt class="descname">MapperSubtrees</tt><big>(</big><em>Xy</em>, <em>tree_root</em>, <em>store_fs=None</em>, <em>function='transform'</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/mappers.html#MapperSubtrees"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.mappers.MapperSubtrees" title="Permalink to this definition">¶</a></dt>
 <dd><p>The mapper runs function (usually as &#8220;transform&#8221;) for NodesInput
 which is a dictionary of nodes.</p>
+<p>Xy:X matrix and y vertor</p>
+<dl class="docutils">
+<dt>tree_root: epac.BaseNode</dt>
+<dd>the root node of the epac tree</dd>
+<dt>store_fs:</dt>
+<dd>where the node want to save</dd>
+<dt>function:</dt>
+<dd>function of node</dd>
+</dl>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -79,9 +88,8 @@ which is a dictionary of nodes.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.map_reduce.mappers</span> <span class="kn">import</span> <span class="n">MapperSubtrees</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.map_reduce.mappers</span> <span class="kn">import</span> <span class="n">map_process</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">## Build dataset</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">## Build dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## =============</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="gp">... </span>                                    <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
@@ -105,9 +113,8 @@ which is a dictionary of nodes.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">partial_map_process</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">map_process</span><span class="p">,</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">num_processes</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">res_tree_root_list</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">partial_map_process</span><span class="p">,</span> <span class="n">input_list</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">## Merge results from pool</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">## Merge results from pool</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">each_tree_root</span> <span class="ow">in</span> <span class="n">res_tree_root_list</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">tree_root_node</span><span class="o">.</span><span class="n">merge_tree_store</span><span class="p">(</span><span class="n">each_tree_root</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## Run map processes in single process</span>
@@ -119,24 +126,14 @@ which is a dictionary of nodes.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## ==================</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuray&#39;: 0.8, &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean&#39;: 0.8, &#39;y/test/score_accuray/pval&#39;: [ 0.]},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuray&#39;: 0.8, &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean&#39;: 0.8, &#39;y/test/score_accuray/pval&#39;: [ 0.]}])</span>
+<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8},</span>
+<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8}])</span>
 </pre></div>
 </div>
 <dl class="method">
 <dt id="epac.map_reduce.mappers.MapperSubtrees.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>Xy</em>, <em>tree_root</em>, <em>store_fs=None</em>, <em>function='transform'</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/mappers.html#MapperSubtrees.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.mappers.MapperSubtrees.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialization for the mapper</p>
-<p>Xy:X matrix and y vertor</p>
-<dl class="docutils">
-<dt>tree_root: epac.BaseNode</dt>
-<dd>the root node of the epac tree</dd>
-<dt>store_fs:</dt>
-<dd>where the node want to save</dd>
-<dt>function:</dt>
-<dd>function of node</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="epac.map_reduce.mappers.MapperSubtrees.map">
@@ -157,7 +154,7 @@ which is a dictionary of nodes.</p>
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="engine.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">epac.map_reduce.engine</span></tt></a></p>
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">epac.map_reduce.engine</span></tt></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="reducers.html"
                         title="next chapter"><tt class="docutils literal"><span class="pre">epac.map_reduce.reducers</span></tt></a></p>

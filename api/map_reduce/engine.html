@@ -63,7 +63,15 @@
 <dl class="class">
 <dt id="epac.map_reduce.engine.LocalEngine">
 <em class="property">class </em><tt class="descclassname">epac.map_reduce.engine.</tt><tt class="descname">LocalEngine</tt><big>(</big><em>tree_root</em>, <em>function_name='transform'</em>, <em>num_processes=-1</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/engine.html#LocalEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.engine.LocalEngine" title="Permalink to this definition">¶</a></dt>
-<dd><p>LocalEninge run function for each node of epac tree in parallel</p>
+<dd><p>LocalEngine run function for each node of epac tree in parallel</p>
+<p>tree_root: BaseNode</p>
+<dl class="docutils">
+<dt>function_name: string</dt>
+<dd>The name of function need to be executed through all nodes in
+epac tree</dd>
+<dt>num_processes: integer</dt>
+<dd>Run map process in #processes</dd>
+</dl>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.map_reduce.engine</span> <span class="kn">import</span> <span class="n">LocalEngine</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.tests.wfexamples2test</span> <span class="kn">import</span> <span class="n">WFExample2</span>
@@ -95,8 +103,8 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## ==================</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuray&#39;: 0.8, &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean&#39;: 0.8, &#39;y/test/score_accuray/pval&#39;: [ 0.]},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuray&#39;: 0.8, &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean&#39;: 0.8, &#39;y/test/score_accuray/pval&#39;: [ 0.]}])</span>
+<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8},</span>
+<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8}])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -134,14 +142,13 @@
 <span class="gp">... </span>                                <span class="n">function_name</span><span class="o">=</span><span class="s">&quot;transform&quot;</span><span class="p">,</span>
 <span class="gp">... </span>                                <span class="n">num_processes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span> <span class="o">=</span> <span class="n">sfw_engine</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">## Run reduce process</span>
+<span class="go">light mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c">## Run reduce process</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## ==================</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuray&#39;: 0.8, &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean&#39;: 0.8, &#39;y/test/score_accuray/pval&#39;: [ 0.]},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuray&#39;: 0.8, &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean&#39;: 0.8, &#39;y/test/score_accuray/pval&#39;: [ 0.]}])</span>
+<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8},</span>
+<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8}])</span>
 </pre></div>
 </div>
 </dd></dl>

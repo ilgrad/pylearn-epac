@@ -68,9 +68,30 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">r3</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="s">&#39;SVC(C=3)&#39;</span><span class="p">,</span> <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">r4</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="s">&#39;SVC(C=4)&#39;</span><span class="p">,</span> <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set1</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">set1</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: SVC(C=1), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=2), &#39;a&#39;: 1, &#39;b&#39;: 2}])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set2</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="n">r3</span><span class="p">,</span> <span class="n">r4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">set2</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: SVC(C=3), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=4), &#39;a&#39;: 1, &#39;b&#39;: 2}])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set3</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="n">set1</span><span class="p">,</span> <span class="n">set2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">set3</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: SVC(C=1), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=2), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=3), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=4), &#39;a&#39;: 1, &#39;b&#39;: 2}])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set3</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Result</span><span class="p">(</span><span class="s">&#39;SVC(C=5)&#39;</span><span class="p">,</span> <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">set3</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: SVC(C=1), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=2), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=3), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=4), &#39;a&#39;: 1, &#39;b&#39;: 2},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=5), &#39;a&#39;: 1, &#39;b&#39;: 2}])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -79,7 +100,7 @@
 <dt id="epac.map_reduce.results.Result">
 <em class="property">class </em><tt class="descclassname">epac.map_reduce.results.</tt><tt class="descname">Result</tt><big>(</big><em>key=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/results.html#Result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.results.Result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Result is a record with a &#8220;key&#8221;, and a &#8220;payload&#8221;.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Result</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Result</span><span class="p">,</span> <span class="n">conf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">r1</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="s">&#39;SVC(C=1)&#39;</span><span class="p">,</span> <span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">r2</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s">&#39;SVC(C=10)&#39;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">r1</span><span class="p">[</span><span class="s">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;bar&quot;</span>
@@ -113,7 +134,7 @@
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="reducers.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">epac.map_reduce.reducers</span></tt></a></p>
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">epac.map_reduce.reducers</span></tt></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="split_input.html"
                         title="next chapter"><tt class="docutils literal"><span class="pre">epac.map_reduce.split_input</span></tt></a></p>

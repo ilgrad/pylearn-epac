@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Building epac tree &mdash; epac 0.0.1 documentation</title>
+    <title>Building EPAC tree &mdash; epac 0.0.1 documentation</title>
     
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="epac 0.0.1 documentation" href="index.html" />
     <link rel="next" title="Introduction" href="installation.html" />
-    <link rel="prev" title="Welcome to epac’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to EPAC’s documentation!" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -41,7 +41,7 @@
           <a href="installation.html" title="Introduction"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to epac’s documentation!"
+          <a href="index.html" title="Welcome to EPAC’s documentation!"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">epac 0.0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -53,13 +53,12 @@
           <div class="body">
             
   <div class="section" id="building-epac-tree">
-<span id="introduction"></span><h1>Building epac tree<a class="headerlink" href="#building-epac-tree" title="Permalink to this headline">¶</a></h1>
-<p>Easily building machine learning workflow that can be executed in sequential or in parallel.</p>
+<span id="introduction"></span><h1>Building EPAC tree<a class="headerlink" href="#building-epac-tree" title="Permalink to this headline">¶</a></h1>
+<p>Easily building machine learning workflow that can be executed in sequential order or in parallel.</p>
 <p>To quick start with eapc, here is a simple example to do an embarrassing machine learning computing:
-permutation, cross-validation, and LDA classification.
-We will introduce more details and examples in <tt class="xref doc docutils literal"><span class="pre">examples.rst</span></tt>.</p>
+permutation, cross-validation, and LDA classification. We will introduce more details and examples in <a class="reference external" href="./tutorials.html">tutorials</a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="kn">from</span> <span class="nn">sklearn.lda</span> <span class="kn">import</span> <span class="n">LDA</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                                  <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c"># Permutations + Cross-validation</span>
@@ -72,25 +71,25 @@ We will introduce more details and examples in <tt class="xref doc docutils lite
 <span class="c">#  /   |   \</span>
 <span class="c"># 0    1    2                      Folds (Slicer)</span>
 <span class="c"># |    |    |</span>
-<span class="c"># LDA LDA LDA                      Classifier (Estimator)</span>
+<span class="c"># SVM SVM  SVM                      Classifier (Estimator)</span>
 <span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Perms</span><span class="p">,</span> <span class="n">CV</span>
-<span class="n">perms_cv_lda</span> <span class="o">=</span> <span class="n">Perms</span><span class="p">(</span><span class="n">CV</span><span class="p">(</span><span class="n">LDA</span><span class="p">(),</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+<span class="n">perms_cv_svm</span> <span class="o">=</span> <span class="n">Perms</span><span class="p">(</span><span class="n">CV</span><span class="p">(</span><span class="n">SVM</span><span class="p">(),</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
                        <span class="n">n_perms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="s">&quot;y&quot;</span><span class="p">)</span>
-<span class="c"># Run: Top-down process</span>
+<span class="c"># run: Top-down process</span>
 <span class="c">#   1: Permutations (shuffling X and y)</span>
 <span class="c">#   2: CV (Splitting X and y into training and test parts)</span>
-<span class="c">#   3: LDA (Classifilication process)</span>
-<span class="n">perms_cv_lda</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="c"># Reduce: Bottom-up process</span>
+<span class="c">#   3: SVM (Classifilication process)</span>
+<span class="n">perms_cv_svm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="c"># reduce: Bottom-up process</span>
 <span class="c">#   1: CV (computing recognition scores from its leaves)</span>
 <span class="c">#   2: Permutations (computing p values)</span>
-<span class="n">perms_cv_lda</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
+<span class="n">perms_cv_svm</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="run-in-parallel">
 <h1>Run in parallel<a class="headerlink" href="#run-in-parallel" title="Permalink to this headline">¶</a></h1>
-<p>Run epac tree in parallel on local multi-core machine or on HPC (using DRMAA).</p>
+<p>Run epac tree in parallel on local multi-core machine or on Distributed Resource Management (DRM) system which implements Distributed Resource Management Application API (DRMAA) by soma-workflow.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Run epac tree on a multi-core machine</span>
 <span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">SomaWorkflowEngine</span>
 <span class="n">sfw_engine</span> <span class="o">=</span> <span class="n">SomaWorkflowEngine</span><span class="p">(</span>
@@ -99,7 +98,7 @@ We will introduce more details and examples in <tt class="xref doc docutils lite
 <span class="n">perms_cv_svm</span> <span class="o">=</span> <span class="n">sfw_engine</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">perms_cv_svm</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 
-<span class="c"># Run epac tree using soma-workflow which can be run on HPC (using DRMAA).</span>
+<span class="c"># Run epac tree using soma-workflow which can be run on DRM system.</span>
 <span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">SomaWorkflowEngine</span>
 <span class="n">sfw_engine</span> <span class="o">=</span> <span class="n">SomaWorkflowEngine</span><span class="p">(</span>
                     <span class="n">tree_root</span><span class="o">=</span><span class="n">perms_cv_svm</span><span class="p">,</span>
@@ -113,7 +112,7 @@ We will introduce more details and examples in <tt class="xref doc docutils lite
 <h1>Design your own plug-in<a class="headerlink" href="#design-your-own-plug-in" title="Permalink to this headline">¶</a></h1>
 <p>Design your own machine learning algorithm as a plug-in in epac tree.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">precision_recall_fscore_support</span>
-<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.reducers</span> <span class="kn">import</span> <span class="n">Reducer</span>
 <span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Methods</span>
 
@@ -123,7 +122,7 @@ We will introduce more details and examples in <tt class="xref doc docutils lite
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">C</span>
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
+        <span class="n">svc</span> <span class="o">=</span> <span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
         <span class="n">svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="c"># &quot;transform&quot; should return a dictionary</span>
         <span class="k">return</span> <span class="p">{</span><span class="s">&quot;y/pred&quot;</span><span class="p">:</span> <span class="n">svc</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="s">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">}</span>
@@ -168,14 +167,14 @@ We will introduce more details and examples in <tt class="xref doc docutils lite
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Building epac tree</a></li>
+<li><a class="reference internal" href="#">Building EPAC tree</a></li>
 <li><a class="reference internal" href="#run-in-parallel">Run in parallel</a></li>
 <li><a class="reference internal" href="#design-your-own-plug-in">Design your own plug-in</a></li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to epac&#8217;s documentation!</a></p>
+                        title="previous chapter">Welcome to EPAC&#8217;s documentation!</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="installation.html"
                         title="next chapter">Introduction</a></p>
@@ -214,7 +213,7 @@ We will introduce more details and examples in <tt class="xref doc docutils lite
           <a href="installation.html" title="Introduction"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to epac’s documentation!"
+          <a href="index.html" title="Welcome to EPAC’s documentation!"
              >previous</a> |</li>
         <li><a href="index.html">epac 0.0.1 documentation</a> &raquo;</li> 
       </ul>

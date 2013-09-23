@@ -24,7 +24,7 @@
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="epac 0.0.1 documentation" href="index.html" />
-    <link rel="next" title="API Documentation" href="api.html" />
+    <link rel="next" title="Glossary" href="glossary.html" />
     <link rel="prev" title="Introduction" href="installation.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API Documentation"
+          <a href="glossary.html" title="Glossary"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Introduction"
@@ -54,62 +54,94 @@
             
   <div class="section" id="building-dataset">
 <span id="tutorials"></span><h1>Building Dataset<a class="headerlink" href="#building-dataset" title="Permalink to this headline">¶</a></h1>
-<p>In this section, we start with small examples to understand how to use epac libary. The source code of this tutorial is avaible in <strong>./pylearn-epac/examples/small_toy.py</strong></p>
-<p>In order to build the epac tree, we first need a dataset. Let&#8217;s build <em>X</em> matrix (samples) and <em>y</em> vector (labels) as below.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.lda</span> <span class="kn">import</span> <span class="n">LDA</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">SelectKBest</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
-<span class="gp">... </span>                                    <span class="n">n_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-<span class="gp">... </span>                                    <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="gp">... </span>                                    <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<p>In this section, we start with small examples to understand how to use EPAC libary. The source code of this tutorial is avaible in <strong>./pylearn-epac/examples/small_toy.py</strong></p>
+<p>In order to build the EPAC tree, we first need a dataset. Let&#8217;s build <em>X</em> matrix (samples) and <em>y</em> vector (labels) as below.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">samples_generator</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">samples_generator</span><span class="o">.</span><span class="n">make_classification</span><span class="p">(</span>
+                         <span class="n">n_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                         <span class="n">n_features</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                         <span class="n">n_informative</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                         <span class="n">n_redundant</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the next section, we can use <em>X</em> and <em>y</em> to run machine learning algorithm.</p>
 </div>
+<div class="section" id="a-simple-svm-example">
+<h1>A simple SVM example<a class="headerlink" href="#a-simple-svm-example" title="Permalink to this headline">¶</a></h1>
+<p>Conventionally, we want to learn a mapping from <em>X</em> to <em>y</em> as a machine learning task as shown in the figure below.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/simple_ml_example.png"><img alt="machine learning task" src="images/simple_ml_example.png" style="width: 895.0px; height: 255.0px;" /></a>
+</div>
+<p>Here is an example of SVM from scikit-learn:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s">&#39;linear&#39;</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">prediction</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first step is to fit the SVM model and then we can predict <em>y</em> using <em>X</em>.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/svc_input_output.png"><img alt="input and output of SVC" src="images/svc_input_output.png" style="width: 287.0px; height: 206.0px;" /></a>
+</div>
+<p>The input of SVM is <em>X</em> and <em>y</em> which is a dictionary. The output is the prediction. We first call the fit function and then call the predict function of SVM. In fact, here will a basic node in EPAC tree.</p>
+</div>
+<div class="section" id="preprocessing">
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
+<p>Before the classification step, sometimes we need a preprocessing step, for example, feature selection (<em>SelectKBest</em> in sklearn) as shown below.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/select_k_best.png"><img alt="select k best features based on univariate statistical tests" src="images/select_k_best.png" style="width: 320.0px; height: 218.0px;" /></a>
+</div>
+<p>It can reduce the <em>X</em> feature dimension so that the classifier (SVM in this example) takes less time.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/select_k_best_example.png"><img alt="reduce X feature dimension" src="images/select_k_best_example.png" style="width: 865.0px; height: 535.0px;" /></a>
+</div>
+<p>To implement these two processes without Pipeline in sklearn and without Pipe in EPAC.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># without epac</span>
+<span class="c"># 0. build two processes</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">SelectKBest</span>
+<span class="n">select_k_best</span> <span class="o">=</span> <span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">svm</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s">&#39;linear&#39;</span><span class="p">)</span>
+<span class="c"># 1. fit model from X and y</span>
+<span class="n">select_k_best</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="c"># select features from X</span>
+<span class="n">tr_X</span> <span class="o">=</span> <span class="n">select_k_best</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c"># 2. fit model from output of select_k_best</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">tr_X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="c"># predict results from output of select_k_best</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">tr_X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the next section, we will introduce how to simply the codes using EPAC.</p>
+</div>
 <div class="section" id="basic-units-pipe-and-methods">
 <h1>Basic units: Pipe and Methods<a class="headerlink" href="#basic-units-pipe-and-methods" title="Permalink to this headline">¶</a></h1>
-<p>In epac, there are two very basic elements, <em>Pipe</em> (sequential pipeline) and <em>Methods</em> (parallel methods). <em>Pipe</em> is used for running a sequence of nodes while <em>Methods</em> is designed for parallelly run sequences of nodes.</p>
+<p>In EPAC, there are two basic elements, <em>Pipe</em> (sequential pipeline) and <em>Methods</em> (parallel methods). <em>Pipe</em> is used for running a sequence of nodes while <em>Methods</em> is designed for parallelly run nodes or sequences of nodes.</p>
 <div class="section" id="pipe">
 <h2>Pipe<a class="headerlink" href="#pipe" title="Permalink to this headline">¶</a></h2>
 <p>Now, we first introduce <em>Pipe</em>, which executes a sequential of BaseNode. These nodes should implement</p>
 <p>either as non-leaf node (non-termianl node),</p>
 <ul class="simple">
-<li>fit and transform, e.g. <em>SelectKBest(k=2)</em></li>
+<li>fit and transform, e.g. <em>SelectKBest(k=2)</em>,</li>
 </ul>
 <p>or as leaf node (terminal node)</p>
 <ul class="simple">
-<li>fit and predict, e.g. <em>SVM()</em></li>
+<li>fit and predict, e.g. <em>SVM()</em>,</li>
 </ul>
-<p>For example, we want to build a sequential machine learning process as <tt class="docutils literal"><span class="pre">{X,</span> <span class="pre">y}</span> <span class="pre">-&gt;</span> <span class="pre">SelectKBest(k=2)</span> <span class="pre">-&gt;</span> <span class="pre">SVM</span> <span class="pre">-&gt;</span> <span class="pre">y</span></tt>. Without using epac, we can write below codes to implement these processes.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># without epac</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># 0. build two processes</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">select_k_best</span> <span class="o">=</span> <span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">svm</span> <span class="o">=</span> <span class="n">SVM</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># 1. fit model from X and y</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">select_k_best</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># select features from X</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tr_X</span> <span class="o">=</span> <span class="n">select_k_best</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># 2. fit model from output of select_k_best</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">svm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">tr_X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># predict results from output of select_k_best</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">svm</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">tr_X</span><span class="p">)</span>
-<span class="go">array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  1.,  1.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">y</span>
-<span class="go">[ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.]</span>
-</pre></div>
+<p>or as any nodes with only transform function.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/epac_nodes.png"><img alt="reduce X feature dimension" src="images/epac_nodes.png" style="width: 953.0px; height: 265.0px;" /></a>
 </div>
-<p>You can find that the output of <tt class="docutils literal"><span class="pre">SelectKBest(k=2)</span></tt> becomes the input of <tt class="docutils literal"><span class="pre">SVM()</span></tt>. It is a sequential process. Using epac, the codes are much more simple as shown below. After building epac tree, we can call <em>run</em> which is a top-down process. The input <em>X</em> and <em>y</em> will pass from <em>SelectKBest</em> to SVM. The output of <em>SelectKBest</em> will become the input of <em>SVM</em> automatically. All the input and output are a dictionary. For example, we want to run</p>
+<p>As the example shown above, you can find that the output of <tt class="docutils literal"><span class="pre">SelectKBest(k=2)</span></tt> becomes the input of <tt class="docutils literal"><span class="pre">SVM()</span></tt>. It is a sequential process. Using EPAC, the codes are much more simple as shown below. After building EPAC tree, we can call <em>run</em> which is a top-down process. The input <em>X</em> and <em>y</em> will pass from <em>SelectKBest</em> to SVM. The output of <em>SelectKBest</em> will become the input of <em>SVM</em> automatically. All the input and output are a dictionary. For example, we want to run</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Build sequential Pipeline</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># -------------------------</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># 2  SelectKBest (Estimator)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># SelectKBest (Transformer)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># |</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># SVM Classifier (Estimator)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Pipe</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">SVM</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">SVC</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pipe</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="go">{&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  1.,  1.])}</span>
+<span class="go">{&#39;y/true&#39;: array([1, 0, 0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/pred&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 0])}</span>
 </pre></div>
 </div>
 <p>The downstream data-flow is a keyword arguments (dict) containing <em>X</em> and <em>y</em>. It will pass through each processing node, <em>SelectKBest(k=2)</em> and <em>SVM</em>. Each non-terminal node call fit and transform, that take a dictionnary as input and produces a dictionnary as output. The output is passed to the next node till terminal node. The return value of the run is simply agregation of the outputs (dict) of the leaf nodes (terminal nodes). Here <tt class="docutils literal"><span class="pre">y/true</span></tt> means the labels in original dataset while <tt class="docutils literal"><span class="pre">y/pred</span></tt> means the prediction from pipe. <tt class="docutils literal"><span class="pre">y/true</span></tt> and <tt class="docutils literal"><span class="pre">y/pred</span></tt> are use for the reducing step. In the next section, we will present parallel <tt class="docutils literal"><span class="pre">Methods</span></tt>.</p>
@@ -125,19 +157,20 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="c">#        /   \</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># SVM(C=1)  SVM(C=10)   Classifiers (Estimator)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Methods</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span> <span class="o">=</span> <span class="n">Methods</span><span class="p">(</span><span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span> <span class="o">=</span> <span class="n">Methods</span><span class="p">(</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">multi</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="go">[{&#39;y/true&#39;: array([ 0.,  0.,  1.,  1.,  1.,  1.,  0.,  0.,  0.,  1.,  1.,  0.]), &#39;y/pred&#39;: array([ 0.,  0.,  1.,  1.,  1.,  1.,  0.,  0.,  0.,  1.,  1.,  0.])}, {&#39;y/true&#39;: array([ 0.,  0.,  1.,  1.,  1.,  1.,  0.,  0.,  0.,  1.,  1.,  0.]), &#39;y/pred&#39;: array([ 0.,  0.,  1.,  1.,  1.,  1.,  0.,  0.,  0.,  1.,  1.,  0.])}]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">multi</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: LinearSVC(C=1), &#39;y/true&#39;: [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.], &#39;y/pred&#39;: [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.]},</span>
-<span class="go"> {&#39;key&#39;: LinearSVC(C=10), &#39;y/true&#39;: [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.], &#39;y/pred&#39;: [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  1.  1.  0.]}])</span>
+<span class="go">[{&#39;key&#39;: SVC(C=1), &#39;y/true&#39;: [1 0 0 1 1 0 1 0 1 0], &#39;y/pred&#39;: [1 0 0 1 1 0 1 0 1 0]},</span>
+<span class="go"> {&#39;key&#39;: SVC(C=10), &#39;y/true&#39;: [1 0 0 1 1 0 1 0 1 0], &#39;y/pred&#39;: [1 0 0 1 1 0 1 0 1 0]}])</span>
 </pre></div>
 </div>
-<p>In these codes, <tt class="docutils literal"><span class="pre">Methods</span></tt> set the input of dictionary <tt class="docutils literal"><span class="pre">{X=X,</span> <span class="pre">y=y}</span></tt> to <tt class="docutils literal"><span class="pre">SVM(C=1)</span></tt> and to <tt class="docutils literal"><span class="pre">SVM(C=10)</span></tt> respectively. <tt class="docutils literal"><span class="pre">multi.reduce()</span></tt> outputs into &#8220;ResultSet&#8221; which is a dict-like structure which contains the &#8220;keys&#8221; of the methods that as been used. In epac, <strong>run</strong> means the top-down process, and <strong>reduce</strong> means bottom-up process. For this moment, the <strong>reduce</strong> process returen only the collection of results from classifiers. We will show more meaningful examples using <strong>reduce</strong> later.  A more complicated <tt class="docutils literal"><span class="pre">Methods</span></tt> example using two arguments is shown as below.</p>
+<p>In these codes, <tt class="docutils literal"><span class="pre">Methods</span></tt> set the input of dictionary <tt class="docutils literal"><span class="pre">{X=X,</span> <span class="pre">y=y}</span></tt> to <tt class="docutils literal"><span class="pre">SVM(C=1)</span></tt> and to <tt class="docutils literal"><span class="pre">SVM(C=10)</span></tt> respectively. <tt class="docutils literal"><span class="pre">multi.reduce()</span></tt> outputs into &#8220;ResultSet&#8221; which is a dict-like structure which contains the &#8220;keys&#8221; of the methods that as been used. In EPAC, <strong>run</strong> means the top-down process, and <strong>reduce</strong> means bottom-up process. For this moment, the <strong>reduce</strong> process returen only the collection of results from classifiers. We will show more meaningful examples using <strong>reduce</strong> later.  A more complicated <tt class="docutils literal"><span class="pre">Methods</span></tt> example using two arguments is shown as below.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c">#                         Methods                  Methods (Splitter)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">#          /                        \</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># SVM(l1, C=1)  SVM(l1, C=10)  ..... SVM(l2, C=10) Classifiers (Estimator)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">svms</span> <span class="o">=</span> <span class="n">Methods</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">SVM</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">)</span> <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&quot;l1&quot;</span><span class="p">,</span> <span class="s">&quot;l2&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">C</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">svms</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="go">[{&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.,  1.])}, {&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.])}, {&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.,  1.])}, {&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.])}]</span>
@@ -149,34 +182,30 @@
 <span class="go"> {&#39;key&#39;: LinearSVC(loss=l2,C=10), &#39;y/true&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], &#39;y/pred&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.]}])</span>
 </pre></div>
 </div>
-<p>This example illustrates how to iterate two argument arrays using epac. We can computes all the results from all the combinations. In the next section, we will show how to combine <tt class="docutils literal"><span class="pre">Pipe</span></tt> and <tt class="docutils literal"><span class="pre">Methods</span></tt>.</p>
+<p>This example illustrates how to iterate two argument arrays using EPAC. We can computes all the results from all the combinations. In the next section, we will show how to combine <tt class="docutils literal"><span class="pre">Pipe</span></tt> and <tt class="docutils literal"><span class="pre">Methods</span></tt>.</p>
 </div>
 <div class="section" id="pipe-and-methods-combination">
 <h2>Pipe and Methods Combination<a class="headerlink" href="#pipe-and-methods-combination" title="Permalink to this headline">¶</a></h2>
-<p>An example is shown in this section to combine <tt class="docutils literal"><span class="pre">Methods</span></tt> and <tt class="docutils literal"><span class="pre">Pipe</span></tt>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Parallelize sequential Pipeline: Anova(k best selection) + SVM.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c">#    Methods    Methods (Splitter)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c">#  /   |   \</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># 1    5   10   SelectKBest (Estimator)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># |    |    |</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># SVM SVM SVM   Classifiers (Estimator)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">anovas_svm</span> <span class="o">=</span> <span class="n">Methods</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">Pipe</span><span class="p">(</span><span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">),</span> <span class="n">SVM</span><span class="p">())</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">anovas_svm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="go">[{&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  0.,  0.,  1.,  1.])}, {&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  1.,  1.])}, {&#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.,  1.])}]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">anovas_svm</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
+<p>An example is shown in this section to combine <tt class="docutils literal"><span class="pre">Methods</span></tt> and <tt class="docutils literal"><span class="pre">Pipe</span></tt>. When you need some common preprocessing, e.g. feature selection, for all classifiers, you can concatenate a preprocessing with the combination of pipe and methods, in order to save your computing resource. An example that concatenating <tt class="docutils literal"><span class="pre">SelectKBest</span></tt> and two svm (<tt class="docutils literal"><span class="pre">SVC(C=1)</span></tt> and <tt class="docutils literal"><span class="pre">SVC(C=2)</span></tt>) is shown below:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="images/pipe_and_method_combination.png"><img alt="save your computing resource using pipe" src="images/pipe_and_method_combination.png" style="width: 412.0px; height: 462.0px;" /></a>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pipe_methods</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="n">SelectKBest</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">Methods</span><span class="p">(</span><span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">10</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pipe_methods</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="go">[{&#39;y/true&#39;: array([1, 0, 0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/pred&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 0])}, {&#39;y/true&#39;: array([1, 0, 0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/pred&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 0])}]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pipe_methods</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: SelectKBest(k=1)/LinearSVC, &#39;y/true&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], &#39;y/pred&#39;: [ 1.  0.  1.  1.  0.  0.  1.  0.  0.  0.  1.  1.]},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest(k=5)/LinearSVC, &#39;y/true&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], &#39;y/pred&#39;: [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  1.  1.]},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest(k=10)/LinearSVC, &#39;y/true&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], &#39;y/pred&#39;: [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  0.  1.]}])</span>
+<span class="go">[{&#39;key&#39;: SelectKBest/LinearSVC(C=1), &#39;y/true&#39;: [1 0 0 1 1 0 1 0 1 0], &#39;y/pred&#39;: [1 0 0 1 0 0 1 0 1 0]},</span>
+<span class="go"> {&#39;key&#39;: SelectKBest/LinearSVC(C=10), &#39;y/true&#39;: [1 0 0 1 1 0 1 0 1 0], &#39;y/pred&#39;: [1 0 0 1 0 0 1 0 1 0]}])</span>
 </pre></div>
 </div>
-<p>Therefore, two basic units have been presented in this section. You can start to construct your own epac for many machine learning processes.
-In the next section, we will introduce reducers, for instance, Cross-validation.</p>
+<p>Therefore, two basic units have been presented in this section. You can start to construct your own EPAC tree for many machine learning processes.
+In the next section, we will introduce some predefined nodes in EPAC, for instance, Cross-Validation.</p>
 </div>
 </div>
 <div class="section" id="cross-validation">
 <h1>Cross-validation<a class="headerlink" href="#cross-validation" title="Permalink to this headline">¶</a></h1>
-<p>In this section, we will introduce the cross-validation as codes below.</p>
+<p>In this section, we will introduce the cross-validation as below.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Cross-validation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># ----------------</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># CV of LDA</span>
@@ -188,13 +217,14 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
 <span class="gp">&gt;&gt;&gt; </span><span class="c">#    /   \</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">#  LDA  SVM    Classifier (Estimator)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">CV</span><span class="p">,</span> <span class="n">Methods</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.lda</span> <span class="kn">import</span> <span class="n">LDA</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">Methods</span><span class="p">(</span><span class="n">LDA</span><span class="p">(),</span> <span class="n">SVM</span><span class="p">()))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="go">[[{&#39;y/test/pred&#39;: array([ 0.,  0.,  1.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.,  0.])}, {&#39;y/test/pred&#39;: array([ 0.,  0.,  1.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.,  0.])}], [{&#39;y/test/pred&#39;: array([ 1.,  1.,  1.]), &#39;y/train/pred&#39;: array([ 0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.]), &#39;y/test/true&#39;: array([ 1.,  0.,  1.])}, {&#39;y/test/pred&#39;: array([ 0.,  1.,  1.]), &#39;y/train/pred&#39;: array([ 0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.]), &#39;y/test/true&#39;: array([ 1.,  0.,  1.])}], [{&#39;y/test/pred&#39;: array([ 0.,  0.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/test/true&#39;: array([ 1.,  0.])}, {&#39;y/test/pred&#39;: array([ 0.,  0.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/test/true&#39;: array([ 1.,  0.])}], [{&#39;y/test/pred&#39;: array([ 0.,  1.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.])}, {&#39;y/test/pred&#39;: array([ 0.,  0.]), &#39;y/train/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  0.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.])}], [{&#39;y/test/pred&#39;: array([ 0.,  1.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.])}, {&#39;y/test/pred&#39;: array([ 1.,  1.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.])}]]</span>
+<span class="go">[[{&#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}], [{&#39;y/test/pred&#39;: array([0, 1]), &#39;y/train/pred&#39;: array([1, 0, 1, 0, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([0, 1])}, {&#39;y/test/pred&#39;: array([0, 1]), &#39;y/train/pred&#39;: array([1, 0, 1, 0, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([0, 1])}], [{&#39;y/test/pred&#39;: array([0, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;y/test/pred&#39;: array([0, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}], [{&#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}], [{&#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: LDA, &#39;y/test/score_precision&#39;: [ 0.66666667  0.66666667], &#39;y/test/score_recall&#39;: [ 0.66666667  0.66666667], &#39;y/test/score_accuracy&#39;: 0.666666666667, &#39;y/test/score_f1&#39;: [ 0.66666667  0.66666667], &#39;y/test/score_recall_mean&#39;: 0.666666666667},</span>
-<span class="go"> {&#39;key&#39;: LinearSVC, &#39;y/test/score_precision&#39;: [ 0.42857143  0.4       ], &#39;y/test/score_recall&#39;: [ 0.5         0.33333333], &#39;y/test/score_accuracy&#39;: 0.416666666667, &#39;y/test/score_f1&#39;: [ 0.46153846  0.36363636], &#39;y/test/score_recall_mean&#39;: 0.416666666667}])</span>
+<span class="go">[{&#39;key&#39;: LDA, &#39;y/test/score_precision&#39;: [ 0.83333333  1.        ], &#39;y/test/score_recall&#39;: [ 1.   0.8], &#39;y/test/score_accuracy&#39;: 0.9, &#39;y/test/score_f1&#39;: [ 0.90909091  0.88888889], &#39;y/test/score_recall_mean&#39;: 0.9},</span>
+<span class="go"> {&#39;key&#39;: LinearSVC, &#39;y/test/score_precision&#39;: [ 0.83333333  1.        ], &#39;y/test/score_recall&#39;: [ 1.   0.8], &#39;y/test/score_accuracy&#39;: 0.9, &#39;y/test/score_f1&#39;: [ 0.90909091  0.88888889], &#39;y/test/score_recall_mean&#39;: 0.9}])</span>
 </pre></div>
 </div>
 <p><tt class="docutils literal"><span class="pre">cv.run(X=X,</span> <span class="pre">y=y)</span></tt> run the top-down process so that we get all the results, and <tt class="docutils literal"><span class="pre">cv.reduce()</span></tt> compute different scores, accuracies, etc. For instance, <tt class="docutils literal"><span class="pre">y/test/score_precision</span></tt> denotes the precision on the test part for the prediction on <em>y</em>.</p>
@@ -212,10 +242,10 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># CV + Grid search of a simple classifier</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">wf</span> <span class="o">=</span> <span class="n">CVBestSearchRefit</span><span class="p">(</span><span class="n">Methods</span><span class="p">(</span><span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">SVM</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">10</span><span class="p">)))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">wf</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="go">{&#39;best_params&#39;: [{&#39;C&#39;: 1, &#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.,  1.])}</span>
+<span class="go">{&#39;best_params&#39;: [{&#39;C&#39;: 1, &#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/true&#39;: array([1, 0, 0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0, 1, 0])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">wf</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: CVBestSearchRefit, &#39;best_params&#39;: [{&#39;C&#39;: 1, &#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/true&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], &#39;y/pred&#39;: [ 0.  0.  0.  1.  0.  0.  1.  0.  1.  0.  0.  1.]}])</span>
+<span class="go">[{&#39;key&#39;: CVBestSearchRefit, &#39;best_params&#39;: [{&#39;C&#39;: 1, &#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/true&#39;: [1 0 0 1 1 0 1 0 1 0], &#39;y/pred&#39;: [1 0 0 1 1 0 1 0 1 0]}])</span>
 </pre></div>
 </div>
 <p>This example shows how to select model from several classifiers. <tt class="docutils literal"><span class="pre">wf.run(X=X,</span> <span class="pre">y=y)</span></tt> and <tt class="docutils literal"><span class="pre">wf.reduce()</span></tt> return the same results which are the best parameters and its prediction on <tt class="docutils literal"><span class="pre">y</span></tt> vector. A more complicated example, which select model from <tt class="docutils literal"><span class="pre">SelectKBest</span> <span class="pre">-&gt;</span> <span class="pre">LDA()</span></tt> and <tt class="docutils literal"><span class="pre">SelectKBest</span> <span class="pre">-&gt;</span> <span class="pre">SVM()</span></tt>,  is shown as below.</p>
@@ -236,23 +266,23 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
 <span class="go">{&#39;best_params&#39;: [{&#39;k&#39;: 1, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/true&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/pred&#39;: array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  0.,  0.,  1.,  1.])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">best_cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: CVBestSearchRefit, &#39;best_params&#39;: [{&#39;k&#39;: 1, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/true&#39;: [ 1.  0.  0.  1.  0.  0.  1.  0.  1.  1.  0.  1.], &#39;y/pred&#39;: [ 1.  0.  1.  1.  0.  0.  1.  0.  0.  0.  1.  1.]}])</span>
+<span class="go">[{&#39;key&#39;: CVBestSearchRefit, &#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/true&#39;: [1 0 0 1 1 0 1 0 1 0], &#39;y/pred&#39;: [1 0 0 1 1 0 1 0 1 0]}])</span>
 </pre></div>
 </div>
-<p>We can use epac like playing &#8220;lego&#8221;. <tt class="docutils literal"><span class="pre">best_cv</span></tt> can be put in cross-validation as shown below.</p>
+<p>We can use EPAC like playing &#8220;lego&#8221;. <tt class="docutils literal"><span class="pre">best_cv</span></tt> can be put in cross-validation as shown below.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Put it in an outer CV</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">best_cv</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="go">[{&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([ 0.,  0.,  1.]), &#39;y/train/pred&#39;: array([ 1.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.,  0.])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([ 0.,  0.,  0.]), &#39;y/train/pred&#39;: array([ 0.,  1.,  0.,  0.,  1.,  0.,  1.,  0.,  0.]), &#39;y/test/true&#39;: array([ 1.,  0.,  1.])}, {&#39;best_params&#39;: [{&#39;k&#39;: 1, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/test/pred&#39;: array([ 0.,  1.]), &#39;y/train/pred&#39;: array([ 0.,  1.,  1.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;y/test/true&#39;: array([ 1.,  0.])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([ 1.,  0.]), &#39;y/train/pred&#39;: array([ 0.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  0.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([ 1.,  0.]), &#39;y/train/pred&#39;: array([ 0.,  0.,  0.,  1.,  0.,  0.,  1.,  1.,  1.,  1.]), &#39;y/test/true&#39;: array([ 0.,  1.])}]</span>
+<span class="go">[{&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([0, 1, 1, 0, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LinearSVC&#39;}], &#39;y/test/pred&#39;: array([0, 1]), &#39;y/train/pred&#39;: array([1, 0, 1, 0, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([0, 1])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([0, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}, {&#39;best_params&#39;: [{&#39;k&#39;: 5, &#39;name&#39;: &#39;SelectKBest&#39;}, {&#39;name&#39;: &#39;LDA&#39;}], &#39;y/test/pred&#39;: array([1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 0, 1, 0]), &#39;y/test/true&#39;: array([1, 0])}]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: CVBestSearchRefit, &#39;y/test/score_precision&#39;: [ 0.25  0.  ], &#39;y/test/score_recall&#39;: [ 0.33333333  0.        ], &#39;y/test/score_accuracy&#39;: 0.166666666667, &#39;y/test/score_f1&#39;: [ 0.28571429  0.        ], &#39;y/test/score_recall_mean&#39;: 0.166666666667}])</span>
+<span class="go">[{&#39;key&#39;: CVBestSearchRefit, &#39;y/test/score_precision&#39;: [ 0.83333333  1.        ], &#39;y/test/score_recall&#39;: [ 1.   0.8], &#39;y/test/score_accuracy&#39;: 0.9, &#39;y/test/score_f1&#39;: [ 0.90909091  0.88888889], &#39;y/test/score_recall_mean&#39;: 0.9}])</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="running-in-parallel">
 <h1>Running in Parallel<a class="headerlink" href="#running-in-parallel" title="Permalink to this headline">¶</a></h1>
-<p>In order to take advantage of multi-cores machine, epac can be run in parallel. We can first create a epac tree as below</p>
+<p>In order to take advantage of multi-cores machine, EPAC can be run in parallel. We can first create a EPAC tree as below</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Perms + Cross-validation of SVM(linear) and SVM(rbf)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># -------------------------------------</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">#           Perms        Perm (Splitter)</span>
@@ -287,9 +317,9 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">SomaWorkflowEngine</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sfw_engine</span> <span class="o">=</span> <span class="n">SomaWorkflowEngine</span><span class="p">(</span>
 <span class="gp">&gt;&gt;&gt; </span>                    <span class="n">tree_root</span><span class="o">=</span><span class="n">perms_cv_svm</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">num_processes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">resource_id</span><span class="o">=</span><span class="s">&quot;jl237561@gabriel&quot;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">login</span><span class="o">=</span><span class="s">&quot;jl237561&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">num_processes</span><span class="o">=</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="c">#, resource_id=&quot;jl237561@gabriel&quot;,</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="c"># login=&quot;jl237561&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span>                    <span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perms_cv_svm</span> <span class="o">=</span> <span class="n">sfw_engine</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perms_cv_svm</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
@@ -298,7 +328,7 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
 </div>
 <div class="section" id="design-your-own-plug-in">
 <h1>Design your own plug-in<a class="headerlink" href="#design-your-own-plug-in" title="Permalink to this headline">¶</a></h1>
-<p>Design your own machine learning algorithm as a plug-in in epac tree.</p>
+<p>Design your own machine learning algorithm as a plug-in in EPAC tree.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">precision_recall_fscore_support</span>
 <span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.reducers</span> <span class="kn">import</span> <span class="n">Reducer</span>
@@ -339,7 +369,7 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
 <span class="c">#          /      \</span>
 <span class="c"># MySVC(C=1.0)  MySVC(C=2.0)</span>
 <span class="c"># top-down process to call transform</span>
-<span class="n">two_svc</span><span class="o">.</span><span class="n">top_down</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">two_svc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="c"># buttom-up process to compute scores</span>
 <span class="n">two_svc</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 </pre></div>
@@ -355,6 +385,8 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Building Dataset</a></li>
+<li><a class="reference internal" href="#a-simple-svm-example">A simple SVM example</a></li>
+<li><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
 <li><a class="reference internal" href="#basic-units-pipe-and-methods">Basic units: Pipe and Methods</a><ul>
 <li><a class="reference internal" href="#pipe">Pipe</a></li>
 <li><a class="reference internal" href="#methods">Methods</a></li>
@@ -371,8 +403,8 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
   <p class="topless"><a href="installation.html"
                         title="previous chapter">Introduction</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="api.html"
-                        title="next chapter">API Documentation</a></p>
+  <p class="topless"><a href="glossary.html"
+                        title="next chapter">Glossary</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="sources/tutorials.txt"
@@ -405,7 +437,7 @@ In the next section, we will introduce reducers, for instance, Cross-validation.
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="API Documentation"
+          <a href="glossary.html" title="Glossary"
              >next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Introduction"

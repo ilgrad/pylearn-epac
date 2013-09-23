@@ -64,6 +64,11 @@
 <dt id="epac.map_reduce.split_input.SplitNodesInput">
 <em class="property">class </em><tt class="descclassname">epac.map_reduce.split_input.</tt><tt class="descname">SplitNodesInput</tt><big>(</big><em>tree_root_node</em>, <em>num_processes=-1</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/split_input.html#SplitNodesInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.split_input.SplitNodesInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split NodesInput into a list of epac.map_reduce.NodesInput</p>
+<dl class="docutils">
+<dt>num_processes: integer</dt>
+<dd>Building a list of num_processes node_inputs.
+if num_processes is equal to -1, num_processes is set to #CPU</dd>
+</dl>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.tests.wfexamples2test</span> <span class="kn">import</span> <span class="n">WFExample2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.map_reduce.inputs</span> <span class="kn">import</span> <span class="n">NodesInput</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac.map_reduce.split_input</span> <span class="kn">import</span> <span class="n">SplitNodesInput</span>
@@ -78,10 +83,7 @@
 <dl class="method">
 <dt id="epac.map_reduce.split_input.SplitNodesInput.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>tree_root_node</em>, <em>num_processes=-1</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/split_input.html#SplitNodesInput.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.split_input.SplitNodesInput.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>num_processes: integer
-Building a list of num_processes node_inputs.
-if num_processes is equal to -1, num_processes is set to #CPU</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="epac.map_reduce.split_input.SplitNodesInput.split">
