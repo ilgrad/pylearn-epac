@@ -6,6 +6,7 @@ Created on Fri Sep 20 11:45:56 2013
 """
 
 import imp
+import sys
 from distutils.version import LooseVersion as V
 
 modules = ['dill', 'numpy', 'soma_workflow', 'sklearn']
@@ -14,8 +15,8 @@ for module in modules:
     try:
         imp.find_module(module)
     except ImportError:
-        print 'Warning, cannot import %s, ' \
-        'please check that you installed it properly' % module
+        sys.stderr.write('Error, cannot import %s, ' \
+        'please check that you installed it properly' % module)
     else:
         if module == 'dill':
             import dill
