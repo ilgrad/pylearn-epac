@@ -10,6 +10,7 @@ import csv
 import dill as pickle
 from epac.configuration import conf
 from epac.workflow.base import key_push, key_pop
+from epac.map_reduce.results import ResultSet
 
 
 def get_next_number(str_value):
@@ -175,44 +176,101 @@ def which(program):
     return None
 
 
-def export_csv(result_set, filename):
+def _loop_for(results, depth):
+    temp_list = []
+    if depth == 0:
+        temp_list.append(results)
+        return temp_list
+    elif depth == 1:
+        return results
+    else:
+        for result in results:
+            for dic in result:
+                temp_list.append(dic)
+        return _loop_for(temp_list, depth - 1)
+
+
+def export_csv(tree, results, filename):
     '''Export the results to a CSV file
+    
+    Export the results of a top-down(run) or
+    bottom-up(reduce) operation to a CSV file
 
     Parameters
     ----------
-    result_set: ResultSet to export
+    tree: Workflow in study
+
+    results: list or ResultSet to export
 
     filename: Relative or absolute path to the CSV file
         If the file doesn't exist, create it
 
     Example
     -------
-    >>> from epac import Result, ResultSet
+    >>> from sklearn.svm import LinearSVC as SVM
+    >>> from sklearn import datasets
+    >>> from epac import Methods
     >>> from epac.utils import export_csv
     >>> import tempfile
-    >>> _, filename = tempfile.mkstemp(suffix=".csv")
-    >>> r1 = Result('SVC(C=1)', **dict(a=1, b=2))
-    >>> r2 = Result('SVC(C=2)', **dict(a=1, b=2))
-    >>> set = ResultSet(r1, r2)
-    >>> export_csv(set, filename)
-    >>> with open(filename, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    >>> _, filename1 = tempfile.mkstemp(suffix=".csv")
+    >>> X, y = datasets.make_classification(n_samples=12, n_features=10, n_informative=2, random_state=1)
+    >>> multi = Methods(SVM(C=1), SVM(C=10))
+    >>> result_run = multi.run(X=X, y=y)
+    >>> export_csv(multi, result_run, filename1)
+    >>> with open(filename1, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
     ...     print csvfile.read()
-    a,b,key
-    1,2,SVC(C=1)
-    1,2,SVC(C=2)
+    key;y/true;y/pred
+    LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
+    LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+    <BLANKLINE>
+    
+    >>> _, filename2 = tempfile.mkstemp(suffix=".csv")
+    >>> result_reduce = multi.reduce()
+    >>> export_csv(multi, result_reduce, filename2)
+    >>> with open(filename2, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    ...     print csvfile.read()
+    key;y/pred;y/true
+    LinearSVC(C=1);[0 0 0 1 0 0 1 0 1 0 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+    LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
     <BLANKLINE>
     '''
-    with open(filename, 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        result_keys = result_set.values()[0].keys()
-        result_keys.sort()
-        spamwriter.writerow(result_keys)
-        for result in result_set.values():
-            temp_list = []
-            for key in result_keys:
-                temp_list.append(result[key])
-            spamwriter.writerow(temp_list)
+
+    if isinstance(results, ResultSet):
+        with open(filename, 'wb') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=';',
+                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            result_keys = results.values()[0].keys()
+            result_keys.sort()
+            spamwriter.writerow(result_keys)
+            for result in results.values():
+                temp_list = []
+                for key in result_keys:
+                    temp_list.append(result[key])
+                spamwriter.writerow(temp_list)
+    else:
+        with open(filename, 'wb') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=';',
+                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            keys = []
+            for leaf in tree.walk_leaves():
+                key = leaf.get_key().replace('CV/', '').replace('Methods/', '')
+                keys.append(key)
+            result_keys = ["key"]
+            list_res = results
+            depth = 0
+            while not (hasattr(list_res, 'keys')):
+                depth += 1
+                list_res = list_res[0]
+            result_keys += list_res.keys()
+            spamwriter.writerow(result_keys)
+            list_res = _loop_for(results, depth)
+            count = 0
+            for result in list_res:
+                temp_list = [keys[count]]
+                for key in result_keys[1:]:
+                    temp_list.append(result[key])
+                count += 1
+                spamwriter.writerow(temp_list)
 
 
 ## ============================================== ##
