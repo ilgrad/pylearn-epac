@@ -65,7 +65,7 @@ ResultSet(
 
 
 
-* Run epac tree in parallel on local multi-core machine or even on HPC using [soma-workflow](https://pypi.python.org/pypi/soma-workflow "soma-workflow").
+* Run epac tree in parallel on local multi-core machine or even on DRM system using [soma-workflow](https://pypi.python.org/pypi/soma-workflow "soma-workflow").
 
 ```python
 

@@ -39,6 +39,14 @@ Tutorials
 
    tutorials.rst
 
+API
+====
+
+API_
+   
+.. _API: ./epydoc_api/index.html
+
+
 Reference Material
 ==================
 

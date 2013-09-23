@@ -3,6 +3,8 @@
 # This script has only been test on ubuntu
 
 make html
+epydoc -v --html epac -o ./_build/html/epydoc_api
+
 
 outdir="$(mktemp -d)"
 curdir="$(pwd)"
