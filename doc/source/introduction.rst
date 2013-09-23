@@ -5,7 +5,7 @@ Building EPAC tree
 
 Easily building machine learning workflow that can be executed in sequential order or in parallel.
 
-To quick start with eapc, here is a simple example to do an embarrassing machine learning computing:
+To quick start with epac, here is a simple example to do an embarrassing machine learning computing:
 permutation, cross-validation, and LDA classification. We will introduce more details and examples in tutorials_.
 
 
@@ -44,7 +44,7 @@ permutation, cross-validation, and LDA classification. We will introduce more de
 Run in parallel
 ===============
 
-Run epac tree in parallel on local multi-core machine or on Distributed Resource Management (DRM) system which implements Distributed Resource Management Application API (DRMAA) by soma-workflow.
+Run EPAC tree in parallel on local multi-core machine or on Distributed Resource Management (DRM) system which implements Distributed Resource Management Application API (DRMAA) by soma-workflow.
 
 ::
 

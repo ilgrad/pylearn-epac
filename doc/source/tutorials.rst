@@ -4,7 +4,7 @@
 Building Dataset
 ================
 
-In this section, we start with small examples to understand how to use EPAC libary. The source code of this tutorial is avaible in **./pylearn-epac/examples/small_toy.py**
+In this section, we start with small examples to understand how to use EPAC library. The source code of this tutorial is avaible in **./pylearn-epac/examples/small_toy.py**
 
 In order to build the EPAC tree, we first need a dataset. Let's build *X* matrix (samples) and *y* vector (labels) as below.
 
@@ -108,7 +108,7 @@ Pipe
  
 Now, we first introduce *Pipe*, which executes a sequential of BaseNode. These nodes should implement 
 
-either as non-leaf node (non-termianl node),
+either as non-leaf node (non-terminal node),
 
 - fit and transform, e.g. *SelectKBest(k=2)*,
 
