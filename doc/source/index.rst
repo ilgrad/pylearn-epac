@@ -44,7 +44,6 @@ Reference Material
 
 .. toctree::
 
-   api.rst
    glossary.rst
 
 Indices and tables

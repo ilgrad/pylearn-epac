@@ -67,5 +67,5 @@ def func_no_memm_local():
     cv_svm_local.run(**Xy)
     print cv_svm_local.reduce()
 
-func_no_memm_local()
-func_memm_local()
+# func_no_memm_local()
+# func_memm_local()
