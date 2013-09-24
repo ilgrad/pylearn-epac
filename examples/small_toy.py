@@ -31,6 +31,13 @@ pipe.run(X=X, y=y)
 # The return value of the run is simply agregation of the outputs (dict) of
 # the leaf nodes
 
+for leaf in pipe.walk_leaves():
+    print leaf.load_results()
+
+# The result of each branch of the tree is stored in the corresponding leaf,
+# An iteration on all the leaves of a tree can return all the results
+# of the previous top-down operation on the tree
+
 ## Parallelization
 ## ===============
 
