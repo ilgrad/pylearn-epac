@@ -139,4 +139,5 @@ http://neurospin.github.io/pylearn-epac/tutorials.html
 **Documentation**
 http://neurospin.github.io/pylearn-epac
 
-
+**Presentation**
+https://docs.google.com/presentation/d/1ncwf5HWAQOA2vRoIW2Tx24O3Qckn0-NTwnYEzz0LnSQ/pub?start=false&loop=false&delayms=3000
