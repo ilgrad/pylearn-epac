@@ -15,7 +15,7 @@ from epac.workflow.splitters import ColumnSplitter, CRSplitter
 from epac.workflow.base import BaseNode, key_pop, key_split
 from epac.configuration import conf, debug
 from epac.map_reduce.results import ResultSet, Result
-from epac.utils import train_test_merge, train_test_split, dict_diff, range_log2
+from epac.utils import train_test_merge, train_test_split, dict_diff, range_log2, export_csv
 from epac.stores import StoreFs, StoreMem
 from epac.map_reduce.mappers import MapperSubtrees
 from epac.map_reduce.engine import SomaWorkflowEngine, LocalEngine
@@ -36,7 +36,7 @@ __all__ = ['BaseNode',
            'CVBestSearchRefitParallel',
            'ColumnSlicer',
            'ColumnSplitter', 'CRSplitter',
-           'Estimator'
+           'Estimator',
            'ClassificationReport', 'PvalPerms',
            'Result',
            'ResultSet',

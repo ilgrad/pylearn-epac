@@ -176,20 +176,6 @@ def which(program):
     return None
 
 
-def _loop_for(results, depth):
-    temp_list = []
-    if depth == 0:
-        temp_list.append(results)
-        return temp_list
-    elif depth == 1:
-        return results
-    else:
-        for result in results:
-            for dic in result:
-                temp_list.append(dic)
-        return _loop_for(temp_list, depth - 1)
-
-
 def export_csv(tree, results, filename):
     '''Export the results to a CSV file
 
@@ -234,13 +220,15 @@ def export_csv(tree, results, filename):
     LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
     <BLANKLINE>
     '''
-    if isinstance(results, ResultSet):
-        with open(filename, 'wb') as csvfile:
-            spamwriter = csv.writer(csvfile, delimiter=';',
-                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            keys = ["key"]
+
+    with open(filename, 'wb') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=';',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        if isinstance(results, ResultSet):
             result_keys = results.values()[0].keys()
-            if "key" in keys:
+            keys = []
+            if "key" in result_keys:
+                keys.append("key")
                 result_keys.remove("key")
             keys.extend(result_keys)
             spamwriter.writerow(keys)
@@ -249,29 +237,22 @@ def export_csv(tree, results, filename):
                 for key in keys:
                     temp_list.append(result[key])
                 spamwriter.writerow(temp_list)
-    else:
-        with open(filename, 'wb') as csvfile:
-            spamwriter = csv.writer(csvfile, delimiter=';',
-                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        else:
+            result_keys = tree.get_leftmost_leaf().load_results().values()[0].keys()
             keys = []
+            if "key" in result_keys:
+                keys.append("key")
+                result_keys.remove("key")
+            keys.extend(result_keys)
+            spamwriter.writerow(keys)
             for leaf in tree.walk_leaves():
-                key = leaf.get_key().replace('CV/', '').replace('Methods/', '').replace('Perms/','')
-                keys.append(key)
-            result_keys = ["key"]
-            list_res = results
-            depth = 0
-            while not (hasattr(list_res, 'keys')):
-                depth += 1
-                list_res = list_res[0]
-            result_keys.extend(list_res.keys())
-            spamwriter.writerow(result_keys)
-            list_res = _loop_for(results, depth)
-            count = 0
-            for result in list_res:
-                temp_list = [keys[count]]
-                for key in result_keys[1:]:
-                    temp_list.append(result[key])
-                count += 1
+                key = leaf.get_key().replace('CV/', '').replace('Methods/', '')
+                key = key.replace('Perms/', '')
+                result = leaf.load_results()
+                result.values()[0]['key'] = key
+                temp_list = []
+                for key in keys:
+                    temp_list.append(result.values()[0][key])
                 spamwriter.writerow(temp_list)
 
 
