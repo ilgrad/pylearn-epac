@@ -25,8 +25,8 @@ pipe.run(X=X, y=y)
 
 # The downstream data-flow is a keyword arguments (dict) containing X and y.
 # It will pass through each processing node, SelectKBest(k=2) and SVM.
-# Each node call the "transform" method, that take a dictionnary as input
-# and produces a dictionnary as output. The output is passed  to the next node. 
+# Each node calls the "transform" method, that take a dictionary as input
+# and produces a dictionary as output. The output is passed to the next node. 
 
 # The return value of the run is simply agregation of the outputs (dict) of
 # the leaf nodes
@@ -34,7 +34,7 @@ pipe.run(X=X, y=y)
 for leaf in pipe.walk_leaves():
     print leaf.load_results()
 
-# The result of each branch of the tree is stored in the corresponding leaf,
+# The result of each branch of the tree is stored in the corresponding leaf.
 # An iteration on all the leaves of a tree can return all the results
 # of the previous top-down operation on the tree
 
@@ -52,7 +52,7 @@ multi.run(X=X, y=y)
 print multi.reduce()
 
 # Reduce format outputs into "ResultSet" which is a dict-like structure
-# which contains the "keys" of the methods that as beeen used.
+# which contains the "keys" of the methods that have beeen used.
 
 
 #                         Methods                  Methods (Splitter)
