@@ -212,9 +212,8 @@ class BaseNode(object):
         >>> from sklearn.svm import SVC
         >>> from sklearn.lda import LDA
         >>> from sklearn.feature_selection import SelectKBest
-        >>> y = [1, 1, 2, 2]
         >>> wf = CV(Methods(*[Pipe(SelectKBest(k=k), SVC())
-        ...     for k in [1, 5]]), n_folds=2, y=y)
+        ...     for k in [1, 5]]), n_folds=2)
 
         # List all leaves keys
         >>> for n in wf.walk_leaves():
