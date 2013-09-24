@@ -176,6 +176,20 @@ def which(program):
     return None
 
 
+def try_fun_num_trials(func, ntrials=3, **kwarg):
+    itrial = 0
+    while itrial < ntrials:
+        try:
+            res = func(**kwarg)
+            return res
+        except:
+            import time
+            time.sleep(1)
+        itrial += 1
+    return func(**kwarg)
+
+
+
 def export_csv(tree, results, filename):
     '''Export the results to a CSV file
 

@@ -184,12 +184,20 @@ class StoreFs(Store):
 #        pickle.dump(obj, output)
 #        output.close()
 
+    
+        
+
     def load_pickle(self, file_path):
 #        u'/tmp/store/KFold-0/SVC/__node__NodeEstimator.pkl'
 #        inputf = open(file_path, 'rb')
 #        obj = pickle.load(inputf)
 #        inputf.close()
-        obj = joblib.load(file_path)
+        from epac.utils import try_fun_num_trials
+        kwarg = {"filename": file_path}
+        obj = try_fun_num_trials(joblib.load,
+                                 ntrials=3,
+                                 **kwarg)
+        # obj = joblib.load(filename=file_path)
         return obj
 
     def save_json(self, file_path,  obj):
