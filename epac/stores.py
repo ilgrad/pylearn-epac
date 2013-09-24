@@ -195,7 +195,7 @@ class StoreFs(Store):
         from epac.utils import try_fun_num_trials
         kwarg = {"filename": file_path}
         obj = try_fun_num_trials(joblib.load,
-                                 ntrials=3,
+                                 ntrials=10,
                                  **kwarg)
         # obj = joblib.load(filename=file_path)
         return obj

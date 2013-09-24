@@ -184,7 +184,7 @@ def try_fun_num_trials(func, ntrials=3, **kwarg):
             return res
         except:
             import time
-            time.sleep(1)
+            time.sleep(3)
         itrial += 1
     return func(**kwarg)
 
