@@ -119,7 +119,11 @@ class CV(BaseNodeSplitter):
         self.random_state = random_state
         self.cv_type = cv_type
         self.reducer = reducer
-        self.slicer = RowSlicer(signature_name="CV", nb=0, apply_on=None)
+        # self.slicer = RowSlicer(signature_name="CV", nb=0, apply_on=None)
+        self.slicer = CRSlicer(signature_name="CV",
+                               nb=0,
+                               apply_on=None,
+                               col_or_row=False)
         self.children = VirtualList(size=n_folds, parent=self)
         self.slicer.parent = self
         subtree = NodeFactory.build(node)
@@ -531,7 +535,6 @@ class CRSplitter(BaseNodeSplitter):
             indices = indices[0]
             slices[key] = indices
             i += 1
-
         self.slicer.set_sclices(slices)
         return self.slicer
 
