@@ -124,7 +124,8 @@ class CV(BaseNodeSplitter):
                                nb=0,
                                apply_on=None,
                                col_or_row=False)
-        self.children = VirtualList(size=n_folds, parent=self)
+        self.children = VirtualList(size=n_folds,
+                                    parent=self)
         self.slicer.parent = self
         subtree = NodeFactory.build(node)
         # subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)
@@ -409,26 +410,24 @@ class ColumnSlicer(Slicer):
 
 
 class CRSlicer(Slicer):
-    """Collum-sampling
+    """column or row sampling
+    Parameters
+    ----------
+    signature_name: string
+
+    nb: integer
+        nb is used for the key value that distinguishs thier sibling node
+
+    apply_on: string or list of strings (or None)
+        The name(s) of the downstream blocs to be re-slicing. If
+        None, all downstream blocs are sampling (slicing).
+
+    col_or_row: boolean value
+        If col_or_row is True means that column splitter,
+        If col_or_row is False means that row splitter
     """
 
     def __init__(self, signature_name, nb, apply_on, col_or_row=True):
-        """
-        Parameters
-        ----------
-        signature_name: string
-
-        nb: integer
-            nb is used for the key value that distinguishs thier sibling node
-
-        apply_on: string or list of strings (or None)
-            The name(s) of the downstream blocs to be re-slicing. If
-            None, all downstream blocs are sampling (slicing).
-
-        col_or_row: boolean value
-            If col_or_row is True means that column splitter,
-            If col_or_row is False means that row splitter
-        """
         super(CRSlicer, self).__init__(signature_name, nb)
         self.slices = None
         self.col_or_row = col_or_row
