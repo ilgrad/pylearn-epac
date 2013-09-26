@@ -54,6 +54,11 @@ class conf:
                 y_int = y.astype(int)
                 if not np.array_equal(y_int, y):
                     cls.ML_CLASSIFICATION_MODE = False
+                if len(y_int.shape) > 1:
+                    if y_int.shape[0] > y_int.shape[1]: 
+                        y_int = y_int[:, 0]
+                    else:
+                        y_int = y_int[0, :]
                 if np.min(np.bincount(y_int)) < 2:
                     cls.ML_CLASSIFICATION_MODE = False
                 cls.ML_CLASSIFICATION_MODE = True
