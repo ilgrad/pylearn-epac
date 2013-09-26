@@ -50,18 +50,6 @@ def convert2memmap(np_mat):
     mem_mat[:] = np_mat[:]
     return mem_mat
 
-#wf = example().get_workflow()
-#                local_engine_wf = example().get_workflow()
-#                sfw_engine_wf = example().get_workflow()
-#                wf.run(X=self.X, y=self.y)
-#                local_engine = LocalEngine(tree_root=local_engine_wf,
-#                                           num_processes=self.n_cores)
-#                local_engine_wf = local_engine.run(X=self.X, y=self.y)
-#                sfw_engine = SomaWorkflowEngine(
-#                        tree_root=sfw_engine_wf,
-#                        num_processes=self.n_cores)
-#                sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
-
 
 @profile
 def func_memm_local(n_samples, n_features):
@@ -101,6 +89,44 @@ def func_memm_local(n_samples, n_features):
     print " -> memm_local pt5 : finished with", n_features, "features"
 
 
+@profile
+def func_no_memm_local(n_samples, n_features):
+    ''' Test the capacity of the computer
+
+    Parameters
+    ----------
+    n_samples: number of rows of the X matrix
+
+    n_features: number of columns of th X matrix
+    '''
+    print " ------- no_memm_local pt1 : beginning with", n_features, "features -------"
+    ## 1) Build a np.memmap dataset for big matrix
+    ## ============================================================
+    X, y = datasets.make_classification(n_samples=n_samples,
+                                        n_features=n_features,
+                                        n_informative=2,
+                                        random_state=1)
+    print "X matrix file size =", sys.getsizeof(X), "bytes"
+
+    Xy = dict(X=X, y=y)
+    ## 2) Build two workflows respectively
+    ## =======================================================
+    print " -> no_memm_local pt2 : X and y created, building workflow"
+    from sklearn.svm import SVC
+    from epac import CV, Methods
+    cv_svm_local = CV(Methods(*[SVC(kernel="linear"),
+                          SVC(kernel="rbf")]),
+                          n_folds=3)
+    print " -> no_memm_local pt3 : Workflow built, running"
+    cv_svm_local.run(**Xy)
+#    from epac import LocalEngine
+#    local_engine = LocalEngine(cv_svm_local, num_processes=1)
+#    cv_svm = local_engine.run(**Xy)
+    print " -> no_memm_local pt4 : Finished running, reducing"
+    cv_svm_local.reduce()
+    print " -> no_memm_local pt5 : finished with", n_features, "features"
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
-    func_memm_local(int(args[0]), int(args[1]))
+    func_no_memm_local(int(args[0]), int(args[1]))
