@@ -63,7 +63,7 @@ def convert2memmap(np_mat):
 #                sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
 
 
-# @profile
+@profile
 def func_memm_local(n_samples, n_features):
     ''' Test the capacity of the computer
 
