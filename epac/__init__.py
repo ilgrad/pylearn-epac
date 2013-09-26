@@ -10,8 +10,7 @@ from epac.workflow.pipeline import Pipe
 from epac.workflow.splitters import Perms, Methods, CV
 from epac.workflow.splitters import CVBestSearchRefit
 from epac.workflow.splitters import CVBestSearchRefitParallel
-from epac.workflow.splitters import ColumnSlicer
-from epac.workflow.splitters import ColumnSplitter, CRSplitter
+from epac.workflow.splitters import ColumnSplitter, RowSplitter, CRSplitter
 from epac.workflow.base import BaseNode, key_pop, key_split
 from epac.configuration import conf, debug
 from epac.map_reduce.results import ResultSet, Result
@@ -34,9 +33,7 @@ __all__ = ['BaseNode',
            'CV',
            'CVBestSearchRefit',
            'CVBestSearchRefitParallel',
-           'ColumnSlicer',
-           'ColumnSplitter', 'CRSplitter',
-           'Estimator',
+           'ColumnSplitter', 'RowSplitter', 'CRSplitter',
            'ClassificationReport', 'PvalPerms',
            'Result',
            'ResultSet',

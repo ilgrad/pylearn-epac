@@ -44,6 +44,7 @@ import warnings
 # -- Splitter                   -- #
 # -------------------------------- #
 
+
 class BaseNodeSplitter(BaseNode):
     """Splitters are are non leaf node (degree >= 1) with children.
     They split the downstream data-flow to their children.
@@ -110,6 +111,23 @@ class CV(BaseNodeSplitter):
     reducer: Reducer
         A Reducer should implement the reduce(node, key2, val) method.
         Default ClassificationReport() with default arguments.
+
+    Example
+    -------
+    >>> from sklearn import datasets
+    >>> from epac import CV, Methods
+    >>> from sklearn.lda import LDA
+    >>> from sklearn.svm import LinearSVC as SVM
+    >>> X, y = datasets.make_classification(n_samples=20,
+    ...                                     n_features=20,
+    ...                                     n_informative=2,
+    ...                                     random_state=1)
+    >>> cv = CV(Methods(LDA(), SVM()))
+    >>> res = cv.run(X=X, y=y)    
+    >>> print cv.reduce()
+    ResultSet(
+    [{'key': LDA, 'y/test/score_precision': [ 0.55555556  0.54545455], 'y/test/score_recall': [ 0.5  0.6], 'y/test/score_accuracy': 0.55, 'y/test/score_f1': [ 0.52631579  0.57142857], 'y/test/score_recall_mean': 0.55},
+     {'key': LinearSVC, 'y/test/score_precision': [ 0.53846154  0.57142857], 'y/test/score_recall': [ 0.7  0.4], 'y/test/score_accuracy': 0.55, 'y/test/score_f1': [ 0.60869565  0.47058824], 'y/test/score_recall_mean': 0.55}])
     """
 
     def __init__(self, node, n_folds=5, random_state=None,
@@ -119,7 +137,6 @@ class CV(BaseNodeSplitter):
         self.random_state = random_state
         self.cv_type = cv_type
         self.reducer = reducer
-        # self.slicer = RowSlicer(signature_name="CV", nb=0, apply_on=None)
         self.slicer = CRSlicer(signature_name="CV",
                                nb=0,
                                apply_on=None,
@@ -353,62 +370,6 @@ class Slicer(BaseNode):
         return results
 
 
-class ColumnSlicer(Slicer):
-    """Collum-sampling
-    """
-
-    def __init__(self, signature_name, nb, apply_on):
-        """
-        Parameters
-        ----------
-        signature_name: string
-
-        nb: integer
-            nb is used for the key value that distinguishs thier sibling node
-
-        apply_on: string or list of strings (or None)
-            The name(s) of the downstream blocs to be re-slicing. If
-            None, all downstream blocs are sampling (slicing).
-        """
-        super(self.__class__, self).__init__(signature_name, nb)
-        self.slices = None
-        if not apply_on:  # None is an acceptable value here
-            self.apply_on = apply_on
-        elif isinstance(apply_on, list):
-            self.apply_on = apply_on
-        elif isinstance(apply_on, str):
-            self.apply_on = [apply_on]
-        else:
-            raise ValueError("apply_on must be a string or a "\
-                "list of strings or None")
-
-    def set_sclices(self, slices):
-        """
-        """
-        # convert as a list if required
-        if isinstance(slices, dict):
-            self.slices =\
-                {k: slices[k].tolist() if isinstance(slices[k], np.ndarray)
-                else slices[k] for k in slices}
-        else:
-            self.slices = \
-                slices.tolist() if isinstance(slices, np.ndarray) else slices
-
-    def transform(self, **Xy):
-        if not self.slices:
-            raise ValueError("Slicing hasn't been initialized. "
-            "Slicers constructors such as CV or Perm should be called "
-            "with a sample. Ex.: CV(..., y=y), Perm(..., y=y)")
-        data_keys = self.apply_on if self.apply_on else Xy.keys()
-        for data_key in data_keys:  # slice input data
-            dat = Xy.pop(data_key)
-            if len(dat.shape) == 2:
-                Xy[data_key] = dat[:, self.slices[data_key]]
-            else:
-                Xy[data_key] = dat[self.slices[data_key]]
-        return Xy
-
-
 class CRSlicer(Slicer):
     """column or row sampling
     Parameters
@@ -457,8 +418,9 @@ class CRSlicer(Slicer):
         if not self.slices:
             raise ValueError("Slicing hasn't been initialized. ")
         data_keys = self.apply_on if self.apply_on else Xy.keys()
-        for data_key in data_keys:  # slice input data
-            if data_key in self.slices.keys():
+        for slice_key in self.slices.keys():
+            if slice_key in data_keys:
+                data_key = slice_key
                 dat = Xy.pop(data_key)
                 if len(dat.shape) == 2:
                     if self.col_or_row:
@@ -467,6 +429,23 @@ class CRSlicer(Slicer):
                         Xy[data_key] = dat[self.slices[data_key], :]
                 else:
                     Xy[data_key] = dat[self.slices[data_key]]
+        # only for cross-validation
+        if conf.TRAIN in self.slices.keys() \
+            and conf.TEST in self.slices.keys():
+                Xy[conf.KW_SPLIT_TRAIN_TEST] = True
+                for data_key in data_keys:
+                    dat = Xy.pop(data_key)
+                    for sample_set in self.slices:
+                        if len(dat.shape) == 2:
+                            if self.col_or_row:
+                                Xy[key_push(data_key, sample_set)] = \
+                                    dat[:, self.slices[sample_set]]
+                            else:
+                                Xy[key_push(data_key, sample_set)] = \
+                                    dat[self.slices[sample_set], :]
+                        else:
+                            Xy[key_push(data_key, sample_set)] = \
+                                dat[self.slices[sample_set]]
         return Xy
 
 
@@ -480,7 +459,7 @@ class CRSplitter(BaseNodeSplitter):
         Node: Pipe | Par*
 
     indices_of_groups: dictionary
-        gourp index of X matrix
+        The name of the data to be splited and its gourp indices
 
     col_or_row: boolean value
         If col_or_row is True means that column splitter,
@@ -488,6 +467,7 @@ class CRSplitter(BaseNodeSplitter):
 
     Example
     -------
+    See Example in ColumnSplitter
 
     """
 
@@ -545,7 +525,7 @@ class CRSplitter(BaseNodeSplitter):
         return dict(size=self.size)
 
 
-class ColumnSplitter(BaseNodeSplitter):
+class RowSplitter(CRSplitter):
     """Column Splitter parallelization.
 
     Parameters
@@ -555,132 +535,155 @@ class ColumnSplitter(BaseNodeSplitter):
         Node: Pipe | Par*
 
     indices_of_groups: dictionary
-        gourp index of X matrix
+        group index for data
+    
+    Example
+    -------
+    See Example in ColumnSplitter
+    """
 
-    y_group_indices: integer list
-        gourp index of Y matrix
+    def __init__(self, node, indices_of_groups):
+        super(RowSplitter, self).__init__(node,
+                                          indices_of_groups,
+                                          col_or_row=False)
+
+
+class ColumnSplitter(CRSplitter):
+    """Column Splitter parallelization.
+
+    Parameters
+    ----------
+    node: Node | Estimator
+        Estimator: should implement fit/predict/score function
+        Node: Pipe | Par*
+
+    indices_of_groups: dictionary
+        group index for data
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> from epac import ColumnSplitter
+    >>> class TestNode:
+    ...     def transform(self, X, Y):
+    ...         print "---------------------"
+    ...         print "X=", X.shape
+    ...         print "Y=", Y.shape
+    ...         return {"X": X, "Y": Y}
+    ... 
+    >>> 
+    >>> n_samples = 10
+    >>> n_xfeatures = 11
+    >>> n_yfeatures = 12
+    >>> X = np.random.randn(n_samples, n_xfeatures)
+    >>> Y = np.random.randn(n_samples, n_yfeatures)
+    >>> print "1. We want to split X into 3 groups (0, 1, 2) column by column"
+    1. We want to split X into 3 groups (0, 1, 2) column by column
+    >>> print "Therefore we need to define a group indices for X"
+    Therefore we need to define a group indices for X
+    >>> X_group_indices = [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2]
+    >>> print 'The key of "X" denotes the data you want to split'
+    The key of "X" denotes the data you want to split
+    >>> print 'X_group_indices denotes how to split by group indices'
+    X_group_indices denotes how to split by group indices
+    >>> indices_of_groups = {"X": X_group_indices}
+    >>> print 'Build spliter for TestNode'
+    Build spliter for TestNode
+    >>> column_splitter = ColumnSplitter(TestNode(),
+    ...                                  indices_of_groups)
+    >>> print 'Run top-down process'
+    Run top-down process
+    >>> print "*********************************"
+    *********************************
+    >>> print "Split X"
+    Split X
+    >>> res = column_splitter.run(X=X, Y=Y)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 12)
+    ---------------------
+    X= (10, 3)
+    Y= (10, 12)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 12)
+    >>> print '2. Similarily we want to split Y'
+    2. Similarily we want to split Y
+    >>> Y_group_indices = [0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+    >>> indices_of_groups = {"Y": Y_group_indices}
+    >>> column_splitter = ColumnSplitter(TestNode(),
+    ...                                  indices_of_groups)
+    >>> print "*********************************"
+    *********************************
+    >>> print "Split Y"
+    Split Y
+    >>> res = column_splitter.run(X=X, Y=Y)    
+    ---------------------
+    X= (10, 11)
+    Y= (10, 3)
+    ---------------------
+    X= (10, 11)
+    Y= (10, 2)
+    ---------------------
+    X= (10, 11)
+    Y= (10, 4)
+    ---------------------
+    X= (10, 11)
+    Y= (10, 3)
+    >>> print '3. We want to split X and Y'
+    3. We want to split X and Y
+    >>> indices_of_groups = {"X": X_group_indices,
+    ...                      "Y": Y_group_indices}
+    >>> column_splitter = ColumnSplitter(TestNode(),
+    ...                                  indices_of_groups)
+    >>> print "*********************************"
+    *********************************
+    >>> print "Split X and Y"
+    Split X and Y
+    >>> res = column_splitter.run(X=X, Y=Y)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 3)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 2)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 4)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 3)
+    ---------------------
+    X= (10, 3)
+    Y= (10, 3)
+    ---------------------
+    X= (10, 3)
+    Y= (10, 2)
+    ---------------------
+    X= (10, 3)
+    Y= (10, 4)
+    ---------------------
+    X= (10, 3)
+    Y= (10, 3)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 3)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 2)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 4)
+    ---------------------
+    X= (10, 4)
+    Y= (10, 3)
 
     """
 
     def __init__(self, node, indices_of_groups):
-        super(ColumnSplitter, self).__init__()
-        self.indices_of_groups = indices_of_groups
-
-        self.slicer = ColumnSlicer(
-            signature_name=self.__class__.__name__,\
-            nb=0,\
-            apply_on=None)
-        for key_indices_of_groups in indices_of_groups:
-            indices_of_groups[key_indices_of_groups]
-        
-        self.x_uni_group_indices = set(x_group_indices)
-        self.y_uni_group_indices = set(y_group_indices)
-        self.size = len(self.x_uni_group_indices) * \
-                    len(self.y_uni_group_indices)
-        self.children = VirtualList(size=self.size, parent=self)
-        self.slicer.parent = self
-        subtree = NodeFactory.build(node)
-        # subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)
-        self.slicer.add_child(subtree)
-
-    def move_to_child(self, nb):
-        self.slicer.set_nb(nb)
-        cpt = 0
-        cp_x_uni_group_indice = None
-        cp_y_uni_group_indice = None
-        for x_uni_group_indice in self.x_uni_group_indices:
-            if (not cp_x_uni_group_indice == None)\
-                or (not cp_y_uni_group_indice == None):
-                break
-            for y_uni_group_indice in self.y_uni_group_indices:
-                if cpt == nb:
-                    cp_x_uni_group_indice = x_uni_group_indice
-                    cp_y_uni_group_indice = y_uni_group_indice
-                    break
-                cpt += 1
-        if (not cp_x_uni_group_indice == None)\
-                or (not cp_y_uni_group_indice == None):
-            x_indices = np.nonzero(np.asarray(self.x_group_indices) == \
-                            np.asarray(cp_x_uni_group_indice))
-            x_indices = x_indices[0]
-            y_indices = np.nonzero(np.asarray(self.y_group_indices) == \
-                            np.asarray(cp_y_uni_group_indice))
-            y_indices = y_indices[0]
-            self.slicer.set_sclices({"X": x_indices,
-                                     "Y": y_indices})
-        return self.slicer
-
-    def transform(self, **Xy):
-        self._sclices = None
-        return Xy
-
-    def get_parameters(self):
-        return dict(size=self.size)
-
-
-class RowSlicer(Slicer):
-    """Row-wise reslicing of the downstream blocs.
-
-    Parameters
-    ----------
-    name: string
-
-    apply_on: string or list of strings (or None)
-        The name(s) of the downstream blocs to be rescliced. If
-        None, all downstream blocs are rescliced.
-    """
-
-    def __init__(self, signature_name, nb, apply_on):
-        super(RowSlicer, self).__init__(signature_name, nb)
-        self.slices = None
-        self.n = 0  # the dimension of that array in ds should respect
-        if not apply_on:  # None is an acceptable value here
-            self.apply_on = apply_on
-        elif isinstance(apply_on, list):
-            self.apply_on = apply_on
-        elif isinstance(apply_on, str):
-            self.apply_on = [apply_on]
-        else:
-            raise ValueError("apply_on must be a string or a list of strings or None")
-
-    def set_sclices(self, slices):
-        # convert as a list if required
-        if isinstance(slices, dict):
-            self.slices =\
-                {k: slices[k].tolist() if isinstance(slices[k], np.ndarray)
-                else slices[k] for k in slices}
-            self.n = np.sum([len(v) for v in self.slices.values()])
-        else:
-            self.slices = \
-                slices.tolist() if isinstance(slices, np.ndarray) else slices
-            self.n = len(self.slices)
-
-    def transform(self, **Xy):
-        if not self.slices:
-            raise ValueError("Slicing hasn't been initialized. "
-            "Slicers constructors such as CV or Perm should be called "
-            "with a sample. Ex.: CV(..., y=y), Perm(..., y=y)")
-        data_keys = self.apply_on if self.apply_on else Xy.keys()
-        # filter out non-array or array with wrong dimension
-        for k in data_keys:
-            if not hasattr(Xy[k], "shape") or \
-                Xy[k].shape[0] != self.n:
-                data_keys.remove(k)
-        for data_key in data_keys:  # slice input data
-            dat = Xy.pop(data_key)
-            if isinstance(self.slices, dict):
-                Xy[conf.KW_SPLIT_TRAIN_TEST] = True
-                for sample_set in self.slices:
-                    if len(dat.shape) == 2:
-                        Xy[key_push(data_key, sample_set)] = dat[self.slices[sample_set], :]
-                    else:
-                        Xy[key_push(data_key, sample_set)] = dat[self.slices[sample_set]]
-            else:
-                if len(dat.shape) == 2:
-                    Xy[data_key] = dat[self.slices, :]
-                else:
-                    Xy[data_key] = dat[self.slices]
-        return Xy
+        super(ColumnSplitter, self).__init__(node,
+                                            indices_of_groups,
+                                            col_or_row=True)
 
 
 class CVBestSearchRefitParallel(Wrapper):
@@ -804,7 +807,6 @@ class CVBestSearchRefit(Wrapper):
 
     Example
     -------
-
     >>> from sklearn import datasets
     >>> from sklearn.svm import SVC
     >>> from epac import Methods
@@ -840,7 +842,7 @@ class CVBestSearchRefit(Wrapper):
         arg_max = kwargs.pop("arg_max") if "arg_max" in kwargs else True
         from epac.workflow.splitters import CV
         #methods = Methods(*tasks)
-        self.cv = CV(node=node, reducer=ClassificationReport(keep=False), **kwargs)
+        self.cv = CV(node=node,reducer=ClassificationReport(keep=False), **kwargs)
         self.score = score
         self.arg_max = arg_max
         warnings.warn("%s is deprecated. Please use %s instead." % \
@@ -889,37 +891,5 @@ class CVBestSearchRefit(Wrapper):
 
 
 if __name__ == "__main__":
-#    import random
-#    from epac import CRSplitter
-#
-#    class Tester:
-#        def transform(self, X, Y):
-#            print "================================="
-#            print "X=", X.shape
-#            print "Y=", Y.shape
-#            return {"X": X, "Y": Y}
-#
-#    n_samples = 10
-#    n_xfeatures = 20
-#    n_yfeatures = 15
-#    x_n_groups = 3
-#    y_n_groups = 2
-#
-#    X = np.random.randn(n_samples, n_xfeatures)
-#    Y = np.random.randn(n_samples, n_yfeatures)
-#    x_group_indices = np.array([random.randint(0, x_n_groups)\
-#        for i in xrange(n_xfeatures)])
-##    y_group_indices = np.array([random.randint(0, y_n_groups)\
-##        for i in xrange(n_yfeatures)])
-#    y_group_indices = np.zeros(n_yfeatures)
-#
-#    # 1) Prediction for each X block return a n_samples x n_yfeatures
-#    mulm = CRSplitter(Tester(), {"X": x_group_indices}, col_or_row=True)
-#    mulm = CRSplitter(Tester(), {"X": x_group_indices,
-#                      "Y": y_group_indices}, 
-#                      col_or_row=True)
-#    mulm.run(X=X, Y=Y)
-
-    
     import doctest
     doctest.testmod()
