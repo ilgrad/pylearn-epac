@@ -12,7 +12,7 @@ outdir="$(mktemp -d)"
 curdir="$(pwd)"
 
 # download the epac from github to upload pages
-git clone git@github.com:neurospin/pylearn-epac.git $outdir
+git clone https://github.com:neurospin/pylearn-epac.git $outdir
 
 # checkout gh-pages which are the epac webpage on github and commit them to github
 cd $outdir
