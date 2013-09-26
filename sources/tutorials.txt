@@ -240,7 +240,28 @@ In this section, we will introduce the cross-validation as below.
     [{'key': LDA, 'y/test/score_precision': [ 0.83333333  1.        ], 'y/test/score_recall': [ 1.   0.8], 'y/test/score_accuracy': 0.9, 'y/test/score_f1': [ 0.90909091  0.88888889], 'y/test/score_recall_mean': 0.9},
      {'key': LinearSVC, 'y/test/score_precision': [ 0.83333333  1.        ], 'y/test/score_recall': [ 1.   0.8], 'y/test/score_accuracy': 0.9, 'y/test/score_f1': [ 0.90909091  0.88888889], 'y/test/score_recall_mean': 0.9}]) 
 
-``cv.run(X=X, y=y)`` run the top-down process so that we get all the results, and ``cv.reduce()`` compute different scores, accuracies, etc. For instance, ``y/test/score_precision`` denotes the precision on the test part for the prediction on *y*. 
+``cv.run(X=X, y=y)`` run the top-down process so that we get all the results, and ``cv.reduce()`` compute different scores, accuracies, etc. For instance, ``y/test/score_precision`` denotes the precision on the test part for the prediction on *y*.
+
+We can get back the results of the run by iterating on the nodes of the tree:
+
+::
+
+    >>> for leaf in cv.walk_leaves():
+    ...     print leaf.load_results()
+    ResultSet(
+    [{'key': LDA, 'y/test/pred': [1 0], 'y/test/true': [1 0], 'y/train/pred': [0 1 1 0 1 0 1 0]}])
+        ...
+    ResultSet(
+    [{'key': LinearSVC, 'y/test/pred': [1 0], 'y/test/true': [1 0], 'y/train/pred': [1 0 0 1 1 0 1 0]}])
+
+We can also export the results of the top-down and the bottom-up processes to a csv file. The results will be saved on the disk, and can be opened later with a spreadsheet software.
+
+::
+
+    >>> from epac import export_csv
+    >>> export_csv(cv, cv.run(X=X, y=y), 'results_run.csv')
+    >>> export_csv(cv, cv.reduce(), 'results_reduce.csv')
+
 
 Model Selection using Cross-validation
 ======================================

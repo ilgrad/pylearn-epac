@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +15,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -228,6 +230,22 @@ In the next section, we will introduce some predefined nodes in EPAC, for instan
 </pre></div>
 </div>
 <p><tt class="docutils literal"><span class="pre">cv.run(X=X,</span> <span class="pre">y=y)</span></tt> run the top-down process so that we get all the results, and <tt class="docutils literal"><span class="pre">cv.reduce()</span></tt> compute different scores, accuracies, etc. For instance, <tt class="docutils literal"><span class="pre">y/test/score_precision</span></tt> denotes the precision on the test part for the prediction on <em>y</em>.</p>
+<p>We can get back the results of the run by iterating on the nodes of the tree:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">leaf</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">walk_leaves</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">leaf</span><span class="o">.</span><span class="n">load_results</span><span class="p">()</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: LDA, &#39;y/test/pred&#39;: [1 0], &#39;y/test/true&#39;: [1 0], &#39;y/train/pred&#39;: [0 1 1 0 1 0 1 0]}])</span>
+<span class="go">    ...</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: LinearSVC, &#39;y/test/pred&#39;: [1 0], &#39;y/test/true&#39;: [1 0], &#39;y/train/pred&#39;: [1 0 0 1 1 0 1 0]}])</span>
+</pre></div>
+</div>
+<p>We can also export the results of the top-down and the bottom-up processes to a csv file. The results will be saved on the disk, and can be opened later with a spreadsheet software.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">export_csv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export_csv</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">),</span> <span class="s">&#39;results_run.csv&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">export_csv</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">(),</span> <span class="s">&#39;results_reduce.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="model-selection-using-cross-validation">
 <h1>Model Selection using Cross-validation<a class="headerlink" href="#model-selection-using-cross-validation" title="Permalink to this headline">¶</a></h1>
@@ -447,7 +465,7 @@ In the next section, we will introduce some predefined nodes in EPAC, for instan
     </div>
     <div class="footer">
         &copy; Copyright 2013, Neurospin.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

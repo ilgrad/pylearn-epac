@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +15,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -72,17 +74,17 @@ In this section, we will present how to install EPAC on ubuntu and manually on t
 </pre></div>
 </div>
 <p>Download and install <strong>dill</strong> from <a class="reference external" href="https://github.com/uqfoundation/dill">https://github.com/uqfoundation/dill</a>. EPAC needs the latest code of dill.</p>
-<div class="highlight-guess"><div class="highlight"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/uqfoundation/dill</span>
+<div class="highlight-guess"><div class="highlight"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https:</span><span class="sr">//gi</span><span class="n">thub</span><span class="o">.</span><span class="n">com</span><span class="sr">/uqfoundation/</span><span class="n">dill</span>
 <span class="n">cd</span> <span class="n">dill</span>
-<span class="n">python</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span> <span class="n">build</span>
-<span class="n">sudo</span> <span class="n">python</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span> <span class="n">install</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+<span class="n">sudo</span> <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
 <p>Download and install <strong>joblib</strong> from <a class="reference external" href="https://github.com/joblib/joblib">https://github.com/joblib/joblib</a>. EPAC needs the latest code of joblib.</p>
 <p>Finally, EPAC can be downloaded from github and you can run installation script for your local user.</p>
-<div class="highlight-guess"><div class="highlight"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/neurospin/pylearn-epac.git</span>
+<div class="highlight-guess"><div class="highlight"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https:</span><span class="sr">//gi</span><span class="n">thub</span><span class="o">.</span><span class="n">com</span><span class="sr">/neurospin/</span><span class="n">pylearn</span><span class="o">-</span><span class="n">epac</span><span class="o">.</span><span class="n">git</span>
 <span class="n">cd</span> <span class="n">pylearn</span><span class="o">-</span><span class="n">epac</span>
-<span class="n">sudo</span> <span class="n">python</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span> <span class="n">install</span>
+<span class="n">sudo</span> <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
 </div>
@@ -95,9 +97,9 @@ In this section, we will present how to install EPAC on ubuntu and manually on t
 <p><strong>joblib</strong>: download and install <strong>joblib</strong> from <a class="reference external" href="https://github.com/joblib/joblib">https://github.com/joblib/joblib</a>.</p>
 <p><strong>EPAC</strong>: download EPAC from github to <tt class="docutils literal"><span class="pre">$EPACDIR</span></tt> and set enviroment variable <tt class="docutils literal"><span class="pre">$PYTHONPATH</span></tt> that contains <tt class="docutils literal"><span class="pre">$EPACDIR</span></tt> (EPAC directory), and <tt class="docutils literal"><span class="pre">$PATH</span></tt> contains $EPACDIR/bin</p>
 <div class="highlight-guess"><div class="highlight"><pre><span class="n">EPACDIR</span><span class="o">=</span><span class="n">epac</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/neurospin/pylearn-epac.git $EPACDIR</span>
-<span class="n">export</span> <span class="n">PYTHONPATH</span><span class="o">=</span><span class="err">$</span><span class="n">EPACDIR</span><span class="o">:</span><span class="err">$</span><span class="n">PYTHONPATH</span>
-<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="err">$</span><span class="n">EPACDIR</span><span class="o">/</span><span class="n">bin</span><span class="o">:</span><span class="err">$</span><span class="n">PATH</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https:</span><span class="sr">//gi</span><span class="n">thub</span><span class="o">.</span><span class="n">com</span><span class="sr">/neurospin/</span><span class="n">pylearn</span><span class="o">-</span><span class="n">epac</span><span class="o">.</span><span class="n">git</span> <span class="nv">$EPACDIR</span>
+<span class="n">export</span> <span class="n">PYTHONPATH</span><span class="o">=</span><span class="nv">$EPACDIR:$PYTHONPATH</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="nv">$EPACDIR</span><span class="o">/</span><span class="n">bin:</span><span class="nv">$PATH</span>
 </pre></div>
 </div>
 <p>Now, you can start to use EPAC for machine learning.</p>
@@ -164,7 +166,7 @@ In this section, we will present how to install EPAC on ubuntu and manually on t
     </div>
     <div class="footer">
         &copy; Copyright 2013, Neurospin.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

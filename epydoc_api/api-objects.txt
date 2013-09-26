@@ -1,6 +1,7 @@
 epac	epac-module.html
 epac.train_test_merge	epac-module.html#train_test_merge
 epac.range_log2	epac-module.html#range_log2
+epac.export_csv	epac-module.html#export_csv
 epac.key_split	epac-module.html#key_split
 epac.__package__	epac-module.html#__package__
 epac.train_test_split	epac-module.html#train_test_split
@@ -110,7 +111,6 @@ epac.utils.save_dictionary	epac.utils-module.html#save_dictionary
 epac.utils._list_diff	epac.utils-module.html#_list_diff
 epac.utils.load_dictionary	epac.utils-module.html#load_dictionary
 epac.utils.__package__	epac.utils-module.html#__package__
-epac.utils._loop_for	epac.utils-module.html#_loop_for
 epac.utils.train_test_split	epac.utils-module.html#train_test_split
 epac.utils.which	epac.utils-module.html#which
 epac.utils.is_need_mem	epac.utils-module.html#is_need_mem
@@ -124,6 +124,7 @@ epac.utils._list_union_inter_diff	epac.utils-module.html#_list_union_inter_diff
 epac.utils.key_pop	epac.workflow.base-module.html#key_pop
 epac.utils.range_log2	epac.utils-module.html#range_log2
 epac.utils._dict_prefix_keys	epac.utils-module.html#_dict_prefix_keys
+epac.utils.try_fun_num_trials	epac.utils-module.html#try_fun_num_trials
 epac.utils.dict_diff	epac.utils-module.html#dict_diff
 epac.workflow	epac.workflow-module.html
 epac.workflow.__package__	epac.workflow-module.html#__package__

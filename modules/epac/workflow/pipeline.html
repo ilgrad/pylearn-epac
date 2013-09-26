@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -121,7 +123,7 @@
 <span class="sd">    ...                                     random_state=1)</span>
 <span class="sd">    &gt;&gt;&gt; pipe = Pipe(SelectKBest(k=2), LDA())</span>
 <span class="sd">    &gt;&gt;&gt; pipe.transform(X=X, y=y)</span>
-<span class="sd">    {&#39;y&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;X&#39;: array([[-0.34385368,  0.75623409],</span>
+<span class="sd">    {&#39;y&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), &#39;X&#39;: array([[-0.34385368,  0.75623409],</span>
 <span class="sd">           [ 0.19829972, -1.16389861],</span>
 <span class="sd">           [-0.74715829,  0.86977629],</span>
 <span class="sd">           [ 1.13162939,  0.90876519],</span>
@@ -136,7 +138,7 @@
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; pipe2 = Pipe(Pipe(SelectKBest(k=2), LDA()), SVC())</span>
 <span class="sd">    &gt;&gt;&gt; pipe2.transform(X=X, y=y)</span>
-<span class="sd">    {&#39;y&#39;: array([ 1.,  0.,  0.,  1.,  0.,  0.,  1.,  0.,  1.,  1.,  0.,  1.]), &#39;X&#39;: array([[-0.34385368,  0.75623409],</span>
+<span class="sd">    {&#39;y&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), &#39;X&#39;: array([[-0.34385368,  0.75623409],</span>
 <span class="sd">           [ 0.19829972, -1.16389861],</span>
 <span class="sd">           [-0.74715829,  0.86977629],</span>
 <span class="sd">           [ 1.13162939,  0.90876519],</span>
@@ -206,7 +208,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2013, Neurospin.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
