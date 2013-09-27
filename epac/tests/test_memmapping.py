@@ -14,11 +14,14 @@ import random
 import datetime
 import sys
 import os
+import tempfile
 
 def create_mmat(nrows, ncols, default_values=None):
     now = datetime.datetime.now()
     np.random.seed(now.second)
-    filename = path.join(mkdtemp(), 'newfile.dat')
+    hfile = tempfile.NamedTemporaryFile("w+")
+    filename = hfile.name
+    hfile.close()
     mem_mat = np.memmap(filename,\
                      dtype='float32',\
                      mode='w+',\
@@ -40,15 +43,15 @@ def create_array(size, default_values=None):
     ret_array = ret_array[:, 0]
     return ret_array
 
-
-def convert2memmap(np_mat):
-    filename = path.join(mkdtemp(), 'newfile.dat')
-    mem_mat = np.memmap(filename,\
-                     dtype='float32',\
-                     mode='w+',\
-                     shape=np_mat.shape)
-    mem_mat[:] = np_mat[:]
-    return mem_mat
+#
+#def convert2memmap(np_mat):
+#    filename = path.join(mkdtemp(), 'newfile.dat')
+#    mem_mat = np.memmap(filename,\
+#                     dtype='float32',\
+#                     mode='w+',\
+#                     shape=np_mat.shape)
+#    mem_mat[:] = np_mat[:]
+#    return mem_mat
 
 
 # @profile
@@ -129,4 +132,5 @@ def func_no_memm_local(n_samples, n_features):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
+    args = [50, 100]
     func_memm_local(int(args[0]), int(args[1]))
