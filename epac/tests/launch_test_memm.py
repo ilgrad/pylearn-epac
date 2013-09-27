@@ -10,7 +10,7 @@ import time
 import psutil
 import subprocess
 import commands
-
+import datetime
 
 def get_pid(process_name):
     cmd = 'ps -ef | '\
@@ -51,6 +51,8 @@ for n_features in test_list:
     
     print "=========================="
     print "n_features = ", n_features
+    start_time = datetime.datetime.now()
+    print "Starting time = ", repr(start_time)
     max_mem_cost = 0
     while True:
         pid = get_pid(process_name)
@@ -59,8 +61,12 @@ for n_features in test_list:
         mem_cost = get_mem_cost(process_name)
         if max_mem_cost < mem_cost:
             max_mem_cost = mem_cost
-        time.sleep(30)
+        time.sleep(10)
         print "memory cost = ", mem_cost
     print "max memory cost = ", max_mem_cost 
+    finished_time = datetime.datetime.now()
+    print "Finished time = ", repr(finished_time)
+    print "Time cost=", repr((finished_time - start_time).seconds)
+    
     with open(filename, "a") as myfile:
         myfile.write("\n \n")
