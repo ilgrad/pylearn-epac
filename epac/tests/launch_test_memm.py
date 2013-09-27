@@ -20,20 +20,25 @@ def get_pid(process_name):
     ret_id = commands.getoutput(cmd)
     if len(ret_id) == 0:
         ret_id = None
+    else:
+        ret_id = ret_id.split()
     return ret_id
 
 
 def get_mem_cost(process_name):
-    pid = get_pid(process_name)
-    if not pid:
+    list_pid = get_pid(process_name)
+    if not list_pid:
         return None
-    cmd = 'ps -o rss %s' % pid
-    mem_cost = commands.getoutput(cmd)
-    mem_cost = mem_cost.split("\n")[1]
-    return int(mem_cost)
+    total_mem_cost = 0
+    for pid in list_pid:
+        cmd = 'ps -o rss %s' % pid
+        mem_cost = commands.getoutput(cmd)
+        mem_cost = mem_cost.split("\n")[1]
+        total_mem_cost += int(mem_cost)
+    return total_mem_cost
 
-n_samples = 50
-test_list = [500, 1000]
+n_samples = 500
+test_list = [50000, 70000]
 memmap = 'True'
 
 filename = 'result_test.txt'
@@ -47,7 +52,7 @@ for n_features in test_list:
     process_name = "test_memmapping.py"
     os.system("(unbuffer python %s %i %i %s \
                >> %s &)" %(process_name, n_samples, n_features, memmap, filename))
-    time.sleep(2)
+    time.sleep(5)
 
     print "=========================="
     print "n_features = ", n_features
