@@ -51,7 +51,7 @@ def convert2memmap(np_mat):
     return mem_mat
 
 
-@profile
+# @profile
 def func_memm_local(n_samples, n_features):
     ''' Test the capacity of the computer
 
@@ -89,7 +89,7 @@ def func_memm_local(n_samples, n_features):
     print " -> memm_local pt5 : finished with", n_features, "features"
 
 
-@profile
+# @profile
 def func_no_memm_local(n_samples, n_features):
     ''' Test the capacity of the computer
 
@@ -129,4 +129,4 @@ def func_no_memm_local(n_samples, n_features):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    func_no_memm_local(int(args[0]), int(args[1]))
+    func_memm_local(int(args[0]), int(args[1]))

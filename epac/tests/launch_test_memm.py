@@ -51,13 +51,16 @@ for n_features in test_list:
     
     print "=========================="
     print "n_features = ", n_features
+    max_mem_cost = 0
     while True:
         pid = get_pid(process_name)
         if not pid:
             break
         mem_cost = get_mem_cost(process_name)
+        if max_mem_cost < mem_cost:
+            max_mem_cost = mem_cost
         time.sleep(30)
         print "memory cost = ", mem_cost
-
+    print "max memory cost = ", max_mem_cost 
     with open(filename, "a") as myfile:
         myfile.write("\n \n")
