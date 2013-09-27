@@ -60,7 +60,7 @@ def func_memm_local(n_samples, n_features, memmap):
     print " -> Pt1 : Beginning with", n_features, "features, memmap =", memmap
     if memmap:
         X = create_mmat(n_samples, n_features, dir="/volatile")
-        y = create_array(n_samples, [0, 1], , dir="/volatile")
+        y = create_array(n_samples, [0, 1], dir="/volatile")
 
         print "X matrix file size =", os.path.getsize(X.filename), "bytes"
 
