@@ -14,10 +14,10 @@ import os
 import tempfile
 
 
-def create_mmat(nrows, ncols, default_values=None):
+def create_mmat(nrows, ncols, default_values=None, dir=None):
     now = datetime.datetime.now()
     np.random.seed(now.second)
-    hfile = tempfile.NamedTemporaryFile("w+")
+    hfile = tempfile.NamedTemporaryFile("w+", dir=dir)
     filename = hfile.name
     hfile.close()
     mem_mat = np.memmap(filename,\
@@ -36,8 +36,8 @@ def create_mmat(nrows, ncols, default_values=None):
     return mem_mat
 
 
-def create_array(size, default_values=None):
-    ret_array = create_mmat(size, 1, default_values)
+def create_array(size, default_values=None, dir=None):
+    ret_array = create_mmat(size, 1, default_values, dir=dir)
     ret_array = ret_array[:, 0]
     return ret_array
 
@@ -59,8 +59,8 @@ def func_memm_local(n_samples, n_features, memmap):
     ## ============================================================
     print " -> Pt1 : Beginning with", n_features, "features, memmap =", memmap
     if memmap:
-        X = create_mmat(n_samples, n_features)
-        y = create_array(n_samples, [0, 1])
+        X = create_mmat(n_samples, n_features, dir="/volatile")
+        y = create_array(n_samples, [0, 1], , dir="/volatile")
 
         print "X matrix file size =", os.path.getsize(X.filename), "bytes"
 
