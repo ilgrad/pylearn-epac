@@ -520,7 +520,7 @@ class BaseNode(object):
     # -------------------------------- #
     # -- I/O persistance operations -- #
     # -------------------------------- #
-    def save_results(self, results):
+    def save_results(self, results, memm=False):
         """ Save ResultSet
         """
         store = self.get_store()
