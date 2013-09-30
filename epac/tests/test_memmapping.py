@@ -43,7 +43,7 @@ def create_array(size, default_values=None, dir=None):
 
 
 # @profile
-def func_memm_local(n_samples, n_features, memmap):
+def func_memm_local(n_samples, n_features, memmap, n_proc):
     ''' Test the capacity of the computer
 
     Parameters
@@ -53,11 +53,14 @@ def func_memm_local(n_samples, n_features, memmap):
     n_features: number of columns of th X matrix
 
     memmap: if True, use memory mapping to reduce memory cost
+
+    n_proc: number of processes
     '''
 
     ## 1) Building dataset
     ## ============================================================
-    print " -> Pt1 : Beginning with", n_features, "features, memmap =", memmap
+    print " -> Pt1 : Beginning with", n_features, "features, memmap =",\
+        memmap, ",", n_proc, "processes"
     if memmap:
         X = create_mmat(n_samples, n_features, dir="/volatile")
         y = create_array(n_samples, [0, 1], dir="/volatile")
@@ -71,7 +74,7 @@ def func_memm_local(n_samples, n_features, memmap):
                                             n_features=n_features,
                                             n_informative=2,
                                             random_state=1)
-    
+
         Xy = dict(X=X, y=y)
     ## 2) Build two workflows respectively
     ## =======================================================
@@ -90,7 +93,7 @@ def func_memm_local(n_samples, n_features, memmap):
 
     # Multiple processes on local engine
     from epac import LocalEngine
-    local_engine = LocalEngine(cv_svm_local, num_processes=1)
+    local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
     cv_svm = local_engine.run(**Xy)
     print " -> Pt4 : Finished running multi-processes, reducing"
     cv_svm.reduce()
@@ -100,5 +103,5 @@ def func_memm_local(n_samples, n_features, memmap):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-#    args = [500, 70000, True]
-    func_memm_local(int(args[0]), int(args[1]), args[2])
+#    args = [500, 70000, True, 1]
+    func_memm_local(int(args[0]), int(args[1]), args[2], int(args[3]))
