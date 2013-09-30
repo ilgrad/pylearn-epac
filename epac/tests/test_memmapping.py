@@ -103,5 +103,6 @@ def func_memm_local(n_samples, n_features, memmap, n_proc):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-#    args = [500, 70000, True, 1]
+#    args = [500, 70000, 'True', 1]
+    args[2] = (args[2] == 'True')
     func_memm_local(int(args[0]), int(args[1]), args[2], int(args[3]))
