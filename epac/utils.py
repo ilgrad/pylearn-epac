@@ -189,6 +189,108 @@ def try_fun_num_trials(func, ntrials=3, **kwarg):
     return func(**kwarg)
 
 
+def export_resultset_csv(results, filename):
+    '''
+    Export the results to a CSV file
+
+    Export the results of a bottom-up operation (reduce) to a CSV file
+
+    Parameters
+    ----------
+    results: ResultSet to export
+
+    filename: Relative or absolute path to the CSV file
+        If the file doesn't exist, create it
+
+    Example
+    -------
+    >>> import tempfile
+    >>> from sklearn.svm import LinearSVC as SVM
+    >>> from sklearn import datasets
+    >>> from epac import Methods
+    >>> _, filename = tempfile.mkstemp(suffix=".csv")
+    >>> X, y = datasets.make_classification(n_samples=12, n_features=10, \
+                                            n_informative=2, random_state=1)
+    >>> multi = Methods(SVM(C=1), SVM(C=10))
+    >>> result_run = multi.run(X=X, y=y)
+    >>> export_resultset_csv(multi.reduce(), filename)
+    >>> with open(filename, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    ...     print csvfile.read()
+    key;y/true;y/pred
+    LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
+    LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+    <BLANKLINE>
+    '''
+    with open(filename, 'wb') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=';', \
+                                quoting=csv.QUOTE_MINIMAL)
+        result_keys = results.values()[0].keys()
+        keys = []
+        if "key" in result_keys:
+            keys.append("key")
+            result_keys.remove("key")
+        keys.extend(result_keys)
+        spamwriter.writerow(keys)
+        for result in results.values():
+            temp_list = []
+            for key in keys:
+                temp_list.append(result[key])
+            spamwriter.writerow(temp_list)
+
+
+def export_leaves_csv(tree_root, filename):
+    '''
+    Export the results to a CSV file
+
+    Export the results of a top-down operation (run) to a CSV file
+
+    Parameters
+    ----------
+    tree_root: Workflow in study
+
+    filename: Relative or absolute path to the CSV file
+        If the file doesn't exist, create it
+
+    Example
+    -------
+    >>> from sklearn.svm import LinearSVC as SVM
+    >>> from sklearn import datasets
+    >>> from epac import Methods
+    >>> from epac.utils import export_csv
+    >>> import tempfile
+    >>> _, filename = tempfile.mkstemp(suffix=".csv")
+    >>> X, y = datasets.make_classification(n_samples=12, n_features=10, \
+                                            n_informative=2, random_state=1)
+    >>> multi = Methods(SVM(C=1), SVM(C=10))
+    >>> result_run = multi.run(X=X, y=y)
+    >>> export_leaves_csv(multi, filename)
+    >>> with open(filename, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    ...     print csvfile.read()
+    key;y/true;y/pred
+    LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
+    LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+    <BLANKLINE>
+    '''
+    with open(filename, 'wb') as csvfile:
+        spamwriter = csv.writer(csvfile, delimiter=';', \
+                                quoting=csv.QUOTE_MINIMAL)
+        result_keys = tree_root.get_leftmost_leaf().load_results().values()[0].keys()
+        keys = []
+        if "key" in result_keys:
+            keys.append("key")
+            result_keys.remove("key")
+        keys.extend(result_keys)
+        spamwriter.writerow(keys)
+        for leaf in tree_root.walk_leaves():
+            key = leaf.get_key().replace('CV/', '').replace('Methods/', '')
+            key = key.replace('Perms/', '')
+            result = leaf.load_results()
+            result.values()[0]['key'] = key
+            temp_list = []
+            for key in keys:
+                temp_list.append(result.values()[0][key])
+            spamwriter.writerow(temp_list)
+
 
 def export_csv(tree, results, filename):
     '''Export the results to a CSV file
@@ -237,7 +339,7 @@ def export_csv(tree, results, filename):
 
     with open(filename, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=';',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                                quoting=csv.QUOTE_MINIMAL)
         if isinstance(results, ResultSet):
             result_keys = results.values()[0].keys()
             keys = []
