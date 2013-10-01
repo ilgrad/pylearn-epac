@@ -14,7 +14,8 @@ from epac.workflow.splitters import ColumnSplitter, RowSplitter, CRSplitter
 from epac.workflow.base import BaseNode, key_pop, key_split
 from epac.configuration import conf, debug
 from epac.map_reduce.results import ResultSet, Result
-from epac.utils import train_test_merge, train_test_split, dict_diff, range_log2, export_csv
+from epac.utils import train_test_merge, train_test_split, dict_diff
+from epac.utils import range_log2, export_csv, export_resultset_csv, export_leaves_csv
 from epac.stores import StoreFs, StoreMem
 from epac.map_reduce.mappers import MapperSubtrees
 from epac.map_reduce.engine import SomaWorkflowEngine, LocalEngine
@@ -46,6 +47,8 @@ __all__ = ['BaseNode',
            'key_split',
            'dict_diff',
            'export_csv',
+           'export_resultset_csv',
+           'export_leaves_csv',
            'StoreFs',
            'StoreMem',
            'range_log2',

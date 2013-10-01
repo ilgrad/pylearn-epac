@@ -38,6 +38,12 @@ for leaf in pipe.walk_leaves():
 # An iteration on all the leaves of a tree can return all the results
 # of the previous top-down operation on the tree
 
+# To save the results of the top-down operation (run) on the disk, it is
+# possible to convert it to CSV format
+
+from epac import export_leaves_csv
+export_leaves_csv(pipe, 'my_result_run.csv')
+
 ## Parallelization
 ## ===============
 
@@ -53,6 +59,11 @@ print multi.reduce()
 
 # Reduce format outputs into "ResultSet" which is a dict-like structure
 # which contains the "keys" of the methods that have beeen used.
+
+# You can also export the results of the bottom-up operation (reduce) to CSV
+
+from epac import export_resultset_csv
+export_resultset_csv(multi.reduce(), 'my_result_reduce.csv')
 
 
 #                         Methods                  Methods (Splitter)
