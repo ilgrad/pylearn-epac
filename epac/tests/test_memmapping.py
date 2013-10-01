@@ -43,7 +43,7 @@ def create_array(size, default_values=None, dir=None):
 
 
 # @profile
-def func_memm_local(n_samples, n_features, memmap, n_proc):
+def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
     ''' Test the capacity of the computer
 
     Parameters
@@ -92,9 +92,22 @@ def func_memm_local(n_samples, n_features, memmap, n_proc):
 #    cv_svm_local.reduce()
 
     # Multiple processes on local engine
-    from epac import LocalEngine
-    local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
-    cv_svm = local_engine.run(**Xy)
+    cv_svm = None
+    if is_swf:
+        from epac import SomaWorkflowEngine
+        mmap_mode = None
+        if memmap:
+            mmap_mode = "r+"
+        swf_engine = SomaWorkflowEngine(cv_svm_local,
+                                        num_processes=n_proc,
+                                        resource_id="jl237561@gabriel",
+                                        login="jl237561",
+                                        mmap_mode=mmap_mode)
+        cv_svm = swf_engine.run(**Xy)
+    else:
+        from epac import LocalEngine
+        local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
+        cv_svm = local_engine.run(**Xy)
     print " -> Pt4 : Finished running multi-processes, reducing"
     cv_svm.reduce()
 
@@ -105,4 +118,5 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 #    args = [500, 70000, 'True', 1]
     args[2] = (args[2] == 'True')
-    func_memm_local(int(args[0]), int(args[1]), args[2], int(args[3]))
+    args[4] = (args[4] == 'True')
+    func_memm_local(int(args[0]), int(args[1]), args[2], int(args[3]), args[4])

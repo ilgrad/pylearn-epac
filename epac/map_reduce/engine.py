@@ -150,6 +150,12 @@ class LocalEngine(Engine):
 
 class SomaWorkflowEngine(LocalEngine):
     '''Using soma-workflow to run epac tree in parallel
+    
+    Parameters
+    ----------
+    mmap_mode: {None, ‘r+’, ‘r’, ‘w+’, ‘c’, 'auto'}, optional :
+        'auto' means that the system determine if we use memory mapping or not.
+        See numpy.load for the meaning of the other arguments.
     '''
     dataset_relative_path = "./dataset"
     open_me_by_soma_workflow_gui = "open_me_by_soma_workflow_gui"
@@ -162,10 +168,12 @@ class SomaWorkflowEngine(LocalEngine):
                  login="",
                  pw="",
                  remove_finished_wf=True,
-                 remove_local_tree=True):
-        super(SomaWorkflowEngine, self).__init__(tree_root=tree_root,
-                                                 function_name=function_name,
-                                                 num_processes=num_processes)
+                 remove_local_tree=True,
+                 mmap_mode="auto"):
+        super(SomaWorkflowEngine, self).__init__(
+                        tree_root=tree_root,
+                        function_name=function_name,
+                        num_processes=num_processes)
         if num_processes == -1:
             self.num_processes = 20
         self.resource_id = resource_id
@@ -173,6 +181,79 @@ class SomaWorkflowEngine(LocalEngine):
         self.pw = pw
         self.remove_finished_wf = remove_finished_wf
         self.remove_local_tree = remove_local_tree
+        self.mmap_mode = mmap_mode
+
+
+    def _save_job_list(self,
+                        working_directory,
+                        nodesinput_list):
+        '''Write job list into working_directory as 0.job, 1.job, etc.
+
+        Parameters
+        ----------
+        working_directory: string
+            directory to write job list
+
+        nodesinput_list: list of NodesInput
+            This is for parallel computing for each element in the list.
+            All of them are saved separately in working_directory.
+
+        Example
+        -------
+        >>> from epac.map_reduce.engine import SomaWorkflowEngine
+        >>> nodesinput_list = [{'Perms/Perm(nb=0)': 'Perms/Perm(nb=0)'},
+        ...                    {'Perms/Perm(nb=1)': 'Perms/Perm(nb=1)'},
+        ...                    {'Perms/Perm(nb=2)': 'Perms/Perm(nb=2)'}]
+        >>> working_directory =  "/tmp"
+        >>> swf_engine = SomaWorkflowEngine(None)
+        >>> swf_engine._save_job_list(working_directory, nodesinput_list)
+        ['./0.job', './1.job', './2.job']
+        '''
+        keysfile_list = list()
+        jobi = 0
+        for nodesinput in nodesinput_list:
+            keysfile = "." + os.path.sep + repr(jobi) + "." + conf.SUFFIX_JOB
+            keysfile_list.append(keysfile)
+            # print "in_working_directory="+in_working_directory
+            # print "keysfile="+keysfile
+            abs_keysfile = os.path.join(working_directory, keysfile)
+            f = open(abs_keysfile, 'w')
+            for key_signature in nodesinput:
+                f.write("%s\n" % key_signature)
+            f.close()
+            jobi = jobi + 1
+        return keysfile_list
+
+    def _create_jobs(self,
+                     keysfile_list,
+                     is_run_local,
+                     ft_working_directory):
+        from soma_workflow.client import Job
+        jobs = []
+        for nodesfile in keysfile_list:
+            command = []
+            command.append("epac_mapper")
+            command.append("--datasets")
+            command.append('"'
+                           + SomaWorkflowEngine.dataset_relative_path
+                           + '"')
+            command.append("--keysfile")
+            command.append('"' + (nodesfile) + '"')
+            if self.mmap_mode:
+                command.append("--mmap_mode")
+                command.append(self.mmap_mode)
+            if not is_run_local:
+                job = Job(command,
+                        referenced_input_files=[ft_working_directory],
+                        referenced_output_files=[ft_working_directory],
+                        name="epac_job_key=%s" % (nodesfile),
+                        working_directory=ft_working_directory)
+            else:
+                job = Job(command,
+                        name="epac_job_key=%s" % (nodesfile),
+                        working_directory=ft_working_directory)
+            jobs.append(job)
+        return jobs
 
     def run(self, **Xy):
         '''Run soma-workflow without gui
@@ -258,31 +339,14 @@ class SomaWorkflowEngine(LocalEngine):
                                            num_processes=self.num_processes)
         nodesinput_list = split_node_input.split(node_input)
         keysfile_list = save_job_list(tmp_work_dir_path, nodesinput_list)
+
         ## Build soma-workflow
         ## ===================
-        if not is_run_local:
-            jobs = [Job(command=[u"epac_mapper",
-                                 u'--datasets', '"%s"' %
-                                 (SomaWorkflowEngine.dataset_relative_path),
-                                 u'--keysfile', '"%s"' %
-                                 (nodesfile)],
-                        referenced_input_files=[ft_working_directory],
-                        referenced_output_files=[ft_working_directory],
-                        name="epac_job_key=%s" % (nodesfile),
-                        working_directory=ft_working_directory,
-                        native_specification="-l pmem=%dmb" % db_size)
-                    for nodesfile in keysfile_list]
-        else:
-            jobs = [Job(command=[u"epac_mapper",
-                                 u'--datasets', '"%s"' %
-                                 (SomaWorkflowEngine.dataset_relative_path),
-                                 u'--keysfile', '"%s"' %
-                                 (nodesfile)],
-                        name="epac_job_key=%s" % (nodesfile),
-                        working_directory=ft_working_directory,
-                        native_specification="-l pmem=%dmb" % db_size)
-                    for nodesfile in keysfile_list]
+        jobs = self._create_jobs(keysfile_list,
+                                 is_run_local,
+                                 ft_working_directory)
         soma_workflow = Workflow(jobs=jobs)
+
 
         controller = WorkflowController(self.resource_id,
                                         self.login,
@@ -349,17 +413,9 @@ class SomaWorkflowEngine(LocalEngine):
                                             nodesinput_list)
         ## Build soma-workflow
         ## ===================
-        jobs = [Job(command=[u"epac_mapper",
-                             u'--datasets', '"%s"' %
-                             (SomaWorkflowEngine.dataset_relative_path),
-                             u'--keysfile', '"%s"' %
-                             (nodesfile)],
-                    referenced_input_files=[ft_working_directory],
-                    referenced_output_files=[ft_working_directory],
-                    name="epac_job_key=%s" % (nodesfile),
-                    working_directory=ft_working_directory,
-                    native_specification="-l pmem=%dmb" % db_size)
-                for nodesfile in keysfile_list]
+        jobs = self._create_jobs(keysfile_list,
+                                 is_run_local=False,
+                                 ft_working_directory=ft_working_directory)
         soma_workflow = Workflow(jobs=jobs)
         if soma_workflow_dirpath and soma_workflow_dirpath != "":
             out_soma_workflow_file = os.path.join(

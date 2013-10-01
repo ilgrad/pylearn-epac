@@ -37,6 +37,11 @@ if __name__ == "__main__":
                       'represents a key node')
     parser.add_option('-x', '--function',
                       help='Function to execute. Default "fit_predict"')
+    parser.add_option('-m', '--mmap_mode',
+                      help="{None, 'r+', 'r', 'w+', 'c', 'auto'} " + \
+                      "'auto' means that the system determine " + \
+                      "if we use memory mapping or not. " + \
+                      "See numpy.load for the meaning of the other arguments.")
     parser.add_option('-t', '--treedir',
                       help='directory to save tree')
     # argv = ['epac_mapper',
@@ -55,6 +60,7 @@ if __name__ == "__main__":
     keys = None
     listkey = list()
     function = "transform"
+    mmap_mode = None
 
     if options.datasets:
         datasets_filepath = repr(options.datasets)
@@ -92,6 +98,9 @@ if __name__ == "__main__":
     if len(listkey) <= 0:
         sys.exit(0)
 
+    if options.mmap_mode:
+        mmap_mode = options.mmap_mode
+
     nodes_input = NodesInput(listkey[0])
     for str_key in listkey:
         nodes_input.add(str_key)
@@ -103,7 +112,7 @@ if __name__ == "__main__":
     # datasets_filepath ="/tmp/tmpO8D3dG_datasets.npz"
     # keys="fs:///tmp/tmpXyC_XE/ParPerm/Perm(nb=0)"
 
-    Xy = load_dataset(datasets_filepath)
+    Xy = load_dataset(datasets_filepath, mmap_mode)
 
     tree_root_relative_path = SomaWorkflowEngine.tree_root_relative_path
     if options.treedir:

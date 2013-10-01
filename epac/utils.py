@@ -470,6 +470,38 @@ def train_test_merge(Xy_train, Xy_test):
     Xy_train.update(Xy_test)
     return Xy_train
 
+def save_dictionary(dataset_dir, **Xy):
+    '''Save a dictionary to a directory
+    Save a dictionary to a directory. This dictionary may contain
+    numpy array, numpy.memmap
+
+    Example
+    -------
+    from sklearn import datasets
+    from epac.utils import save_dictionary
+    X, y = datasets.make_classification(n_samples=500,
+                                        n_features=200000,
+                                        n_informative=2,
+                                        random_state=1)
+    Xy = dict(X=X, y=y)
+    save_dictionary("/tmp/save_datasets_data", **Xy)
+    '''
+    if not os.path.exists(dataset_dir):
+        os.makedirs(dataset_dir)
+    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
+    file_dict_index = open(index_filepath, "w+")
+    file_dict_index.write(repr(len(Xy)) + "\n")
+    for key in Xy:
+        filepath = os.path.join(dataset_dir, key + ".npy")
+        file_dict_index.write(key)
+        file_dict_index.write("\n")
+        file_dict_index.write(filepath)
+        file_dict_index.write("\n")
+    file_dict_index.close()
+    for key in Xy:
+        filepath = os.path.join(dataset_dir, key + ".npy")
+        np.save(filepath, Xy[key])
+
 
 def save_dataset_path(dataset_dir, **Xy_path):
     '''Save a dictionary to a directory
@@ -532,6 +564,47 @@ def is_need_mem(filepath):
     if filesize > conf.MEMM_THRESHOLD:
         return True
     return False
+
+def load_dictionary(dataset_dir, mmap_mode="auto"):
+    '''Load a dictionary
+    Load a dictionary from save_dictionary
+
+    Parameters
+    ----------
+    dataset_dir: str
+        the directory where you want to load your dataset
+
+    mmap_mode: {None, ‘r+’, ‘r’, ‘w+’, ‘c’, 'auto'}, optional :
+        'auto' means that the system determine if we use memory mapping or not.
+        See numpy.load for the meaning of the other arguments.
+
+    Example
+    -------
+    from epac.utils import load_dictionary
+    Xy = load_dictionary("/tmp/save_datasets_data")
+    '''
+    if not os.path.exists(dataset_dir):
+        return None
+    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
+    if not os.path.isfile(index_filepath):
+        return None
+    file_dict_index = open(index_filepath, "r")
+    len_dict = file_dict_index.readline()
+    res = {}
+    for i in range(int(len_dict)):
+        key = file_dict_index.readline()
+        key = key.strip("\n")
+        filepath = file_dict_index.readline()
+        filepath = filepath.strip("\n")
+        if ("auto" not in mmap_mode) and mmap_mode:
+            data = np.load(filepath, mmap_mode)
+        elif ("auto" in mmap_mode) and is_need_mem(filepath):
+            data = np.load(filepath, "r+")
+        else:
+            data = np.load(filepath)
+
+        res[key] = data
+    return res
 
 
 def load_dataset(dataset_dir):
