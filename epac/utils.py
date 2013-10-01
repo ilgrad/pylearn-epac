@@ -596,7 +596,9 @@ def load_dictionary(dataset_dir, mmap_mode="auto"):
         key = key.strip("\n")
         filepath = file_dict_index.readline()
         filepath = filepath.strip("\n")
-        if ("auto" not in mmap_mode) and mmap_mode:
+        if not mmap_mode:
+            data = np.load(filepath)
+        elif (not "auto" in mmap_mode) and mmap_mode:
             data = np.load(filepath, mmap_mode)
         elif ("auto" in mmap_mode) and is_need_mem(filepath):
             data = np.load(filepath, "r+")

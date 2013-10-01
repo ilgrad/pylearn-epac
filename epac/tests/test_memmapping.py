@@ -102,6 +102,8 @@ def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
                                         num_processes=n_proc,
                                         resource_id="jl237561@gabriel",
                                         login="jl237561",
+                                        remove_finished_wf=False,
+                                        remove_local_tree=False,
                                         mmap_mode=mmap_mode)
         cv_svm = swf_engine.run(**Xy)
     else:
