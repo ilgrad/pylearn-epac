@@ -111,9 +111,14 @@ def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
         local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
         cv_svm = local_engine.run(**Xy)
     print " -> Pt4 : Finished running multi-processes, reducing"
-    cv_svm.reduce()
+    print cv_svm.reduce()
 
     print " -> Pt5 : Finished with", n_features, "features"
+
+    if hasattr(X, "filename"):
+        os.remove(X.filename)
+    if hasattr(y, "filename"):
+        os.remove(y.filename)
 
 
 if __name__ == "__main__":
