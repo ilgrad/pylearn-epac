@@ -258,7 +258,7 @@ We can also export the results of the top-down and the bottom-up processes to a 
 
 ::
 
-    >>> from epac import export_csv
+    >>> from epac import export_leaves_csv, export_resultset_csv
     >>> export_leaves_csv(cv, 'results_run.csv')
     >>> export_resultset_csv(cv.reduce(), 'results_reduce.csv')
 

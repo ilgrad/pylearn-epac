@@ -241,7 +241,7 @@ In the next section, we will introduce some predefined nodes in EPAC, for instan
 </pre></div>
 </div>
 <p>We can also export the results of the top-down and the bottom-up processes to a csv file. The results will be saved on the disk, and can be opened later with a spreadsheet software.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">export_csv</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">export_leaves_csv</span><span class="p">,</span> <span class="n">export_resultset_csv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">export_leaves_csv</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="s">&#39;results_run.csv&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">export_resultset_csv</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">(),</span> <span class="s">&#39;results_reduce.csv&#39;</span><span class="p">)</span>
 </pre></div>
