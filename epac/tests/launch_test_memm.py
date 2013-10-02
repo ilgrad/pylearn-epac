@@ -60,8 +60,8 @@ is_on_cluster = True
 open(filename, 'w').close()
 
 n_samples = 500
-#test_list = [50000 * (2 ** n) for n in range(0, 7)]
-test_list = [5000, 10000]
+test_list = [50000 * (2 ** n) for n in range(0, 7)]
+#test_list = [5000, 10000]
 for n_proc in range(1, 9):
     for n_features in test_list:
         print "=========================="
