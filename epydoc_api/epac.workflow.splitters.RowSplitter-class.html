@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>epac.tests.wfexamples2test.WFExample5</title>
+  <title>epac.workflow.splitters.RowSplitter</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -38,9 +38,9 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="epac-module.html">Package&nbsp;epac</a> ::
-        <a href="epac.tests-module.html">Package&nbsp;tests</a> ::
-        <a href="epac.tests.wfexamples2test-module.html">Module&nbsp;wfexamples2test</a> ::
-        Class&nbsp;WFExample5
+        <a href="epac.workflow-module.html" onclick="show_private();">Package&nbsp;workflow</a> ::
+        <a href="epac.workflow.splitters-module.html">Module&nbsp;splitters</a> ::
+        Class&nbsp;RowSplitter
       </span>
     </td>
     <td>
@@ -50,48 +50,45 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="epac.tests.wfexamples2test.WFExample5-class.html"
+            >]&nbsp;|&nbsp;<a href="epac.workflow.splitters.RowSplitter-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class WFExample5</h1><p class="nomargin-top"><span class="codelink"><a href="epac.tests.wfexamples2test-pysrc.html#WFExample5">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class RowSplitter</h1><p class="nomargin-top"><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSplitter">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-     object --+    
-              |    
-<a href="epac.tests.wfexamples2test.WorkflowExample-class.html">WorkflowExample</a> --+
-                  |
-                 <strong class="uidshort">WFExample5</strong>
+   object --+            
+            |            
+<a href="epac.workflow.base.BaseNode-class.html">base.BaseNode</a> --+        
+                |        
+ <a href="epac.workflow.splitters.BaseNodeSplitter-class.html">BaseNodeSplitter</a> --+    
+                    |    
+           <a href="epac.workflow.splitters.CRSplitter-class.html">CRSplitter</a> --+
+                        |
+                       <strong class="uidshort">RowSplitter</strong>
 </pre>
 
 <hr />
-<!-- ==================== NESTED CLASSES ==================== -->
-<a name="section-NestedClasses"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Nested Classes</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-NestedClasses"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.tests.wfexamples2test.WorkflowExample-class.html">WorkflowExample</a></code></b>:
-      <code><a href="abc.ABCMeta-class.html">__metaclass__</a></code>
-      </p>
-    </td>
-  </tr>
-</table>
+<pre class="literalblock">
+Column Splitter parallelization.
+
+Parameters
+----------
+node: Node | Estimator
+    Estimator: should implement fit/predict/score function
+    Node: Pipe | Par*
+
+indices_of_groups: dictionary
+    group index for data
+
+Example
+-------
+See Example in ColumnSplitter
+
+</pre>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -115,10 +112,12 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="epac.tests.wfexamples2test.WFExample5-class.html#get_workflow" class="summary-sig-name">get_workflow</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Retrieve workflow</td>
+          <td><span class="summary-sig"><a href="epac.workflow.splitters.RowSplitter-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">indices_of_groups</span>)</span><br />
+      x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="epac.tests.wfexamples2test-pysrc.html#WFExample5.get_workflow">source&nbsp;code</a></span>
+            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSplitter.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -128,56 +127,59 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.workflow.splitters.CRSplitter-class.html">CRSplitter</a></code></b>:
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#convert_dict2list">convert_dict2list</a></code>,
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#get_parameters">get_parameters</a></code>,
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#move_to_child">move_to_child</a></code>,
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#transform">transform</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.workflow.splitters.BaseNodeSplitter-class.html">BaseNodeSplitter</a></code></b>:
+      <code><a href="epac.workflow.splitters.BaseNodeSplitter-class.html#reduce">reduce</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.workflow.base.BaseNode-class.html">base.BaseNode</a></code></b>:
+      <code><a href="epac.workflow.base.BaseNode-class.html#__repr__">__repr__</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#add_child">add_child</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#add_children">add_children</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#collect_save">collect_save</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_children_top_down">get_children_top_down</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_key">get_key</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_leftmost_leaf">get_leftmost_leaf</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_node">get_node</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_path_from_node">get_path_from_node</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_path_from_root">get_path_from_root</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_rightmost_leaf">get_rightmost_leaf</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_root">get_root</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_signature">get_signature</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_signature_args">get_signature_args</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#get_store">get_store</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#initialization">initialization</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#load_results">load_results</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#load_state">load_state</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#merge_tree_store">merge_tree_store</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#run">run</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#save_node">save_node</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#save_results">save_results</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#save_state">save_state</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#save_tree">save_tree</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#stats">stats</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#top_down">top_down</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#walk_leaves">walk_leaves</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#walk_nodes">walk_nodes</a></code>,
+      <code><a href="epac.workflow.base.BaseNode-class.html#walk_true_nodes">walk_true_nodes</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
-      <code>__repr__</code>,
       <code>__setattr__</code>,
       <code>__sizeof__</code>,
       <code>__str__</code>,
       <code>__subclasshook__</code>
       </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Class Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-ClassVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="__abstractmethods__"></a><span class="summary-name">__abstractmethods__</span> = <code title="frozenset([])"><code class="variable-group">frozenset([</code><code class="variable-group">])</code></code>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.tests.wfexamples2test.WorkflowExample-class.html">WorkflowExample</a></code></b> (private):
-      <code><a href="epac.tests.wfexamples2test.WorkflowExample-class.html#_abc_cache" onclick="show_private();">_abc_cache</a></code>,
-      <code><a href="epac.tests.wfexamples2test.WorkflowExample-class.html#_abc_negative_cache" onclick="show_private();">_abc_negative_cache</a></code>,
-      <code><a href="epac.tests.wfexamples2test.WorkflowExample-class.html#_abc_negative_cache_version" onclick="show_private();">_abc_negative_cache_version</a></code>,
-      <code><a href="epac.tests.wfexamples2test.WorkflowExample-class.html#_abc_registry" onclick="show_private();">_abc_registry</a></code>
-      </p></div>
     </td>
   </tr>
 </table>
@@ -224,24 +226,27 @@
   </td>
 </tr>
 </table>
-<a name="get_workflow"></a>
+<a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_workflow</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">node</span>,
+        <span class="sig-arg">indices_of_groups</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.tests.wfexamples2test-pysrc.html#WFExample5.get_workflow">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#RowSplitter.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Retrieve workflow</p>
+  <p>x.__init__(...) initializes x; see help(type(x)) for signature</p>
   <dl class="fields">
     <dt>Overrides:
-        <a href="epac.tests.wfexamples2test.WorkflowExample-class.html#get_workflow">WorkflowExample.get_workflow</a>
+        object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>

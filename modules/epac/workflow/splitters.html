@@ -95,6 +95,7 @@
 <span class="c"># -- Splitter                   -- #</span>
 <span class="c"># -------------------------------- #</span>
 
+
 <div class="viewcode-block" id="BaseNodeSplitter"><a class="viewcode-back" href="../../../api/workflow/splitters.html#epac.workflow.splitters.BaseNodeSplitter">[docs]</a><span class="k">class</span> <span class="nc">BaseNodeSplitter</span><span class="p">(</span><span class="n">BaseNode</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Splitters are are non leaf node (degree &gt;= 1) with children.</span>
 <span class="sd">    They split the downstream data-flow to their children.</span>
@@ -161,6 +162,23 @@
 <span class="sd">    reducer: Reducer</span>
 <span class="sd">        A Reducer should implement the reduce(node, key2, val) method.</span>
 <span class="sd">        Default ClassificationReport() with default arguments.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn import datasets</span>
+<span class="sd">    &gt;&gt;&gt; from epac import CV, Methods</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.lda import LDA</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.svm import LinearSVC as SVM</span>
+<span class="sd">    &gt;&gt;&gt; X, y = datasets.make_classification(n_samples=20,</span>
+<span class="sd">    ...                                     n_features=20,</span>
+<span class="sd">    ...                                     n_informative=2,</span>
+<span class="sd">    ...                                     random_state=1)</span>
+<span class="sd">    &gt;&gt;&gt; cv = CV(Methods(LDA(), SVM()))</span>
+<span class="sd">    &gt;&gt;&gt; res = cv.run(X=X, y=y)    </span>
+<span class="sd">    &gt;&gt;&gt; print cv.reduce()</span>
+<span class="sd">    ResultSet(</span>
+<span class="sd">    [{&#39;key&#39;: LDA, &#39;y/test/score_precision&#39;: [ 0.55555556  0.54545455], &#39;y/test/score_recall&#39;: [ 0.5  0.6], &#39;y/test/score_accuracy&#39;: 0.55, &#39;y/test/score_f1&#39;: [ 0.52631579  0.57142857], &#39;y/test/score_recall_mean&#39;: 0.55},</span>
+<span class="sd">     {&#39;key&#39;: LinearSVC, &#39;y/test/score_precision&#39;: [ 0.53846154  0.57142857], &#39;y/test/score_recall&#39;: [ 0.7  0.4], &#39;y/test/score_accuracy&#39;: 0.55, &#39;y/test/score_f1&#39;: [ 0.60869565  0.47058824], &#39;y/test/score_recall_mean&#39;: 0.55}])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -170,8 +188,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cv_type</span> <span class="o">=</span> <span class="n">cv_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span> <span class="o">=</span> <span class="n">reducer</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span> <span class="o">=</span> <span class="n">RowSlicer</span><span class="p">(</span><span class="n">signature_name</span><span class="o">=</span><span class="s">&quot;CV&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">apply_on</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">VirtualList</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span> <span class="o">=</span> <span class="n">CRSlicer</span><span class="p">(</span><span class="n">signature_name</span><span class="o">=</span><span class="s">&quot;CV&quot;</span><span class="p">,</span>
+                               <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">apply_on</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                               <span class="n">col_or_row</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">VirtualList</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span>
+                                    <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">subtree</span> <span class="o">=</span> <span class="n">NodeFactory</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="c"># subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)</span>
@@ -399,83 +421,25 @@
         <span class="k">return</span> <span class="n">results</span>
 
 
-<span class="k">class</span> <span class="nc">ColumnSlicer</span><span class="p">(</span><span class="n">Slicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Collum-sampling</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signature_name</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">apply_on</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        signature_name: string</span>
-
-<span class="sd">        nb: integer</span>
-<span class="sd">            nb is used for the key value that distinguishs thier sibling node</span>
-
-<span class="sd">        apply_on: string or list of strings (or None)</span>
-<span class="sd">            The name(s) of the downstream blocs to be re-slicing. If</span>
-<span class="sd">            None, all downstream blocs are sampling (slicing).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">signature_name</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">apply_on</span><span class="p">:</span>  <span class="c"># None is an acceptable value here</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="n">apply_on</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apply_on</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="n">apply_on</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apply_on</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="p">[</span><span class="n">apply_on</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;apply_on must be a string or a &quot;</span>\
-                <span class="s">&quot;list of strings or None&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">set_sclices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slices</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c"># convert as a list if required</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span>\
-                <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slices</span><span class="p">}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> \
-                <span class="n">slices</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">slices</span>
-
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Slicing hasn&#39;t been initialized. &quot;</span>
-            <span class="s">&quot;Slicers constructors such as CV or Perm should be called &quot;</span>
-            <span class="s">&quot;with a sample. Ex.: CV(..., y=y), Perm(..., y=y)&quot;</span><span class="p">)</span>
-        <span class="n">data_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="k">else</span> <span class="n">Xy</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>  <span class="c"># slice input data</span>
-            <span class="n">dat</span> <span class="o">=</span> <span class="n">Xy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">data_key</span><span class="p">]]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">data_key</span><span class="p">]]</span>
-        <span class="k">return</span> <span class="n">Xy</span>
-
-
 <span class="k">class</span> <span class="nc">CRSlicer</span><span class="p">(</span><span class="n">Slicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Collum-sampling</span>
+    <span class="sd">&quot;&quot;&quot;column or row sampling</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signature_name: string</span>
+
+<span class="sd">    nb: integer</span>
+<span class="sd">        nb is used for the key value that distinguishs thier sibling node</span>
+
+<span class="sd">    apply_on: string or list of strings (or None)</span>
+<span class="sd">        The name(s) of the downstream blocs to be re-slicing. If</span>
+<span class="sd">        None, all downstream blocs are sampling (slicing).</span>
+
+<span class="sd">    col_or_row: boolean value</span>
+<span class="sd">        If col_or_row is True means that column splitter,</span>
+<span class="sd">        If col_or_row is False means that row splitter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signature_name</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">apply_on</span><span class="p">,</span> <span class="n">col_or_row</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        signature_name: string</span>
-
-<span class="sd">        nb: integer</span>
-<span class="sd">            nb is used for the key value that distinguishs thier sibling node</span>
-
-<span class="sd">        apply_on: string or list of strings (or None)</span>
-<span class="sd">            The name(s) of the downstream blocs to be re-slicing. If</span>
-<span class="sd">            None, all downstream blocs are sampling (slicing).</span>
-
-<span class="sd">        col_or_row: boolean value</span>
-<span class="sd">            If col_or_row is True means that column splitter,</span>
-<span class="sd">            If col_or_row is False means that row splitter</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CRSlicer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">signature_name</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">col_or_row</span> <span class="o">=</span> <span class="n">col_or_row</span>
@@ -505,8 +469,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Slicing hasn&#39;t been initialized. &quot;</span><span class="p">)</span>
         <span class="n">data_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="k">else</span> <span class="n">Xy</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>  <span class="c"># slice input data</span>
-            <span class="k">if</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">slice_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">slice_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>
+                <span class="n">data_key</span> <span class="o">=</span> <span class="n">slice_key</span>
                 <span class="n">dat</span> <span class="o">=</span> <span class="n">Xy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_or_row</span><span class="p">:</span>
@@ -515,6 +480,23 @@
                         <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">data_key</span><span class="p">],</span> <span class="p">:]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">data_key</span><span class="p">]]</span>
+        <span class="c"># only for cross-validation</span>
+        <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">TRAIN</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
+            <span class="ow">and</span> <span class="n">conf</span><span class="o">.</span><span class="n">TEST</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">Xy</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">KW_SPLIT_TRAIN_TEST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>
+                    <span class="n">dat</span> <span class="o">=</span> <span class="n">Xy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">sample_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_or_row</span><span class="p">:</span>
+                                <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
+                                    <span class="n">dat</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
+                                    <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">],</span> <span class="p">:]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
+                                <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">Xy</span>
 
 
@@ -528,7 +510,7 @@
 <span class="sd">        Node: Pipe | Par*</span>
 
 <span class="sd">    indices_of_groups: dictionary</span>
-<span class="sd">        gourp index of X matrix</span>
+<span class="sd">        The name of the data to be splited and its gourp indices</span>
 
 <span class="sd">    col_or_row: boolean value</span>
 <span class="sd">        If col_or_row is True means that column splitter,</span>
@@ -536,6 +518,7 @@
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
+<span class="sd">    See Example in ColumnSplitter</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -582,7 +565,6 @@
             <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">slices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">set_sclices</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span>
 
@@ -594,7 +576,7 @@
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">ColumnSplitter</span><span class="p">(</span><span class="n">BaseNodeSplitter</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RowSplitter</span><span class="p">(</span><span class="n">CRSplitter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Column Splitter parallelization.</span>
 
 <span class="sd">    Parameters</span>
@@ -604,132 +586,155 @@
 <span class="sd">        Node: Pipe | Par*</span>
 
 <span class="sd">    indices_of_groups: dictionary</span>
-<span class="sd">        gourp index of X matrix</span>
+<span class="sd">        group index for data</span>
+<span class="sd">    </span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    See Example in ColumnSplitter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="sd">    y_group_indices: integer list</span>
-<span class="sd">        gourp index of Y matrix</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indices_of_groups</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RowSplitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span>
+                                          <span class="n">indices_of_groups</span><span class="p">,</span>
+                                          <span class="n">col_or_row</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ColumnSplitter</span><span class="p">(</span><span class="n">CRSplitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Column Splitter parallelization.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node: Node | Estimator</span>
+<span class="sd">        Estimator: should implement fit/predict/score function</span>
+<span class="sd">        Node: Pipe | Par*</span>
+
+<span class="sd">    indices_of_groups: dictionary</span>
+<span class="sd">        group index for data</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from epac import ColumnSplitter</span>
+<span class="sd">    &gt;&gt;&gt; class TestNode:</span>
+<span class="sd">    ...     def transform(self, X, Y):</span>
+<span class="sd">    ...         print &quot;---------------------&quot;</span>
+<span class="sd">    ...         print &quot;X=&quot;, X.shape</span>
+<span class="sd">    ...         print &quot;Y=&quot;, Y.shape</span>
+<span class="sd">    ...         return {&quot;X&quot;: X, &quot;Y&quot;: Y}</span>
+<span class="sd">    ... </span>
+<span class="sd">    &gt;&gt;&gt; </span>
+<span class="sd">    &gt;&gt;&gt; n_samples = 10</span>
+<span class="sd">    &gt;&gt;&gt; n_xfeatures = 11</span>
+<span class="sd">    &gt;&gt;&gt; n_yfeatures = 12</span>
+<span class="sd">    &gt;&gt;&gt; X = np.random.randn(n_samples, n_xfeatures)</span>
+<span class="sd">    &gt;&gt;&gt; Y = np.random.randn(n_samples, n_yfeatures)</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;1. We want to split X into 3 groups (0, 1, 2) column by column&quot;</span>
+<span class="sd">    1. We want to split X into 3 groups (0, 1, 2) column by column</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Therefore we need to define a group indices for X&quot;</span>
+<span class="sd">    Therefore we need to define a group indices for X</span>
+<span class="sd">    &gt;&gt;&gt; X_group_indices = [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2]</span>
+<span class="sd">    &gt;&gt;&gt; print &#39;The key of &quot;X&quot; denotes the data you want to split&#39;</span>
+<span class="sd">    The key of &quot;X&quot; denotes the data you want to split</span>
+<span class="sd">    &gt;&gt;&gt; print &#39;X_group_indices denotes how to split by group indices&#39;</span>
+<span class="sd">    X_group_indices denotes how to split by group indices</span>
+<span class="sd">    &gt;&gt;&gt; indices_of_groups = {&quot;X&quot;: X_group_indices}</span>
+<span class="sd">    &gt;&gt;&gt; print &#39;Build spliter for TestNode&#39;</span>
+<span class="sd">    Build spliter for TestNode</span>
+<span class="sd">    &gt;&gt;&gt; column_splitter = ColumnSplitter(TestNode(),</span>
+<span class="sd">    ...                                  indices_of_groups)</span>
+<span class="sd">    &gt;&gt;&gt; print &#39;Run top-down process&#39;</span>
+<span class="sd">    Run top-down process</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;*********************************&quot;</span>
+<span class="sd">    *********************************</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Split X&quot;</span>
+<span class="sd">    Split X</span>
+<span class="sd">    &gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 12)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 3)</span>
+<span class="sd">    Y= (10, 12)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 12)</span>
+<span class="sd">    &gt;&gt;&gt; print &#39;2. Similarily we want to split Y&#39;</span>
+<span class="sd">    2. Similarily we want to split Y</span>
+<span class="sd">    &gt;&gt;&gt; Y_group_indices = [0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3]</span>
+<span class="sd">    &gt;&gt;&gt; indices_of_groups = {&quot;Y&quot;: Y_group_indices}</span>
+<span class="sd">    &gt;&gt;&gt; column_splitter = ColumnSplitter(TestNode(),</span>
+<span class="sd">    ...                                  indices_of_groups)</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;*********************************&quot;</span>
+<span class="sd">    *********************************</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Split Y&quot;</span>
+<span class="sd">    Split Y</span>
+<span class="sd">    &gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)    </span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 11)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 11)</span>
+<span class="sd">    Y= (10, 2)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 11)</span>
+<span class="sd">    Y= (10, 4)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 11)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    &gt;&gt;&gt; print &#39;3. We want to split X and Y&#39;</span>
+<span class="sd">    3. We want to split X and Y</span>
+<span class="sd">    &gt;&gt;&gt; indices_of_groups = {&quot;X&quot;: X_group_indices,</span>
+<span class="sd">    ...                      &quot;Y&quot;: Y_group_indices}</span>
+<span class="sd">    &gt;&gt;&gt; column_splitter = ColumnSplitter(TestNode(),</span>
+<span class="sd">    ...                                  indices_of_groups)</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;*********************************&quot;</span>
+<span class="sd">    *********************************</span>
+<span class="sd">    &gt;&gt;&gt; print &quot;Split X and Y&quot;</span>
+<span class="sd">    Split X and Y</span>
+<span class="sd">    &gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 2)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 4)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 3)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 3)</span>
+<span class="sd">    Y= (10, 2)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 3)</span>
+<span class="sd">    Y= (10, 4)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 3)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 3)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 2)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 4)</span>
+<span class="sd">    ---------------------</span>
+<span class="sd">    X= (10, 4)</span>
+<span class="sd">    Y= (10, 3)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indices_of_groups</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ColumnSplitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">indices_of_groups</span> <span class="o">=</span> <span class="n">indices_of_groups</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span> <span class="o">=</span> <span class="n">ColumnSlicer</span><span class="p">(</span>
-            <span class="n">signature_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>\
-            <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>\
-            <span class="n">apply_on</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">key_indices_of_groups</span> <span class="ow">in</span> <span class="n">indices_of_groups</span><span class="p">:</span>
-            <span class="n">indices_of_groups</span><span class="p">[</span><span class="n">key_indices_of_groups</span><span class="p">]</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">x_uni_group_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">x_group_indices</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_uni_group_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">y_group_indices</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_uni_group_indices</span><span class="p">)</span> <span class="o">*</span> \
-                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_uni_group_indices</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">VirtualList</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
-        <span class="n">subtree</span> <span class="o">=</span> <span class="n">NodeFactory</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="c"># subtree = node if isinstance(node, BaseNode) else LeafEstimator(node)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">subtree</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">move_to_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">set_nb</span><span class="p">(</span><span class="n">nb</span><span class="p">)</span>
-        <span class="n">cpt</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">cp_x_uni_group_indice</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">cp_y_uni_group_indice</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">for</span> <span class="n">x_uni_group_indice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_uni_group_indices</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cp_x_uni_group_indice</span> <span class="o">==</span> <span class="bp">None</span><span class="p">)</span>\
-                <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cp_y_uni_group_indice</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
-                <span class="k">break</span>
-            <span class="k">for</span> <span class="n">y_uni_group_indice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_uni_group_indices</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">cpt</span> <span class="o">==</span> <span class="n">nb</span><span class="p">:</span>
-                    <span class="n">cp_x_uni_group_indice</span> <span class="o">=</span> <span class="n">x_uni_group_indice</span>
-                    <span class="n">cp_y_uni_group_indice</span> <span class="o">=</span> <span class="n">y_uni_group_indice</span>
-                    <span class="k">break</span>
-                <span class="n">cpt</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cp_x_uni_group_indice</span> <span class="o">==</span> <span class="bp">None</span><span class="p">)</span>\
-                <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">cp_y_uni_group_indice</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
-            <span class="n">x_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_group_indices</span><span class="p">)</span> <span class="o">==</span> \
-                            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cp_x_uni_group_indice</span><span class="p">))</span>
-            <span class="n">x_indices</span> <span class="o">=</span> <span class="n">x_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">y_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_group_indices</span><span class="p">)</span> <span class="o">==</span> \
-                            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cp_y_uni_group_indice</span><span class="p">))</span>
-            <span class="n">y_indices</span> <span class="o">=</span> <span class="n">y_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span><span class="o">.</span><span class="n">set_sclices</span><span class="p">({</span><span class="s">&quot;X&quot;</span><span class="p">:</span> <span class="n">x_indices</span><span class="p">,</span>
-                                     <span class="s">&quot;Y&quot;</span><span class="p">:</span> <span class="n">y_indices</span><span class="p">})</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span>
-
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">return</span> <span class="n">Xy</span>
-
-    <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">RowSlicer</span><span class="p">(</span><span class="n">Slicer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Row-wise reslicing of the downstream blocs.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name: string</span>
-
-<span class="sd">    apply_on: string or list of strings (or None)</span>
-<span class="sd">        The name(s) of the downstream blocs to be rescliced. If</span>
-<span class="sd">        None, all downstream blocs are rescliced.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signature_name</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">apply_on</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">RowSlicer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">signature_name</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># the dimension of that array in ds should respect</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">apply_on</span><span class="p">:</span>  <span class="c"># None is an acceptable value here</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="n">apply_on</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apply_on</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="n">apply_on</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apply_on</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="p">[</span><span class="n">apply_on</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;apply_on must be a string or a list of strings or None&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">set_sclices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slices</span><span class="p">):</span>
-        <span class="c"># convert as a list if required</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span>\
-                <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slices</span><span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> \
-                <span class="n">slices</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">slices</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Slicing hasn&#39;t been initialized. &quot;</span>
-            <span class="s">&quot;Slicers constructors such as CV or Perm should be called &quot;</span>
-            <span class="s">&quot;with a sample. Ex.: CV(..., y=y), Perm(..., y=y)&quot;</span><span class="p">)</span>
-        <span class="n">data_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="k">else</span> <span class="n">Xy</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="c"># filter out non-array or array with wrong dimension</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Xy</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="s">&quot;shape&quot;</span><span class="p">)</span> <span class="ow">or</span> \
-                <span class="n">Xy</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:</span>
-                <span class="n">data_keys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>  <span class="c"># slice input data</span>
-            <span class="n">dat</span> <span class="o">=</span> <span class="n">Xy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">Xy</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">KW_SPLIT_TRAIN_TEST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
-                <span class="k">for</span> <span class="n">sample_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                        <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">],</span> <span class="p">:]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">Xy</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ColumnSplitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span>
+                                            <span class="n">indices_of_groups</span><span class="p">,</span>
+                                            <span class="n">col_or_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CVBestSearchRefitParallel</span><span class="p">(</span><span class="n">Wrapper</span><span class="p">):</span>
@@ -853,7 +858,6 @@
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
-
 <span class="sd">    &gt;&gt;&gt; from sklearn import datasets</span>
 <span class="sd">    &gt;&gt;&gt; from sklearn.svm import SVC</span>
 <span class="sd">    &gt;&gt;&gt; from epac import Methods</span>
@@ -889,7 +893,7 @@
         <span class="n">arg_max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;arg_max&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s">&quot;arg_max&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="bp">True</span>
         <span class="kn">from</span> <span class="nn">epac.workflow.splitters</span> <span class="kn">import</span> <span class="n">CV</span>
         <span class="c">#methods = Methods(*tasks)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arg_max</span> <span class="o">=</span> <span class="n">arg_max</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is deprecated. Please use </span><span class="si">%s</span><span class="s"> instead.&quot;</span> <span class="o">%</span> \
@@ -938,38 +942,6 @@
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="c">#    import random</span>
-<span class="c">#    from epac import CRSplitter</span>
-<span class="c">#</span>
-<span class="c">#    class Tester:</span>
-<span class="c">#        def transform(self, X, Y):</span>
-<span class="c">#            print &quot;=================================&quot;</span>
-<span class="c">#            print &quot;X=&quot;, X.shape</span>
-<span class="c">#            print &quot;Y=&quot;, Y.shape</span>
-<span class="c">#            return {&quot;X&quot;: X, &quot;Y&quot;: Y}</span>
-<span class="c">#</span>
-<span class="c">#    n_samples = 10</span>
-<span class="c">#    n_xfeatures = 20</span>
-<span class="c">#    n_yfeatures = 15</span>
-<span class="c">#    x_n_groups = 3</span>
-<span class="c">#    y_n_groups = 2</span>
-<span class="c">#</span>
-<span class="c">#    X = np.random.randn(n_samples, n_xfeatures)</span>
-<span class="c">#    Y = np.random.randn(n_samples, n_yfeatures)</span>
-<span class="c">#    x_group_indices = np.array([random.randint(0, x_n_groups)\</span>
-<span class="c">#        for i in xrange(n_xfeatures)])</span>
-<span class="c">##    y_group_indices = np.array([random.randint(0, y_n_groups)\</span>
-<span class="c">##        for i in xrange(n_yfeatures)])</span>
-<span class="c">#    y_group_indices = np.zeros(n_yfeatures)</span>
-<span class="c">#</span>
-<span class="c">#    # 1) Prediction for each X block return a n_samples x n_yfeatures</span>
-<span class="c">#    mulm = CRSplitter(Tester(), {&quot;X&quot;: x_group_indices}, col_or_row=True)</span>
-<span class="c">#    mulm = CRSplitter(Tester(), {&quot;X&quot;: x_group_indices,</span>
-<span class="c">#                      &quot;Y&quot;: y_group_indices}, </span>
-<span class="c">#                      col_or_row=True)</span>
-<span class="c">#    mulm.run(X=X, Y=Y)</span>
-
-    
     <span class="kn">import</span> <span class="nn">doctest</span>
     <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
 </pre></div>

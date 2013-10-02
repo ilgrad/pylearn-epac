@@ -259,8 +259,8 @@ We can also export the results of the top-down and the bottom-up processes to a 
 ::
 
     >>> from epac import export_csv
-    >>> export_csv(cv, cv.run(X=X, y=y), 'results_run.csv')
-    >>> export_csv(cv, cv.reduce(), 'results_reduce.csv')
+    >>> export_leaves_csv(cv, 'results_run.csv')
+    >>> export_resultset_csv(cv.reduce(), 'results_reduce.csv')
 
 
 Model Selection using Cross-validation

@@ -196,15 +196,15 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="epac.workflow.splitters.ColumnSlicer-class.html" class="summary-name">ColumnSlicer</a><br />
-      Collum-sampling
+        <a href="epac.workflow.splitters.ColumnSplitter-class.html" class="summary-name">ColumnSplitter</a><br />
+      Column Splitter parallelization.
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="epac.workflow.splitters.ColumnSplitter-class.html" class="summary-name">ColumnSplitter</a><br />
+        <a href="epac.workflow.splitters.RowSplitter-class.html" class="summary-name">RowSplitter</a><br />
       Column Splitter parallelization.
     </td>
   </tr>
@@ -464,6 +464,42 @@ which is a dictionary of nodes.
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_csv">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="epac-module.html#export_resultset_csv" class="summary-sig-name">export_resultset_csv</a>(<span class="summary-sig-arg">results</span>,
+        <span class="summary-sig-arg">filename</span>)</span><br />
+      Export the results to a CSV file</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#export_resultset_csv">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="epac-module.html#export_leaves_csv" class="summary-sig-name">export_leaves_csv</a>(<span class="summary-sig-arg">tree_root</span>,
+        <span class="summary-sig-arg">filename</span>)</span><br />
+      Export the results to a CSV file</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#export_leaves_csv">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -839,6 +875,109 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
   </dl>
 </td></tr></table>
 </div>
+<a name="export_resultset_csv"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">export_resultset_csv</span>(<span class="sig-arg">results</span>,
+        <span class="sig-arg">filename</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="epac.utils-pysrc.html#export_resultset_csv">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Export the results to a CSV file
+
+Export the results of a bottom-up operation (reduce) to a CSV file
+
+Parameters
+----------
+results: ResultSet to export
+
+filename: Relative or absolute path to the CSV file
+    If the file doesn't exist, create it
+
+Example
+-------
+&gt;&gt;&gt; import tempfile
+&gt;&gt;&gt; from sklearn.svm import LinearSVC as SVM
+&gt;&gt;&gt; from sklearn import datasets
+&gt;&gt;&gt; from epac import Methods
+&gt;&gt;&gt; _, filename = tempfile.mkstemp(suffix=&quot;.csv&quot;)
+&gt;&gt;&gt; X, y = datasets.make_classification(n_samples=12, n_features=10,                                             n_informative=2, random_state=1)
+&gt;&gt;&gt; multi = Methods(SVM(C=1), SVM(C=10))
+&gt;&gt;&gt; result_run = multi.run(X=X, y=y)
+&gt;&gt;&gt; export_resultset_csv(multi.reduce(), filename)
+&gt;&gt;&gt; with open(filename, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+...     print csvfile.read()
+key;y/true;y/pred
+LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
+LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+&lt;BLANKLINE&gt;
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="export_leaves_csv"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">export_leaves_csv</span>(<span class="sig-arg">tree_root</span>,
+        <span class="sig-arg">filename</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="epac.utils-pysrc.html#export_leaves_csv">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Export the results to a CSV file
+
+Export the results of a top-down operation (run) to a CSV file
+
+Parameters
+----------
+tree_root: Workflow in study
+
+filename: Relative or absolute path to the CSV file
+    If the file doesn't exist, create it
+
+Example
+-------
+&gt;&gt;&gt; from sklearn.svm import LinearSVC as SVM
+&gt;&gt;&gt; from sklearn import datasets
+&gt;&gt;&gt; from epac import Methods
+&gt;&gt;&gt; from epac.utils import export_csv
+&gt;&gt;&gt; import tempfile
+&gt;&gt;&gt; _, filename = tempfile.mkstemp(suffix=&quot;.csv&quot;)
+&gt;&gt;&gt; X, y = datasets.make_classification(n_samples=12, n_features=10,                                             n_informative=2, random_state=1)
+&gt;&gt;&gt; multi = Methods(SVM(C=1), SVM(C=10))
+&gt;&gt;&gt; result_run = multi.run(X=X, y=y)
+&gt;&gt;&gt; export_leaves_csv(multi, filename)
+&gt;&gt;&gt; with open(filename, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+...     print csvfile.read()
+key;y/true;y/pred
+LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
+LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
+&lt;BLANKLINE&gt;
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -866,7 +1005,7 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Sep 26 17:57:18 2013
+    Generated by Epydoc 3.0.1 on Wed Oct  2 09:43:36 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

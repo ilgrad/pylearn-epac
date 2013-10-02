@@ -69,7 +69,7 @@ They agregate upstream data-flow from their children.</p>
 
 <dl class="class">
 <dt id="epac.workflow.splitters.CV">
-<em class="property">class </em><tt class="descclassname">epac.workflow.splitters.</tt><tt class="descname">CV</tt><big>(</big><em>node</em>, <em>n_folds=5</em>, <em>random_state=None</em>, <em>cv_type='stratified'</em>, <em>reducer=&lt;epac.map_reduce.reducers.ClassificationReport instance at 0x2f312d8&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../modules/epac/workflow/splitters.html#CV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.workflow.splitters.CV" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">epac.workflow.splitters.</tt><tt class="descname">CV</tt><big>(</big><em>node</em>, <em>n_folds=5</em>, <em>random_state=None</em>, <em>cv_type='stratified'</em>, <em>reducer=&lt;epac.map_reduce.reducers.ClassificationReport instance at 0x3640cf8&gt;</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../modules/epac/workflow/splitters.html#CV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.workflow.splitters.CV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cross-validation parallelization.</p>
 <dl class="docutils">
 <dt>node: Node | Estimator</dt>
@@ -85,11 +85,27 @@ Node: Pipe | Par*</dd>
 <dd>A Reducer should implement the reduce(node, key2, val) method.
 Default ClassificationReport() with default arguments.</dd>
 </dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">CV</span><span class="p">,</span> <span class="n">Methods</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.lda</span> <span class="kn">import</span> <span class="n">LDA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">LinearSVC</span> <span class="k">as</span> <span class="n">SVM</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="gp">... </span>                                    <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+<span class="gp">... </span>                                    <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="gp">... </span>                                    <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">Methods</span><span class="p">(</span><span class="n">LDA</span><span class="p">(),</span> <span class="n">SVM</span><span class="p">()))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>    
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
+<span class="go">ResultSet(</span>
+<span class="go">[{&#39;key&#39;: LDA, &#39;y/test/score_precision&#39;: [ 0.55555556  0.54545455], &#39;y/test/score_recall&#39;: [ 0.5  0.6], &#39;y/test/score_accuracy&#39;: 0.55, &#39;y/test/score_f1&#39;: [ 0.52631579  0.57142857], &#39;y/test/score_recall_mean&#39;: 0.55},</span>
+<span class="go"> {&#39;key&#39;: LinearSVC, &#39;y/test/score_precision&#39;: [ 0.53846154  0.57142857], &#39;y/test/score_recall&#39;: [ 0.7  0.4], &#39;y/test/score_accuracy&#39;: 0.55, &#39;y/test/score_f1&#39;: [ 0.60869565  0.47058824], &#39;y/test/score_recall_mean&#39;: 0.55}])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="class">
 <dt id="epac.workflow.splitters.Perms">
-<em class="property">class </em><tt class="descclassname">epac.workflow.splitters.</tt><tt class="descname">Perms</tt><big>(</big><em>node</em>, <em>n_perms=100</em>, <em>permute='y'</em>, <em>random_state=None</em>, <em>reducer=&lt;epac.map_reduce.reducers.PvalPerms instance at 0x2f31050&gt;</em>, <em>col_or_row=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../modules/epac/workflow/splitters.html#Perms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.workflow.splitters.Perms" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">epac.workflow.splitters.</tt><tt class="descname">Perms</tt><big>(</big><em>node</em>, <em>n_perms=100</em>, <em>permute='y'</em>, <em>random_state=None</em>, <em>reducer=&lt;epac.map_reduce.reducers.PvalPerms instance at 0x3650050&gt;</em>, <em>col_or_row=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../modules/epac/workflow/splitters.html#Perms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.workflow.splitters.Perms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Permutation parallelization.</p>
 <dl class="docutils">
 <dt>node: Node | Estimator</dt>

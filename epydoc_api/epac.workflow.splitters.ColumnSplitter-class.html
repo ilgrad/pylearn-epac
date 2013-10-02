@@ -59,13 +59,15 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ColumnSplitter</h1><p class="nomargin-top"><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#ColumnSplitter">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-   object --+        
-            |        
-<a href="epac.workflow.base.BaseNode-class.html">base.BaseNode</a> --+    
-                |    
- <a href="epac.workflow.splitters.BaseNodeSplitter-class.html">BaseNodeSplitter</a> --+
-                    |
-                   <strong class="uidshort">ColumnSplitter</strong>
+   object --+            
+            |            
+<a href="epac.workflow.base.BaseNode-class.html">base.BaseNode</a> --+        
+                |        
+ <a href="epac.workflow.splitters.BaseNodeSplitter-class.html">BaseNodeSplitter</a> --+    
+                    |    
+           <a href="epac.workflow.splitters.CRSplitter-class.html">CRSplitter</a> --+
+                        |
+                       <strong class="uidshort">ColumnSplitter</strong>
 </pre>
 
 <hr />
@@ -79,10 +81,125 @@ node: Node | Estimator
     Node: Pipe | Par*
 
 indices_of_groups: dictionary
-    gourp index of X matrix
+    group index for data
 
-y_group_indices: integer list
-    gourp index of Y matrix
+Example
+-------
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from epac import ColumnSplitter
+&gt;&gt;&gt; class TestNode:
+...     def transform(self, X, Y):
+...         print &quot;---------------------&quot;
+...         print &quot;X=&quot;, X.shape
+...         print &quot;Y=&quot;, Y.shape
+...         return {&quot;X&quot;: X, &quot;Y&quot;: Y}
+... 
+&gt;&gt;&gt; 
+&gt;&gt;&gt; n_samples = 10
+&gt;&gt;&gt; n_xfeatures = 11
+&gt;&gt;&gt; n_yfeatures = 12
+&gt;&gt;&gt; X = np.random.randn(n_samples, n_xfeatures)
+&gt;&gt;&gt; Y = np.random.randn(n_samples, n_yfeatures)
+&gt;&gt;&gt; print &quot;1. We want to split X into 3 groups (0, 1, 2) column by column&quot;
+1. We want to split X into 3 groups (0, 1, 2) column by column
+&gt;&gt;&gt; print &quot;Therefore we need to define a group indices for X&quot;
+Therefore we need to define a group indices for X
+&gt;&gt;&gt; X_group_indices = [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2]
+&gt;&gt;&gt; print 'The key of &quot;X&quot; denotes the data you want to split'
+The key of &quot;X&quot; denotes the data you want to split
+&gt;&gt;&gt; print 'X_group_indices denotes how to split by group indices'
+X_group_indices denotes how to split by group indices
+&gt;&gt;&gt; indices_of_groups = {&quot;X&quot;: X_group_indices}
+&gt;&gt;&gt; print 'Build spliter for TestNode'
+Build spliter for TestNode
+&gt;&gt;&gt; column_splitter = ColumnSplitter(TestNode(),
+...                                  indices_of_groups)
+&gt;&gt;&gt; print 'Run top-down process'
+Run top-down process
+&gt;&gt;&gt; print &quot;*********************************&quot;
+*********************************
+&gt;&gt;&gt; print &quot;Split X&quot;
+Split X
+&gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)
+---------------------
+X= (10, 4)
+Y= (10, 12)
+---------------------
+X= (10, 3)
+Y= (10, 12)
+---------------------
+X= (10, 4)
+Y= (10, 12)
+&gt;&gt;&gt; print '2. Similarily we want to split Y'
+2. Similarily we want to split Y
+&gt;&gt;&gt; Y_group_indices = [0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3]
+&gt;&gt;&gt; indices_of_groups = {&quot;Y&quot;: Y_group_indices}
+&gt;&gt;&gt; column_splitter = ColumnSplitter(TestNode(),
+...                                  indices_of_groups)
+&gt;&gt;&gt; print &quot;*********************************&quot;
+*********************************
+&gt;&gt;&gt; print &quot;Split Y&quot;
+Split Y
+&gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)    
+---------------------
+X= (10, 11)
+Y= (10, 3)
+---------------------
+X= (10, 11)
+Y= (10, 2)
+---------------------
+X= (10, 11)
+Y= (10, 4)
+---------------------
+X= (10, 11)
+Y= (10, 3)
+&gt;&gt;&gt; print '3. We want to split X and Y'
+3. We want to split X and Y
+&gt;&gt;&gt; indices_of_groups = {&quot;X&quot;: X_group_indices,
+...                      &quot;Y&quot;: Y_group_indices}
+&gt;&gt;&gt; column_splitter = ColumnSplitter(TestNode(),
+...                                  indices_of_groups)
+&gt;&gt;&gt; print &quot;*********************************&quot;
+*********************************
+&gt;&gt;&gt; print &quot;Split X and Y&quot;
+Split X and Y
+&gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)
+---------------------
+X= (10, 4)
+Y= (10, 3)
+---------------------
+X= (10, 4)
+Y= (10, 2)
+---------------------
+X= (10, 4)
+Y= (10, 4)
+---------------------
+X= (10, 4)
+Y= (10, 3)
+---------------------
+X= (10, 3)
+Y= (10, 3)
+---------------------
+X= (10, 3)
+Y= (10, 2)
+---------------------
+X= (10, 3)
+Y= (10, 4)
+---------------------
+X= (10, 3)
+Y= (10, 3)
+---------------------
+X= (10, 4)
+Y= (10, 3)
+---------------------
+X= (10, 4)
+Y= (10, 2)
+---------------------
+X= (10, 4)
+Y= (10, 4)
+---------------------
+X= (10, 4)
+Y= (10, 3)
 
 </pre>
 
@@ -122,59 +239,14 @@ y_group_indices: integer list
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="move_to_child"></a><span class="summary-sig-name">move_to_child</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">nb</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#ColumnSplitter.move_to_child">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="epac.workflow.splitters.ColumnSplitter-class.html#transform" class="summary-sig-name">transform</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">**Xy</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#ColumnSplitter.transform">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="epac.workflow.splitters.ColumnSplitter-class.html#get_parameters" class="summary-sig-name">get_parameters</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return the state of the object</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="epac.workflow.splitters-pysrc.html#ColumnSplitter.get_parameters">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.workflow.splitters.CRSplitter-class.html">CRSplitter</a></code></b>:
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#convert_dict2list">convert_dict2list</a></code>,
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#get_parameters">get_parameters</a></code>,
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#move_to_child">move_to_child</a></code>,
+      <code><a href="epac.workflow.splitters.CRSplitter-class.html#transform">transform</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="epac.workflow.splitters.BaseNodeSplitter-class.html">BaseNodeSplitter</a></code></b>:
       <code><a href="epac.workflow.splitters.BaseNodeSplitter-class.html#reduce">reduce</a></code>
       </p>
@@ -294,53 +366,6 @@ y_group_indices: integer list
   </dl>
 </td></tr></table>
 </div>
-<a name="transform"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">transform</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">**Xy</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#ColumnSplitter.transform">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  
-  <dl class="fields">
-    <dt>Overrides:
-        <a href="epac.workflow.base.BaseNode-class.html#transform">base.BaseNode.transform</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_parameters"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_parameters</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.workflow.splitters-pysrc.html#ColumnSplitter.get_parameters">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return the state of the object</p>
-  <dl class="fields">
-    <dt>Overrides:
-        <a href="epac.workflow.base.BaseNode-class.html#get_parameters">base.BaseNode.get_parameters</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -368,7 +393,7 @@ y_group_indices: integer list
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Sep 26 17:57:19 2013
+    Generated by Epydoc 3.0.1 on Wed Oct  2 09:43:37 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
