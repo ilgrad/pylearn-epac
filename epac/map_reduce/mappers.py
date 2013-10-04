@@ -100,8 +100,8 @@ class MapperSubtrees(Mapper):
     >>> ## ==================
     >>> tree_root_node.reduce()
     ResultSet(
-    [{'key': SelectKBest/SVC(C=1), 'y/test/score_f1': [ 0.8  0.8], 'y/test/score_recall_mean/pval': [ 0.], 'y/test/score_recall/pval': [ 0.  0.], 'y/test/score_accuracy/pval': [ 0.], 'y/test/score_f1/pval': [ 0.  0.], 'y/test/score_precision/pval': [ 0.  0.], 'y/test/score_precision': [ 0.8  0.8], 'y/test/score_recall': [ 0.8  0.8], 'y/test/score_accuracy': 0.8, 'y/test/score_recall_mean': 0.8},
-     {'key': SelectKBest/SVC(C=3), 'y/test/score_f1': [ 0.8  0.8], 'y/test/score_recall_mean/pval': [ 0.], 'y/test/score_recall/pval': [ 0.  0.], 'y/test/score_accuracy/pval': [ 0.], 'y/test/score_f1/pval': [ 0.  0.], 'y/test/score_precision/pval': [ 0.  0.], 'y/test/score_precision': [ 0.8  0.8], 'y/test/score_recall': [ 0.8  0.8], 'y/test/score_accuracy': 0.8, 'y/test/score_recall_mean': 0.8}])
+    [{'key': SelectKBest/SVC(C=1), 'y/test/score_f1': [ 0.6  0.6], 'y/test/score_recall_mean/pval': [ 0.5], 'y/test/score_recall/pval': [ 0.   0.5], 'y/test/score_accuracy/pval': [ 0.], 'y/test/score_f1/pval': [ 0.   0.5], 'y/test/score_precision/pval': [ 0.5  0. ], 'y/test/score_precision': [ 0.6  0.6], 'y/test/score_recall': [ 0.6  0.6], 'y/test/score_accuracy': 0.6, 'y/test/score_recall_mean': 0.6},
+     {'key': SelectKBest/SVC(C=3), 'y/test/score_f1': [ 0.6  0.6], 'y/test/score_recall_mean/pval': [ 0.5], 'y/test/score_recall/pval': [ 0.   0.5], 'y/test/score_accuracy/pval': [ 0.], 'y/test/score_f1/pval': [ 0.   0.5], 'y/test/score_precision/pval': [ 0.5  0. ], 'y/test/score_precision': [ 0.6  0.6], 'y/test/score_recall': [ 0.6  0.6], 'y/test/score_accuracy': 0.6, 'y/test/score_recall_mean': 0.6}])
 
     '''
     def __init__(self,
@@ -173,4 +173,4 @@ class MapperSubtrees(Mapper):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=True)
+    doctest.testmod()

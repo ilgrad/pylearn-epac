@@ -8,18 +8,19 @@ Created on Mon Oct 29 16:20:03 2012
 ## Class Permutations to be added to sklearn
 import numpy as np
 from sklearn.utils import check_random_state
+from warnings import warn
 
 
 class Permutations(object):
     """
-    
+
     Example
     -------
     >>> from epac.sklearn_plugins.resampling import Permutations
     >>> permutations = Permutations(10, 5)
     >>> for pdata in permutations:  # doctest: +SKIP
     ...     print pdata
-    ... 
+    ...
     [0 1 2 3 4 5 6 7 8 9]
     [9 4 1 2 3 5 6 0 7 8]
     [0 3 8 6 1 7 5 9 2 4]
@@ -83,7 +84,7 @@ class FeatureRanking():
     -------
     >>> from sklearn import datasets
     >>> import numpy as np
-    
+
     # import some data to play with
     >>> iris = datasets.load_iris()
     >>> X = iris.data
@@ -119,9 +120,11 @@ class FeatureRanking():
         return X
 
     def toto(self):
-        return dict(fscores=self.scores, pvalues=self.pvalues, ranks=self.ranks)
+        return dict(fscores=self.scores,
+                    pvalues=self.pvalues,
+                    ranks=self.ranks)
 
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=True)
+    doctest.testmod()

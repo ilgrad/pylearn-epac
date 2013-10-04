@@ -41,7 +41,7 @@ class ClassificationReport(Reducer):
 
     Parameters
     ----------
-    
+
     select_regexp: srt
       A string to select items (defaults "test"). It must match two items:
       "true/test" and "pred/test".
@@ -60,7 +60,7 @@ class ClassificationReport(Reducer):
     >>> result
     [('key', 'SVC'), ('y/test/score_accuracy', 0.75), ('y/test/score_f1', array([ 0.66666667,  0.8       ])), ('y/test/score_precision', array([ 1.        ,  0.66666667])), ('y/test/score_recall', array([ 0.5,  1. ])), ('y/test/score_recall_mean', 0.75)]
     """
-    
+
     def __init__(self, select_regexp=conf.TEST,
                  keep=False):
         self.select_regexp = select_regexp
@@ -85,13 +85,16 @@ class ClassificationReport(Reducer):
         except ValueError:
             pass
         out = Result(key=result["key"])
-        p, r, f1, s = precision_recall_fscore_support(y_true, y_pred, average=None)
+        p, r, f1, s = precision_recall_fscore_support(y_true,
+                                                      y_pred,
+                                                      average=None)
         key, _ = key_pop(key_pred, -1)
         out[key_push(key, conf.SCORE_PRECISION)] = p
         out[key_push(key, conf.SCORE_RECALL)] = r
         out[key_push(key, conf.SCORE_RECALL_MEAN)] = r.mean()
         out[key_push(key, conf.SCORE_F1)] = f1
-        out[key_push(key, conf.SCORE_ACCURACY)] = accuracy_score(y_true, y_pred)
+        out[key_push(key, conf.SCORE_ACCURACY)] = accuracy_score(y_true,
+                                                                 y_pred)
         if self.keep:
             out.update(result)
         return out

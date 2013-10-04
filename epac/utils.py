@@ -38,7 +38,7 @@ def get_next_number(str_value):
 
 def range_log2(n, add_n=True):
     """Return log2 range starting from 1"""
-    rang = (2**np.arange(int(np.floor(np.log2(n))) + 1)).tolist()
+    rang = (2 ** np.arange(int(np.floor(np.log2(n))) + 1)).tolist()
     if add_n:
         rang.append(int(n))
     return rang
@@ -325,7 +325,7 @@ def export_csv(tree, results, filename):
     LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
     LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
     <BLANKLINE>
-    
+
     >>> _, filename2 = tempfile.mkstemp(suffix=".csv")
     >>> result_reduce = multi.reduce()
     >>> export_csv(multi, result_reduce, filename2)
@@ -534,7 +534,7 @@ def get_list_from_lists(lists, nb):
     >>> for nb in xrange(0, 7):
     ...     print "nb=", nb
     ...     print get_list_from_lists(lists, nb)
-    ... 
+    ...
     nb= 0
     [1, 2, 3, 3]
     nb= 1

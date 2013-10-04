@@ -112,7 +112,6 @@ def signature_eval(signature):
         return [("name", signature)]
 
 
-
 ## ======================================= ##
 ## == Workflow Node base abstract class == ##
 ## ======================================= ##
@@ -203,7 +202,7 @@ class BaseNode(object):
         key: str
 
         regexp: str
-            string with wild-cards: "*" to allow several matches. 
+            string with wild-cards: "*" to allow several matches.
             It return KEY STRING LIST instead of nodes.
 
         Example
@@ -472,7 +471,7 @@ class BaseNode(object):
             debug.current = self
             debug.Xy = Xy
         if not self.parent:
-            self.initialization(**Xy)  ## Performe some initialization
+            self.initialization(**Xy)  # Performe some initialization
         Xy = self.transform(**Xy)
         if self.children:
             # Call children func_name down to leaves
@@ -577,8 +576,8 @@ class BaseNode(object):
             if node.store:
                 self.get_store().dict.update(node.store.dict)
         store.save(key=key_push(self.get_key(), conf.STORE_STORE_PREFIX),
-                       obj=self.store, protocol="bin")     
-                
+                       obj=self.store, protocol="bin")
+
     def save_node(self, store):
         """I/O (persistance) operation: save single node states ie.: store"""
         store.save(key=key_push(self.get_key(), conf.STORE_STORE_PREFIX),

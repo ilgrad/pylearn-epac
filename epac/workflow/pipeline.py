@@ -9,7 +9,6 @@ Define "Pipeline": the primitive to build sequential execution of tasks.
 ## tr: train
 ## te: test
 
-from epac.workflow.base import BaseNode
 from epac.workflow.factory import NodeFactory
 
 

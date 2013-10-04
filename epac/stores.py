@@ -103,7 +103,6 @@ class StoreFs(Store):
             file_path = path + conf.STORE_FS_PICKLE_SUFFIX
             self.save_pickle(file_path, obj)
 
-
     def load(self, key=""):
         """Load everything that is prefixed with key.
 
@@ -184,9 +183,6 @@ class StoreFs(Store):
 #        pickle.dump(obj, output)
 #        output.close()
 
-    
-        
-
     def load_pickle(self, file_path):
 #        u'/tmp/store/KFold-0/SVC/__node__NodeEstimator.pkl'
 #        inputf = open(file_path, 'rb')
@@ -217,6 +213,7 @@ class StoreFs(Store):
         obj_dict = json.load(inputf)
         inputf.close()
         return dict_to_obj(obj_dict)
+
 
 ## ============================== ##
 ## == Conversion Object / dict == ##

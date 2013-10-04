@@ -1,4 +1,0 @@
-To run all the tests and doctests of pylearn-epac at once:
-
--> In the pylearn-epac/epac directory, run :
-    nosetests -s --with-doctest --nologcapture --ignore-files=benchmark_mem.py

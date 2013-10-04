@@ -135,4 +135,4 @@ def _gen_keysfile_list_from_nodes_list(
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=True)
+    doctest.testmod()

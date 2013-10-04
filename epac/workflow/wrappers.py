@@ -59,7 +59,7 @@ class Wrapper(BaseNode):
 
 class TransformNode(Wrapper):
     '''Wrapping a class has a "transform" method
-    
+
     Parameters
     ----------
     in_args_transform: list of strings

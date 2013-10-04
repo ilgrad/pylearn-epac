@@ -24,10 +24,10 @@ class SplitInput(object):
 
 class SplitNodesInput(SplitInput):
     """ Split NodesInput into a list of epac.map_reduce.NodesInput
-    
+
     Parameters
     ----------
-    
+
     num_processes: integer
        Building a list of num_processes node_inputs.
        if num_processes is equal to -1, num_processes is set to #CPU
