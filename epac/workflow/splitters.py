@@ -847,10 +847,10 @@ class CVBestSearchRefit(Wrapper):
                      **kwargs)
         self.score = score
         self.arg_max = arg_max
-        warnings.warn("%s is deprecated. Please use %s instead." % \
-                        (self.__class__.__name__,\
-                         CVBestSearchRefitParallel.__name__),
-                        category=DeprecationWarning)
+#        warnings.warn("%s is deprecated. Please use %s instead." % \
+#                        (self.__class__.__name__,\
+#                         CVBestSearchRefitParallel.__name__),
+#                        category=DeprecationWarning)
 
     def get_signature(self):
         return self.__class__.__name__
