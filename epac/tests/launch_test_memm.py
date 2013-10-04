@@ -2,7 +2,7 @@
 """
 Created on Thu Sep 26 12:02:00 2013
 
-@author: laure
+@author: laure.hugo@cea.fr
 """
 
 import os
