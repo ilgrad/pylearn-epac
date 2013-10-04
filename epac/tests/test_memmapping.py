@@ -19,6 +19,7 @@ def create_mmat(nrows, ncols, default_values=None, dir=None):
     np.random.seed(now.second)
     hfile = tempfile.NamedTemporaryFile("w+", dir=dir)
     filename = hfile.name
+    print "Temporary path :", filename
     hfile.close()
     mem_mat = np.memmap(filename,\
                      dtype='float32',\
@@ -43,27 +44,40 @@ def create_array(size, default_values=None, dir=None):
 
 
 # @profile
-def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
+def func_memm_local(n_samples, n_features, memmap=False,
+                    n_proc=1, is_swf=False, dir=None):
     ''' Test the capacity of the computer
 
     Parameters
     ----------
-    n_samples: number of rows of the X matrix
+    n_samples: int
+        Number of rows of the X matrix
 
-    n_features: number of columns of th X matrix
+    n_features: int
+        Number of columns of the X matrix
 
-    memmap: if True, use memory mapping to reduce memory cost
+    memmap: boolean
+        If True, use memory mapping to reduce memory cost
 
-    n_proc: number of processes
+    n_proc: int
+        Number of processes
+
+    is_swf: boolean
+        If True, run the processes on the cluster
+        If False, run on the local machine
+
+    dir: directory path
+        Path of the directory where you want to save the temporary files
+        If None, save in /tmp
     '''
 
     ## 1) Building dataset
     ## ============================================================
     print " -> Pt1 : Beginning with", n_features, "features, memmap =",\
-        memmap, ",", n_proc, "processes"
+        memmap, ",", n_proc, "processes", "is_swf = ", is_swf
     if memmap:
-        X = create_mmat(n_samples, n_features, dir="/volatile")
-        y = create_array(n_samples, [0, 1], dir="/volatile")
+        X = create_mmat(n_samples, n_features, dir=dir)
+        y = create_array(n_samples, [0, 1], dir=dir)
 
         print "X matrix file size =", os.path.getsize(X.filename), "bytes"
 
@@ -76,7 +90,7 @@ def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
                                             random_state=1)
 
         Xy = dict(X=X, y=y)
-    ## 2) Build two workflows respectively
+    ## 2) Building workflow
     ## =======================================================
     print " -> Pt2 : X and y created, building workflow"
     from sklearn.svm import SVC
@@ -86,14 +100,9 @@ def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
                           n_folds=3)
     print " -> Pt3 : Workflow built, running"
 
-#    # Single process on local engine
-#    cv_svm_local.run(**Xy)
-#    print " -> Pt4 : Finished running single-process, reducing"
-#    cv_svm_local.reduce()
-
-    # Multiple processes on local engine
     cv_svm = None
     if is_swf:
+        # Running on the cluster
         from epac import SomaWorkflowEngine
         mmap_mode = None
         if memmap:
@@ -107,14 +116,18 @@ def func_memm_local(n_samples, n_features, memmap, n_proc, is_swf=False):
                                         mmap_mode=mmap_mode)
         cv_svm = swf_engine.run(**Xy)
     else:
+        # Running on the local machine
         from epac import LocalEngine
         local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
         cv_svm = local_engine.run(**Xy)
-    print " -> Pt4 : Finished running multi-processes, reducing"
+    print " -> Pt4 : Finished running reducing"
     print cv_svm.reduce()
 
     print " -> Pt5 : Finished with", n_features, "features"
+    print "\n \n"
 
+    ## 3) Removing files
+    ## =======================================================
     if hasattr(X, "filename"):
         os.remove(X.filename)
     if hasattr(y, "filename"):
