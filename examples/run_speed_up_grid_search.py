@@ -75,8 +75,8 @@ if __name__ == "__main__":
     ##  1. PrevStateMethods will look for different argumenets as signature
     ##     For example, here is v_lambda, there are different for each leaf
     ##  2. And then run TOY_CLF(v_lambda=2).transform
-    ##  3. Except v_lambda, PrevStateMethods copy all the other parameters 
-    ##     from TOY_CLF(v_lambda=2) to TOY_CLF(v_lambda=1)
+    ##  3. Except v_lambda, PrevStateMethods copy all the other parameters
+    ##     from TOY_CLF(v_lambda=2) to TOY_CLF(v_lambda=1) as initialization
     ##  4. Finally call TOY_CLF(v_lambda=1).transform
     print "PrevStateMethods =========================="
     ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
