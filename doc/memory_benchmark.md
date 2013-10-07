@@ -52,23 +52,25 @@ Command::
 
 ```
     n_features |    1 process     |    2 processes   |    3 processes   |
-      50000    |   688MB |   75s  |  2509MB |   85s  |  3483MB |   95s  |
-     100000    |  1340MB |  145s  |  3902MB |  155s  |  5596MB |  176s  |
-     200000    |  2646MB |  155s  |   MEMORY ERROR   |   MEMORY ERROR   |
-     400000    |  5792MB |  597s  | 20037MB |  740s  | 22031MB |  977s  |
-     800000    | 10480MB | 1269s  |   MEMORY ERROR   |   MEMORY ERROR   |
+      50000    |   687MB |   75s  |  1983MB |   85s  |  3067MB |   95s  |
+     100000    |  1340MB |  145s  |  4740MB |  155s  |  5596MB |  176s  |
+     200000    |  2646MB |  296s  |   SYSTEM ERROR   |   SYSTEM ERROR   |
+     400000    |  5787MB |  597s  | 18859MB |  740s  | 22031MB |  977s  |
+     800000    | 10480MB | 1269s  |   SYSTEM ERROR   |   SYSTEM ERROR   |
     1600000    |   MEMORY ERROR   |   MEMORY ERROR   |   MEMORY ERROR   |
 ```
 
 ```
     n_features |    4 processes   |    5 processes   |    6 processes   |
-      50000    |  3082MB |  105s  |  3827MB |   70s  |  3528MB |  136s  |
-     100000    |  6019MB |  206s  |  7480MB |  131s  |  7597MB |  277s  |
-     200000    |   MEMORY ERROR   |   MEMORY ERROR   |   MEMORY ERROR   |
-     400000    | 21546MB | 1026s  |   MEMORY ERROR   |   MEMORY ERROR   |
-     800000    |   MEMORY ERROR   |   MEMORY ERROR   |   MEMORY ERROR   |
+      50000    |  3083MB |  105s  |  3827MB |  125s  |  3528MB |  136s  |
+     100000    |  6019MB |  206s  |  7527MB |  256s  |  7119MB |  277s  |
+     200000    |   SYSTEM ERROR   |   SYSTEM ERROR   |   SYSTEM ERROR   |
+     400000    | 21546MB | 1033s  | 23146MB | 1119s  |   MEMORY ERROR   |
+     800000    |   SYSTEM ERROR   |   SYSTEM ERROR   |   MEMORY ERROR   |
     1600000    |   MEMORY ERROR   |   MEMORY ERROR   |   MEMORY ERROR   |
 ```
+
+SYSTEM ERROR : SystemError: error return without exception set
 
 With memory mapping, on the cluster
 -----------------------------------

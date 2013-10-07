@@ -105,26 +105,26 @@ for n_proc in n_proc_list:
         cmd = ""
         if not is_on_cluster:
             cmd = "(unbuffer python %s %i %i %s %i %s %s >> %s &)" % \
-                                                (process_name,
-                                                 n_samples,
-                                                 n_features,
-                                                 repr(memmap),
-                                                 n_proc,
-                                                 repr(is_on_cluster),
-                                                 directory,
-                                                 filename)
+                  (process_name,
+                   n_samples,
+                   n_features,
+                   repr(memmap),
+                   n_proc,
+                   repr(is_on_cluster),
+                   directory,
+                   filename)
             os.system(cmd)
             time.sleep(5)
             print_process_mem_cost(process_name)
         else:
             cmd = "unbuffer python %s %i %i %s %i %s >> %s" % \
-                                                (process_name,
-                                                 n_samples,
-                                                 n_features,
-                                                 memmap,
-                                                 n_proc,
-                                                 repr(is_on_cluster),
-                                                 filename)
+                  (process_name,
+                   n_samples,
+                   n_features,
+                   memmap,
+                   n_proc,
+                   repr(is_on_cluster),
+                   filename)
             os.system(cmd)
         finished_time = datetime.datetime.now()
         print "Finished time = ", repr(finished_time)

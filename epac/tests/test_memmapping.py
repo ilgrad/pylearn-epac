@@ -21,10 +21,10 @@ def create_mmat(nrows, ncols, default_values=None, dir=None):
     filename = hfile.name
     print "Temporary path :", filename
     hfile.close()
-    mem_mat = np.memmap(filename,\
-                     dtype='float32',\
-                     mode='w+',\
-                     shape=(nrows, ncols))
+    mem_mat = np.memmap(filename,
+                        dtype='float32',
+                        mode='w+',
+                        shape=(nrows, ncols))
     for i in xrange(nrows):
         if not default_values:
             mem_mat[i, :] = np.random.random(size=ncols)
@@ -73,6 +73,7 @@ def func_memm_local(n_samples, n_features, memmap=False,
 
     ## 1) Building dataset
     ## ============================================================
+    print "\n \n"
     print " -> Pt1 : Beginning with", n_features, "features, memmap =",\
         memmap, ",", n_proc, "processes", "is_swf = ", is_swf
     if memmap:
@@ -96,8 +97,8 @@ def func_memm_local(n_samples, n_features, memmap=False,
     from sklearn.svm import SVC
     from epac import CV, Methods
     cv_svm_local = CV(Methods(*[SVC(kernel="linear"),
-                          SVC(kernel="rbf")]),
-                          n_folds=3)
+                                SVC(kernel="rbf")]),
+                      n_folds=3)
     print " -> Pt3 : Workflow built, running"
 
     cv_svm = None
@@ -113,7 +114,8 @@ def func_memm_local(n_samples, n_features, memmap=False,
                                         login="jl237561",
                                         # remove_finished_wf=False,
                                         # remove_local_tree=False,
-                                        mmap_mode=mmap_mode)
+                                        mmap_mode=mmap_mode,
+                                        queue="Global_long")
         cv_svm = swf_engine.run(**Xy)
     else:
         # Running on the local machine
@@ -124,7 +126,6 @@ def func_memm_local(n_samples, n_features, memmap=False,
     print cv_svm.reduce()
 
     print " -> Pt5 : Finished with", n_features, "features"
-    print "\n \n"
 
     ## 3) Removing files
     ## =======================================================
