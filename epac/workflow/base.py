@@ -132,6 +132,7 @@ class BaseNode(object):
         # with the same signature.
         self.signature_args = None  # dict of args to build the node signature
         self.reducer = None
+        self.stop_top_down = False
 
     def __repr__(self):
         return self.get_key()
@@ -473,13 +474,15 @@ class BaseNode(object):
         if not self.parent:
             self.initialization(**Xy)  # Performe some initialization
         Xy = self.transform(**Xy)
-        if self.children:
-            # Call children func_name down to leaves
-            ret = [child.top_down(**Xy) for child in self.get_children_top_down()]
-            Xy = ret[0] if len(ret) == 1 else ret
-        else:
-            result = Result(key=self.get_signature(), **Xy)
-            self.save_results(ResultSet(result))
+
+        if not self.stop_top_down:
+            if self.children:
+                # Call children func_name down to leaves
+                ret = [child.top_down(**Xy) for child in self.get_children_top_down()]
+                Xy = ret[0] if len(ret) == 1 else ret
+            else:
+                result = Result(key=self.get_signature(), **Xy)
+                self.save_results(ResultSet(result))
         return Xy
 
     def get_children_top_down(self):

@@ -7,6 +7,7 @@ Created on Fri Oct  4 10:18:13 2013
 import numpy as np
 from sklearn import datasets
 from epac import Methods
+from epac.workflow.splitters import PrevStateMethods
 
 
 class TOY_CLF:
@@ -23,7 +24,7 @@ class TOY_CLF:
         len_beta = X.shape[1]
 
         min_err = 0
-        if self.v_beta:
+        if not (self.v_beta == None):
             min_err = self._get_error(self.v_beta, self.v_lambda, X, y)
 
         # Search the beta which minimizes the error function
@@ -42,10 +43,20 @@ class TOY_CLF:
 if __name__ == "__main__":
     ## 1) Build dataset
     ## ================================================
-    X, y = datasets.make_classification(n_samples=12,
-                                        n_features=10,
+    X, y = datasets.make_classification(n_samples=5,
+                                        n_features=20,
                                         n_informative=2,
                                         random_state=1)
     Xy = {"X": X, "y": y}
-    methods = Methods(*[TOY_CLF(v_lambda=v_lambda) for v_lambda in [1, 2]])
+
+    # pipe = Pipe(*[TOY_CLF(v_lambda=v_lambda) for v_lambda in [1, 2]])
+
+    ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
+                                for v_lambda in [1, 2]])
+
+    print ps_methods.run(**Xy)
+
+    methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
+                                for v_lambda in [1, 2]])
+
     print methods.run(**Xy)

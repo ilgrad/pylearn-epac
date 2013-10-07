@@ -13,6 +13,36 @@ from epac.workflow.base import key_push, key_pop
 from epac.map_reduce.results import ResultSet
 
 
+def copy_parameters(from_obj, to_obj, exclude_parameters):
+    """
+    Example
+    -------
+    from epac.utils import copy_parameters
+
+    class CA:
+        def __init__(self, c, d):
+            self.c = c
+            self.d = d
+        def test_method(self):
+            pass
+
+    ca1 = CA(c=1, d=1)
+    ca2 = CA(c=2, d=2)
+    print ca1.__dict__
+    print ca2.__dict__
+    copy_parameters(ca1, ca2, exclude_parameters=["d"])
+    # exclude_parameters can be a dict whose keys are exclude_parameters
+    # copy_parameters(ca1, ca2, exclude_parameters={"d":1})
+    print ca1.c
+    print ca1.d
+    print ca2.c
+    print ca2.d
+    """
+    for argument in from_obj.__dict__:
+        if not (argument in exclude_parameters):
+            if argument in to_obj.__dict__:
+                to_obj.__dict__[argument] = from_obj.__dict__[argument]
+
 def get_next_number(str_value):
     start_pos = -1
     end_pos = -1

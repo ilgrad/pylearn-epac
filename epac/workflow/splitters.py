@@ -27,10 +27,12 @@ from epac.stores import StoreMem
 from epac.utils import train_test_split
 from epac.utils import _list_indices, dict_diff, _sub_dict
 from epac.utils import get_list_from_lists
+from epac.utils import copy_parameters
 from epac.map_reduce.results import Result, ResultSet
 from epac.map_reduce.reducers import CVBestSearchRefitPReducer
 from epac.map_reduce.reducers import ClassificationReport, PvalPerms
 from epac.configuration import conf
+from epac import Pipe
 import warnings
 
 ## ======================================================================== ##
@@ -313,6 +315,32 @@ class Methods(BaseNodeSplitter):
         if self.reducer:
             return self.reducer.reduce(results)
         return results
+
+
+class PrevStateMethods(Methods):
+    """Run like methods but with previous state for initialization
+    """
+    def __init__(self, *nodes):
+        super(PrevStateMethods, self).__init__(*nodes)
+        self.stop_top_down = True
+
+    def transform(self, **Xy):
+        prev_node = None
+        rets = []
+        for node in self.children:
+            cpXy = Xy
+            if not (prev_node == None):
+                # from_obj, to_obj, exclude_parameters
+                copy_parameters(from_obj=prev_node.wrapped_node,
+                                to_obj=node.wrapped_node,
+                                exclude_parameters=node.signature_args)
+            ret = node.top_down(**cpXy)
+            rets.append(ret)
+            prev_node = node
+        if len(rets) > 0:
+            Xy = rets[0] if len(rets) == 1 else rets
+        return Xy
+
 
 # -------------------------------- #
 # -- Slicers                    -- #

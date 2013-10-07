@@ -64,13 +64,14 @@ def _export_nodes_recursively(
         return nodes_per_process_list
     left = len_children % num_processes
     if len_children >= num_processes:
-        for i in range(len_children-left):
+        for i in range(len_children - left):
             nodes_per_process_list = _push_node_in_list(
                 node=children_nodes[i],
                 nodes_per_process_list=nodes_per_process_list)
     if left > 0:
-        for i in range(len_children-left, len_children):
-            if not _is_cannot_be_splicted(children_nodes[i].get_signature()):
+        for i in range(len_children - left, len_children):
+            if (not _is_cannot_be_splicted(children_nodes[i].get_signature()))\
+               and (not children_nodes[i].stop_top_down):
                 nodes_per_process_list = _export_nodes_recursively(
                     children_nodes[i],
                     num_processes,
