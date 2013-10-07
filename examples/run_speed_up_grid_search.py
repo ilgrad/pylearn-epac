@@ -10,6 +10,12 @@ from epac import Methods
 from epac.workflow.splitters import PrevStateMethods
 
 
+"""
+PrevStateMethods can implement algorithm like ISTA
+(iterative shrinkage-thresholding algorithm)
+see http://mechroom.technion.ac.il/~becka/papers/71654.pdf
+"""
+
 class TOY_CLF:
     def __init__(self, v_lambda):
         self.v_lambda = v_lambda
@@ -57,12 +63,22 @@ if __name__ == "__main__":
     ## ================================================
     print "Methods ==================================="
     methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
-                                for v_lambda in [1, 2]])
+                                for v_lambda in [2, 1]])
     print methods.run(**Xy)
 
     ## 3) Build PrevStateMethods like Methods
     ## ================================================
+    ##               PrevStateMethods
+    ##             /                  \
+    ##  TOY_CLF(v_lambda=2)    TOY_CLF(v_lambda=1)
+    ##
+    ##  1. PrevStateMethods will look for different argumenets as signature
+    ##     For example, here is v_lambda, there are different for each leaf
+    ##  2. And then run TOY_CLF(v_lambda=2).transform
+    ##  3. Except v_lambda, PrevStateMethods copy all the other parameters 
+    ##     from TOY_CLF(v_lambda=2) to TOY_CLF(v_lambda=1)
+    ##  4. Finally call TOY_CLF(v_lambda=1).transform
     print "PrevStateMethods =========================="
     ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
-                                for v_lambda in [1, 2]])
+                                for v_lambda in [2, 1]])
     print ps_methods.run(**Xy)

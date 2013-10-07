@@ -53,11 +53,11 @@ class TestWorkFlow(unittest.TestCase):
                                             n_informative=2)
         Xy = {"X": X, "y": y}
         methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
-                                    for v_lambda in [1, 2]])
+                                    for v_lambda in [2, 1]])
         methods.run(**Xy)
 
         ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
-                                    for v_lambda in [1, 2]])
+                                    for v_lambda in [2, 1]])
         ps_methods.run(**Xy)
         self.assertTrue(compare_two_node(methods, ps_methods))
         self.assertTrue(comp_2wf_reduce_res(methods, ps_methods))
