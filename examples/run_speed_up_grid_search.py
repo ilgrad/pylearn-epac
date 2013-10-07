@@ -49,14 +49,10 @@ if __name__ == "__main__":
                                         random_state=1)
     Xy = {"X": X, "y": y}
 
-    # pipe = Pipe(*[TOY_CLF(v_lambda=v_lambda) for v_lambda in [1, 2]])
+    methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
+                                for v_lambda in [1, 2]])
+    print methods.run(**Xy)
 
     ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
                                 for v_lambda in [1, 2]])
-
     print ps_methods.run(**Xy)
-
-    methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
-                                for v_lambda in [1, 2]])
-
-    print methods.run(**Xy)

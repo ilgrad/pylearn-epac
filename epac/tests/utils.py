@@ -10,7 +10,7 @@ Created on 20 June 2013
 
 """
 import numpy as np
-
+import copy
 
 def _is_numeric(obj):
     return isinstance(obj, (int, long, float, complex))
@@ -55,6 +55,25 @@ def isequal(obj1, obj2):
         return True
     else:
         return obj1 == obj2
+
+
+def compare_leaf_res(leaf_res1, leaf_res2):
+    for i in range(len(leaf_res1)):
+        for key in leaf_res1[i][leaf_res1[i].keys()[0]].keys():
+            return (np.all(leaf_res1[i][leaf_res1[i].keys()[0]][key]
+                == leaf_res2[i][leaf_res2[i].keys()[0]][key]))
+
+
+def compare_two_node(node1, node2):
+    leaf_res1 = []
+    for leaf1 in node1.walk_leaves():
+        res = copy.copy(leaf1.load_results())
+        leaf_res1.append(res)
+    leaf_res2 = []
+    for leaf2 in node2.walk_leaves():
+        res = copy.copy(leaf2.load_results())
+        leaf_res2.append(res)
+    return compare_leaf_res(leaf_res1, leaf_res2)
 
 
 def comp_2wf_reduce_res(wf1, wf2):

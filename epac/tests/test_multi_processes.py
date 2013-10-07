@@ -18,7 +18,7 @@ from epac import SomaWorkflowEngine
 
 from sklearn import datasets
 from epac.tests.utils import comp_2wf_reduce_res
-import copy
+from epac.tests.utils import compare_two_node
 
 
 class EpacWorkflowTest(unittest.TestCase):
@@ -36,22 +36,6 @@ class EpacWorkflowTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def _compare_two_node(self, node1, node2):
-        leaf_res1 = []
-        for leaf1 in node1.walk_leaves():
-            res = copy.copy(leaf1.load_results())
-            leaf_res1.append(res)
-        leaf_res2 = []
-        for leaf2 in node2.walk_leaves():
-            res = copy.copy(leaf2.load_results())
-            leaf_res2.append(res)
-        self._compare_leaf_res(leaf_res1, leaf_res2)
-
-    def _compare_leaf_res(self, leaf_res1, leaf_res2):
-        for i in range(len(leaf_res1)):
-            for key in leaf_res1[i][leaf_res1[i].keys()[0]].keys():
-                self.assertTrue(np.all(leaf_res1[i][leaf_res1[i].keys()[0]][key]
-                    == leaf_res2[i][leaf_res2[i].keys()[0]][key]))
 
     def test_examples_local_engine(self):
         list_all_examples = get_wf_example_classes()
@@ -70,8 +54,8 @@ class EpacWorkflowTest(unittest.TestCase):
                         tree_root=sfw_engine_wf,
                         num_processes=self.n_cores)
                 sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
-                self._compare_two_node(wf, local_engine_wf)
-                self._compare_two_node(wf, sfw_engine_wf)
+                self.assertTrue(compare_two_node(wf, local_engine_wf))
+                self.assertTrue(compare_two_node(wf, sfw_engine_wf))
                 self.assertTrue(comp_2wf_reduce_res(wf, local_engine_wf))
                 self.assertTrue(comp_2wf_reduce_res(wf, sfw_engine_wf))
 
