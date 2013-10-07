@@ -25,7 +25,10 @@ class TOY_CLF:
 
         min_err = 0
         if not (self.v_beta == None):
+            print "v_beta has been initialized as = ", self.v_beta
             min_err = self._get_error(self.v_beta, self.v_lambda, X, y)
+        else:
+            print "v_beta is None"
 
         # Search the beta which minimizes the error function
         # ==================================================
@@ -36,23 +39,30 @@ class TOY_CLF:
                 self.v_beta = v_beta
                 min_err = err
 
-        pred_y = np.dot(X, v_beta)
+        print "Best v_beta =", self.v_beta
+        pred_y = np.dot(X, self.v_beta)
         return {"y/pred": pred_y, "y/true": y, "best_beta": self.v_beta}
 
 
 if __name__ == "__main__":
     ## 1) Build dataset
     ## ================================================
-    X, y = datasets.make_classification(n_samples=5,
-                                        n_features=20,
+    X, y = datasets.make_classification(n_samples=10,
+                                        n_features=5,
                                         n_informative=2,
                                         random_state=1)
     Xy = {"X": X, "y": y}
 
+    ## 2) Build Methods
+    ## ================================================
+    print "Methods ==================================="
     methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
                                 for v_lambda in [1, 2]])
     print methods.run(**Xy)
 
+    ## 3) Build PrevStateMethods like Methods
+    ## ================================================
+    print "PrevStateMethods =========================="
     ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
                                 for v_lambda in [1, 2]])
     print ps_methods.run(**Xy)

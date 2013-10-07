@@ -40,7 +40,7 @@ class TOY_CLF:
                 self.v_beta = v_beta
                 min_err = err
 
-        pred_y = np.dot(X, v_beta)
+        pred_y = np.dot(X, self.v_beta)
         return {"y/pred": pred_y, "y/true": y, "best_beta": self.v_beta}
 
 
