@@ -169,7 +169,8 @@ class SomaWorkflowEngine(LocalEngine):
                  pw="",
                  remove_finished_wf=True,
                  remove_local_tree=True,
-                 mmap_mode="auto"):
+                 mmap_mode="auto",
+                 queue=None):
         super(SomaWorkflowEngine, self).__init__(
                         tree_root=tree_root,
                         function_name=function_name,
@@ -182,6 +183,7 @@ class SomaWorkflowEngine(LocalEngine):
         self.remove_finished_wf = remove_finished_wf
         self.remove_local_tree = remove_local_tree
         self.mmap_mode = mmap_mode
+        self.queue = queue
 
 
     def _save_job_list(self,
@@ -354,7 +356,8 @@ class SomaWorkflowEngine(LocalEngine):
         ## run soma-workflow
         ## =================
         wf_id = controller.submit_workflow(workflow=soma_workflow,
-                                           name="epac workflow")
+                                           name="epac workflow",
+                                           queue=self.queue)
         Helper.transfer_input_files(wf_id, controller)
         Helper.wait_workflow(wf_id, controller)
         Helper.transfer_output_files(wf_id, controller)
