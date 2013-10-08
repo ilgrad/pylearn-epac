@@ -10,12 +10,9 @@ from epac import Methods
 from epac.workflow.splitters import PrevStateMethods
 
 
-"""
-PrevStateMethods can implement algorithm like ISTA
-(iterative shrinkage-thresholding algorithm)
-see http://mechroom.technion.ac.il/~becka/papers/71654.pdf
-"""
-
+# PrevStateMethods can implement algorithm like ISTA
+# (iterative shrinkage-thresholding algorithm)
+# see http://mechroom.technion.ac.il/~becka/papers/71654.pdf
 class TOY_CLF:
     def __init__(self, v_lambda):
         self.v_lambda = v_lambda
