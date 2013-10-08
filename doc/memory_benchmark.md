@@ -81,29 +81,29 @@ Command::
     . epac/tests/launch_test_memm.sh
     n_samples = 500
     n_features = [50000, 100000, 200000, 400000, 800000, 1600000, 3200000]
-    num_processes  = [1, 2, 3, 4, 5, 6, 7, 8]
+    num_processes  = [1, 2, 3, 4, 5, 6]
 ```
 
 ```
-    n_features | Size X | Size Y |  1 process   |  2 processes |  3 processes |  4 processes |
-      50000    |  100MB |   2kB  |     234s     |     180s     |     148s     |     143s     |
-     100000    |  200MB |   2kB  |     416s     |     318s     |     248s     |     226s     |
-     200000    |  400MB |   2kB  |     820s     |     631s     |     542s     |     429s     |
-     400000    |  800MB |   2kB  |    1665s     |    1353s     |    1212s     |     803s     |
-     800000    | 1600MB |   2kB  |    4530s     |    3235s     |    2466s     |    1913s     |
-    1600000    | 3200MB |   2kB  |   7407s ?    |    6485s     |    5328s     |    7945s     |
-    3200000    | 6400MB |   2kB  |       0s     |   7647s ?    |   7643s ?    |    9538s     |
+    n_features | Size X | Size Y |  1 process   |  2 processes |  3 processes |
+      50000    |  100MB |   2kB  |     234s     |     180s     |     148s     |
+     100000    |  200MB |   2kB  |     416s     |     318s     |     248s     |
+     200000    |  400MB |   2kB  |     820s     |     631s     |     542s     |
+     400000    |  800MB |   2kB  |    1665s     |    1353s     |    1212s     |
+     800000    | 1600MB |   2kB  |    4530s     |    3235s     |    2466s     |
+    1600000    | 3200MB |   2kB  |   7407s ?    |    6485s     |    5328s     |
+    3200000    | 6400MB |   2kB  |       0s     |   7647s ?    |   7643s ?    |
 ```
 
 ```
-    n_features | Size X | Size Y |  5 processes |  6 processes |  7 processes |  8 processes |
-      50000    |  100MB |   2kB  |     146s     |     122s     |     125s     |       0s     |
-     100000    |  200MB |   2kB  |     237s     |     202s     |     185s     |       0s     |
-     200000    |  400MB |   2kB  |     465s     |     379s     |     370s     |       0s     |
-     400000    |  800MB |   2kB  |    1099s     |     796s     |     766s     |       0s     |
-     800000    | 1600MB |   2kB  |    2072s     |    1509s     |    1689s     |       0s     |
-    1600000    | 3200MB |   2kB  |    5188s     |    3096s     |       0s     |       0s     |
-    3200000    | 6400MB |   2kB  |   7651s ?    |   7615s ?    |       0s     |       0s     |
+    n_features | Size X | Size Y |  4 processes |  5 processes |  6 processes |
+      50000    |  100MB |   2kB  |     143s     |     146s     |     122s     |
+     100000    |  200MB |   2kB  |     226s     |     237s     |     202s     |
+     200000    |  400MB |   2kB  |     429s     |     465s     |     379s     |
+     400000    |  800MB |   2kB  |     803s     |    1099s     |     796s     |
+     800000    | 1600MB |   2kB  |    1913s     |    2072s     |    1509s     |
+    1600000    | 3200MB |   2kB  |    7945s     |    5188s     |    3096s     |
+    3200000    | 6400MB |   2kB  |    9538s     |   7651s ?    |   7615s ?    |
 ```
 
 Without memory mapping, on the cluster
@@ -115,25 +115,25 @@ Command::
     . epac/tests/launch_test_memm.sh
     n_samples = 500
     n_features = [50000, 100000, 200000, 400000, 800000, 1600000]
-    num_processes  = [1, 2, 3, 4, 5, 6, 7, 8]
+    num_processes  = [1, 2, 3, 4, 5, 6]
 ```
 
 ```
-    n_features |  1 process   |  2 processes |  3 processes |  4 processes |
-      50000    |     219s     |       0s     |       0s     |       0s     |
-     100000    |     424s     |     314s     |       0s     |       0s     |
-     200000    |     731s     |     570s     |       0s     |       0s     |
-     400000    |    1452s     |    1117s     |       0s     |       0s     |
-     800000    |    3558s     |    3148s     |       0s     |       0s     |
-    1600000    |       0s     |       0s     |       0s     |       0s     |
+    n_features |  1 process   |  2 processes |  3 processes |
+      50000    |     218s     |     189s     |     137s     |
+     100000    |     384s     |     322s     |     227s     |
+     200000    |     765s     |     554s     |     450s     |
+     400000    |    1522s     |    1167s     |    1240s     |
+     800000    |    3567s     |    2715s     |    2419s     |
+    1600000    |    9120s     |   7697s ?    |    5760s     |
 ```
 
 ```
-    n_features |  5 processes |  6 processes |  7 processes |  8 processes |
-      50000    |       0s     |       0s     |       0s     |       0s     |
-     100000    |       0s     |       0s     |       0s     |       0s     |
-     200000    |       0s     |       0s     |       0s     |       0s     |
-     400000    |       0s     |       0s     |       0s     |       0s     |
-     800000    |       0s     |       0s     |       0s     |       0s     |
-    1600000    |       0s     |       0s     |       0s     | MEMORY ERROR |
+    n_features |  4 processes |  5 processes |  6 processes |
+      50000    |     128s     |     157s     |     129s     |
+     100000    |     207s     |     263s     |     175s     
+     200000    |     438s     |     448s     |     352s     |
+     400000    |     927s     |    1057s     |     806s     |
+     800000    |    2027s     |    2114s     |    1751s     |
+    1600000    |    6025s     |    5993s     |    8440s     |
 ```
