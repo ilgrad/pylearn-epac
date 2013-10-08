@@ -141,4 +141,5 @@ if __name__ == "__main__":
     # args = [500, 70000, 'True', 2, 'True']
     args[2] = (args[2] == 'True')
     args[4] = (args[4] == 'True')
-    func_memm_local(int(args[0]), int(args[1]), args[2], int(args[3]), args[4])
+    func_memm_local(int(args[0]), int(args[1]), args[2],
+                    int(args[3]), args[4], args[5])
