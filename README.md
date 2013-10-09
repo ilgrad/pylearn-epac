@@ -92,8 +92,8 @@ ResultSet(
             # "transform" should return a dictionary
             return {"y/pred": svc.predict(X), "y": y}
 
-    ## 2) Design your reducer which recall rate
-    ## ========================================
+    ## 2) Design your reducer for recall rates
+    ## ===========================================
     from epac.map_reduce.reducers import Reducer  
     class MyReducer(Reducer):
         def reduce(self, result):
