@@ -26,6 +26,8 @@ pipeline = CVBestSearchRefitParallel(pipelines,
                                      n_folds=n_folds_nested)
 wf = CV(pipeline, n_folds=n_folds)
 sfw_engine = SomaWorkflowEngine(tree_root=wf,
-                        num_processes=n_cores)
+                                num_processes=n_cores,
+                                remove_finished_wf=False,
+                                remove_local_tree=False)
 sfw_engine_wf = sfw_engine.run(X=X, y=y)
 print sfw_engine_wf.reduce()

@@ -18,11 +18,88 @@ import numpy as np
 from abc import abstractmethod
 
 
+class TagObject:
+    def __init__(self):
+        self.hash_id = os.urandom(32)
+
+
+def replace_values(obj, extracted_values, max_depth=10):
+    """
+    See example in extract_values
+    """
+    max_depth = max_depth - 1
+    if max_depth < 0:
+        return obj
+    public_props = (name for name in dir(obj) if not name.startswith('_'))
+    for props in public_props:
+        if isinstance(getattr(obj, props), TagObject):
+            tag_value = getattr(obj, props)
+            set_value = extracted_values[tag_value.hash_id]
+            setattr(obj, props, set_value)
+        else:
+            obj2set = replace_values(getattr(obj, props),
+                                     extracted_values,
+                                     max_depth)
+            setattr(obj, props, obj2set)
+    return obj
+
+
+def extract_values(obj, which_type, max_depth=10):
+    """
+    Example
+    -------
+    >>> from epac.stores import extract_values
+    >>> from epac.stores import replace_values
+    >>> 
+    >>> class TestC:
+    ...     def __init__(self):
+    ...         self.A = "C1"
+    ...         self.B = "C2"
+    ... 
+    >>> 
+    >>> class TestD:
+    ...     def __init__(self):
+    ...         self.A = "D1"
+    ...         self.B = "D2"
+    ...         self.C = TestC()
+    ... 
+    >>> 
+    >>> obj = TestD()
+    >>> extracted_values, obj = extract_values(obj, str)
+    >>> obj = replace_values(obj, extracted_values)
+    >>> print obj.A
+    D1
+    >>> print obj.B
+    D2
+    >>> print obj.C.A
+    C1
+    >>> print obj.C.B
+    C2
+    """
+    replaced_array = {}
+    max_depth = max_depth - 1
+    if max_depth < 0:
+        return (replaced_array, obj)
+    public_props = (name for name in dir(obj) if not name.startswith('_'))
+    for props in public_props:
+        if type(getattr(obj, props)) is which_type:
+            replaced_object = TagObject()
+            tag_value = getattr(obj, props)
+            setattr(obj, props, replaced_object)
+            replaced_array[replaced_object.hash_id] = tag_value
+        else:
+            pros_replaced_array, obj2set = \
+                extract_values(getattr(obj, props), which_type, max_depth)
+            setattr(obj, props, obj2set)
+            replaced_array.update(pros_replaced_array)
+    return (replaced_array, obj)
+
+
 class epac_joblib:
     """
-    It is optimized for dictionary dumping and load
-    Since joblib produce too many small files for mamory mapping,
-    we try to limite the produced files for dictionary.
+    It is optimized for dictionary dump and load
+    Since joblib produces too many small files for mamory mapping,
+    we try to limit the produced files for dictionary.
 
     Example
     -------
@@ -67,6 +144,11 @@ class epac_joblib:
         filename_norobj = None
         mem_obj = None
         normal_obj = None
+        print "epac_joblib.dump============="
+        print "type(obj)=", type(obj)
+        if type(obj) is StoreMem:
+            for key in obj.dict:
+                print key, " = ", obj.dict[key]
 
         if type(obj) is dict:
             mem_obj = {}
@@ -286,7 +368,7 @@ class StoreFs(Store):
             return loaded
 
     def save_pickle(self, file_path, obj):
-        joblib.dump(obj, file_path)
+        epac_joblib.dump(obj, file_path)
 #        output = open(file_path, 'wb')
 #        pickle.dump(obj, output)
 #        output.close()
@@ -298,7 +380,7 @@ class StoreFs(Store):
 #        inputf.close()
         from epac.utils import try_fun_num_trials
         kwarg = {"filename": file_path}
-        obj = try_fun_num_trials(joblib.load,
+        obj = try_fun_num_trials(epac_joblib.load,
                                  ntrials=10,
                                  **kwarg)
         # obj = joblib.load(filename=file_path)
