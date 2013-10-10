@@ -28,6 +28,9 @@ from epac.utils import estimate_dataset_size
 from epac.utils import save_dataset
 
 
+
+        
+
 class Engine(object):
     __metaclass__ = ABCMeta
 
@@ -148,14 +151,27 @@ class LocalEngine(Engine):
         return self.tree_root
 
 
+class JobInfo:
+    def __init__(self):
+        self.mem_cost = None
+        self.vmem_cost = None
+        self.time_cost = None
+
+
 class SomaWorkflowEngine(LocalEngine):
     '''Using soma-workflow to run epac tree in parallel
-    
+
     Parameters
     ----------
     mmap_mode: {None, ‘r+’, ‘r’, ‘w+’, ‘c’, 'auto'}, optional :
         'auto' means that the system determine if we use memory mapping or not.
         See numpy.load for the meaning of the other arguments.
+
+    engine_info: list of JobInfo
+        You can get engine_info when call SomaWorkflowEngine.run
+        It works only on DRMS
+        (Distributed Resource Management System) using DRMAA, but not for
+        local machine
     '''
     dataset_relative_path = "./dataset"
     open_me_by_soma_workflow_gui = "open_me_by_soma_workflow_gui"
@@ -171,10 +187,9 @@ class SomaWorkflowEngine(LocalEngine):
                  remove_local_tree=True,
                  mmap_mode="auto",
                  queue=None):
-        super(SomaWorkflowEngine, self).__init__(
-                        tree_root=tree_root,
-                        function_name=function_name,
-                        num_processes=num_processes)
+        super(SomaWorkflowEngine, self).__init__(tree_root=tree_root,
+                                                 function_name=function_name,
+                                                 num_processes=num_processes)
         if num_processes == -1:
             self.num_processes = 20
         self.resource_id = resource_id
@@ -184,11 +199,11 @@ class SomaWorkflowEngine(LocalEngine):
         self.remove_local_tree = remove_local_tree
         self.mmap_mode = mmap_mode
         self.queue = queue
-
+        self.engine_info = []
 
     def _save_job_list(self,
-                        working_directory,
-                        nodesinput_list):
+                       working_directory,
+                       nodesinput_list):
         '''Write job list into working_directory as 0.job, 1.job, etc.
 
         Parameters
@@ -246,16 +261,45 @@ class SomaWorkflowEngine(LocalEngine):
                 command.append(self.mmap_mode)
             if not is_run_local:
                 job = Job(command,
-                        referenced_input_files=[ft_working_directory],
-                        referenced_output_files=[ft_working_directory],
-                        name="epac_job_key=%s" % (nodesfile),
-                        working_directory=ft_working_directory)
+                          referenced_input_files=[ft_working_directory],
+                          referenced_output_files=[ft_working_directory],
+                          name="epac_job_key=%s" % (nodesfile),
+                          working_directory=ft_working_directory)
             else:
                 job = Job(command,
-                        name="epac_job_key=%s" % (nodesfile),
-                        working_directory=ft_working_directory)
+                          name="epac_job_key=%s" % (nodesfile),
+                          working_directory=ft_working_directory)
             jobs.append(job)
         return jobs
+
+    def get_engine_info(self, controller, wf_id):
+        """
+        get all the job information when only use DRMAA on DRMS
+        (Distributed Resource Management System).
+        When it is on local machine,
+        the return value (engine_info) is an empty list
+        """
+        engine_info = []
+        workflow_elements_status = controller.workflow_elements_status(wf_id)
+        jobs_status = workflow_elements_status[0]
+        for job_status in jobs_status:
+            job_info = JobInfo()
+            res_string = job_status[3][3]
+            if res_string is not None:
+                res_string = res_string.split()
+                for item_string in res_string:
+                    if "vmem=" in item_string:
+                        key_value = item_string.split("=")
+                        job_info.vmem_cost = int(key_value[1])
+                    # Be careful, don't change order between "vmem=" and "mem="
+                    elif "mem=" in item_string:
+                        key_value = item_string.split("=")
+                        job_info.mem_cost = int(key_value[1])
+                    elif "walltime=" in item_string:
+                        key_value = item_string.split("=")
+                        job_info.time_cost = int(key_value[1])
+                engine_info.append(job_info)
+        return engine_info
 
     def run(self, **Xy):
         '''Run soma-workflow without gui
@@ -349,7 +393,6 @@ class SomaWorkflowEngine(LocalEngine):
                                  ft_working_directory)
         soma_workflow = Workflow(jobs=jobs)
 
-
         controller = WorkflowController(self.resource_id,
                                         self.login,
                                         self.pw)
@@ -361,6 +404,9 @@ class SomaWorkflowEngine(LocalEngine):
         Helper.transfer_input_files(wf_id, controller)
         Helper.wait_workflow(wf_id, controller)
         Helper.transfer_output_files(wf_id, controller)
+
+        self.engine_info = self.get_engine_info(controller, wf_id)
+
         if self.remove_finished_wf:
             controller.delete_workflow(wf_id)
         ## read result tree
