@@ -30,13 +30,13 @@ Command::
 ```
 
 ```
-    n_features | Size X | Size Y |    4 processes   |    5 processes   |
-      50000    |  100MB |   2kB  |  1875MB |   65s  |  2351MB |   70s  |
-     100000    |  200MB |   2kB  |  3597MB |  115s  |  4409MB |  131s  |
-     200000    |  400MB |   2kB  |  7050MB |  267s  |  8999MB |  282s  |
-     400000    |  800MB |   2kB  | 15061MB |  650s  |   MEMORY ERROR   |
-     800000    | 1600MB |   2kB  |   MEMORY ERROR   |   MEMORY ERROR   |
-    1600000    | 3200MB |   2kB  |   MEMORY ERROR   |   MEMORY ERROR   |
+    n_features | Size X | Size Y |    4 processes   |    5 processes   |    6 processes   |
+      50000    |  100MB |   2kB  |  1875MB |   65s  |  2351MB |   70s  |  2451MB |   75s  |
+     100000    |  200MB |   2kB  |  3597MB |  115s  |  4409MB |  131s  |  4695MB |  146s  |
+     200000    |  400MB |   2kB  |  7050MB |  267s  |  8999MB |  282s  |  9700MB |  358s  |
+     400000    |  800MB |   2kB  | 15061MB |  650s  |   MEMORY ERROR   |   MEMORY ERROR   |
+     800000    | 1600MB |   2kB  |   MEMORY ERROR   |   MEMORY ERROR   |   MEMORY ERROR   |
+    1600000    | 3200MB |   2kB  |   MEMORY ERROR   |   MEMORY ERROR   |   MEMORY ERROR   |
 ```
 Without memory mapping, with 16GB available
 -------------------------------------------
