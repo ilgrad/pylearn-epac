@@ -16,11 +16,26 @@ import json
 import inspect
 import numpy as np
 from abc import abstractmethod
+from epac.configuration import conf
 
 
 class TagObject:
     def __init__(self):
         self.hash_id = os.urandom(32)
+
+
+def func_is_big_nparray(obj):
+    if isinstance(obj, np.ndarray):
+        num = 1
+        for ishape in obj.shape:
+            num = num * ishape
+        if num > conf.MEMM_THRESHOLD:
+            return True
+    return False
+
+
+def func_can_deeper(obj):
+    return not isinstance(obj, np.ndarray)
 
 
 def replace_values(obj, extracted_values, max_depth=10):
@@ -30,7 +45,8 @@ def replace_values(obj, extracted_values, max_depth=10):
     max_depth = max_depth - 1
     if max_depth < 0:
         return obj
-    public_props = (name for name in dir(obj) if not name.startswith('_'))
+    public_props = (name for name in dir(obj)
+          if not name.startswith('_') and not callable(getattr(obj, name)))
     for props in public_props:
         if isinstance(getattr(obj, props), TagObject):
             tag_value = getattr(obj, props)
@@ -44,54 +60,104 @@ def replace_values(obj, extracted_values, max_depth=10):
     return obj
 
 
-def extract_values(obj, which_type, max_depth=10):
+def extract_values(obj,
+                   func_is_need_extract,
+                   func_can_deeper=None,
+                   max_depth=10):
     """
     Example
     -------
     >>> from epac.stores import extract_values
     >>> from epac.stores import replace_values
-    >>> 
+    >>> from epac.stores import TagObject
+    >>>
+    >>>
+    >>> def func_is_need_extract(obj):
+    ...     if type(obj) is str:
+    ...         if(len(obj) >= 3):
+    ...             return True
+    ...     return False
+    ...
+    >>>
+    >>>
+    >>> def func_can_deeper(obj):
+    ...     return type(obj) is not str
+    ...
+    >>>
+    >>>
     >>> class TestC:
     ...     def __init__(self):
-    ...         self.A = "C1"
+    ...         self.A = "C1A"
     ...         self.B = "C2"
-    ... 
-    >>> 
+    ...
+    >>>
+    >>>
     >>> class TestD:
     ...     def __init__(self):
     ...         self.A = "D1"
     ...         self.B = "D2"
     ...         self.C = TestC()
-    ... 
-    >>> 
+    ...
+    >>>
+    >>>
     >>> obj = TestD()
-    >>> extracted_values, obj = extract_values(obj, str)
+    >>> extracted_values, obj = extract_values(obj,
+    ...                                        func_is_need_extract,
+    ...                                        func_can_deeper)
+    >>> print obj.A
+    D1
+    >>> print obj.B
+    D2
+    >>> print isinstance(obj.C.A, TagObject)
+    True
+    >>> print obj.C.B
+    C2
     >>> obj = replace_values(obj, extracted_values)
     >>> print obj.A
     D1
     >>> print obj.B
     D2
     >>> print obj.C.A
-    C1
+    C1A
     >>> print obj.C.B
     C2
     """
     replaced_array = {}
+    # When obj is replace-able
+    if func_is_need_extract(obj):
+        replaced_object = TagObject()
+        tag_value = obj
+        obj = replaced_object
+        replaced_array[replaced_object.hash_id] = tag_value
+        return (replaced_array, obj)
+
     max_depth = max_depth - 1
     if max_depth < 0:
         return (replaced_array, obj)
-    public_props = (name for name in dir(obj) if not name.startswith('_'))
+    public_props = (name for name in dir(obj)
+          if not name.startswith('_') and not callable(getattr(obj, name)))
     for props in public_props:
-        if type(getattr(obj, props)) is which_type:
+        if func_is_need_extract(getattr(obj, props)):
             replaced_object = TagObject()
             tag_value = getattr(obj, props)
             setattr(obj, props, replaced_object)
             replaced_array[replaced_object.hash_id] = tag_value
         else:
-            pros_replaced_array, obj2set = \
-                extract_values(getattr(obj, props), which_type, max_depth)
-            setattr(obj, props, obj2set)
-            replaced_array.update(pros_replaced_array)
+            can_deeper = False
+            if func_can_deeper is None:
+                can_deeper = True
+            elif func_can_deeper(obj):
+                can_deeper = True
+
+            if can_deeper:
+                pros_replaced_array, obj2set = \
+                    extract_values(getattr(obj, props),
+                                   func_is_need_extract,
+                                   func_can_deeper,
+                                   max_depth)
+                setattr(obj, props, obj2set)
+                replaced_array.update(pros_replaced_array)
+
     return (replaced_array, obj)
 
 
@@ -140,72 +206,41 @@ class epac_joblib:
 
     @staticmethod
     def dump(obj, filename):
-        filename_memobj = None
-        filename_norobj = None
-        mem_obj = None
-        normal_obj = None
-        print "epac_joblib.dump============="
-        print "type(obj)=", type(obj)
-        if type(obj) is StoreMem:
-            for key in obj.dict:
-                print key, " = ", obj.dict[key]
-
-        if type(obj) is dict:
-            mem_obj = {}
-            normal_obj = {}
-            for key_obj in obj:
-                obj_data = obj[key_obj]
-                if epac_joblib._epac_is_need_memm(obj_data):
-                    mem_obj[key_obj] = obj_data
-                else:
-                    normal_obj[key_obj] = obj_data
-            filename_memobj = filename + "_memobj.enpy"
-            filename_norobj = filename + "_norobj.enpy"
-        else:
-            filename_memobj = filename + "_memobj.enpy"
-
-        if mem_obj is not None:
-            joblib.dump(mem_obj, filename_memobj)
-            epac_joblib._pickle_dump(normal_obj, filename_norobj)
-        else:
-            joblib.dump(obj, filename_memobj)
+        filename_memobj = filename + "_memobj.enpy"
+        filename_norobj = filename + "_norobj.enpy"
+        mem_obj, normal_obj = extract_values(obj,
+                                             func_is_big_nparray,
+                                             func_can_deeper)
+        joblib.dump(mem_obj, filename_memobj)
+        epac_joblib._pickle_dump(normal_obj, filename_norobj)
 
         outfile = open(filename, "w+")
-        if filename_memobj is not None:
-            outfile.write(filename_memobj)
-            outfile.write("\n")
-        if filename_norobj is not None:
-            outfile.write(filename_norobj)
-            outfile.write("\n")
+        outfile.write(filename_memobj)
+        outfile.write("\n")
+        outfile.write(filename_norobj)
+        outfile.write("\n")
         outfile.close()
 
     @staticmethod
     def load(filename, mmap_mode=None):
         filename_memobj = None
         filename_norobj = None
-        mem_obj = {}
-        normal_obj = {}
-
+        mem_obj = None
+        normal_obj = None
+        # Read index file
         infile = open(filename, "rb")
         lines = infile.readlines()
         infile.close()
         for i in xrange(len(lines)):
             lines[i] = lines[i].strip("\n")
-
-        is_dict_obj = False
-        if len(lines) > 1:
-            is_dict_obj = True
-
-        if not is_dict_obj:
-            return joblib.load(lines[0], mmap_mode)
-        else:
-            filename_memobj = lines[0]
-            filename_norobj = lines[1]
-
+        filename_memobj = lines[0]
+        filename_norobj = lines[1]
+        # Load Memory obj and Normal obj
         mem_obj = joblib.load(filename_memobj, mmap_mode)
         normal_obj = epac_joblib._pickle_load(filename_norobj)
-        mem_obj.update(normal_obj)
-        return mem_obj
+        # Replace mem_obj (extracted values)
+        normal_obj = replace_values(normal_obj, mem_obj)
+        return normal_obj
 
 
 class Store(object):
