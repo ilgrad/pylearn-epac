@@ -10,10 +10,10 @@ n_folds = 2
 n_folds_nested = 3
 k_values = [1, 2]
 C_values = [1, 2]
-n_samples = 50
-n_features = 5000
-n_cores = 3
-conf.MEMM_THRESHOLD = 2
+n_samples = 500
+n_features = 10000
+n_cores = 2
+conf.MEMM_THRESHOLD = 50 * 5000 * 7
 
 X, y = datasets.make_classification(n_samples=n_samples,
                                     n_features=n_features,

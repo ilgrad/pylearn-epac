@@ -5,37 +5,38 @@ Created on Thu Oct 10 15:55:05 2013
 @author: jinpeng.li@cea.fr
 """
 
-import joblib
+
 import numpy as np
 from epac.configuration import conf
 from epac.stores import epac_joblib
-
+from epac.stores import TagObject
 
 conf.MEMM_THRESHOLD = 100
 npdata1 = np.random.random(size=(2, 2))
 npdata2 = np.random.random(size=(100, 5))
 
-#dict_data = {"1": npdata1, "2": npdata2}
-#epac_joblib.dump(dict_data, "/tmp/123")
-#dict_data2 = epac_joblib.load("/tmp/123")
-#np.all(dict_data2["1"] == npdata1)
-#np.all(dict_data2["2"] == npdata2)
+dict_data = {"1": npdata1, "2": npdata2}
+epac_joblib.dump(dict_data, "/tmp/123")
+isinstance(dict_data["2"], TagObject)
+dict_data2 = epac_joblib.load("/tmp/123")
+np.all(dict_data2["1"] == npdata1)
+np.all(dict_data2["2"] == npdata2)
 
 
-from epac.stores import StoreMem
-from epac import Result, ResultSet
-
-store = StoreMem()
-
-r1 = Result('SVC(C=1)', a=npdata1, b=npdata2)
-r2 = Result('SVC(C=2)', a=npdata2, b=npdata1)
-set1 = ResultSet(r1, r2)
-store.save('SVC', set1)
-joblib.dump(store, "/tmp/store")
-store = joblib.load("/tmp/store")
-
-r3 = Result('SVC(C=3)', **dict(a=1, b=2))
-r4 = Result('SVC(C=4)', **dict(a=1, b=2))
+#from epac.stores import StoreMem
+#from epac import Result, ResultSet
+#
+#store = StoreMem()
+#
+#r1 = Result('SVC(C=1)', a=npdata1, b=npdata2)
+#r2 = Result('SVC(C=2)', a=npdata2, b=npdata1)
+#set1 = ResultSet(r1, r2)
+#store.save('SVC', set1)
+#epac_joblib.dump(store, "/tmp/store")
+#store = epac_joblib.load("/tmp/store")
+#
+#r3 = Result('SVC(C=3)', **dict(a=1, b=2))
+#r4 = Result('SVC(C=4)', **dict(a=1, b=2))
 
 #from epac.stores import extract_values
 #from epac.stores import replace_values

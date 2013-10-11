@@ -17,7 +17,7 @@ import inspect
 import numpy as np
 from abc import abstractmethod
 from epac.configuration import conf
-from epac.map_reduce.results import ResultSet, Result
+from epac.map_reduce.results import ResultSet
 
 
 class TagObject:
@@ -26,7 +26,8 @@ class TagObject:
 
 
 def func_is_big_nparray(obj):
-    if isinstance(obj, np.ndarray):
+    if type(obj) in (np.ndarray, np.matrix, np.memmap):
+    # if isinstance(obj, np.ndarray):
         num = 8
         for ishape in obj.shape:
             num = num * ishape
@@ -36,7 +37,7 @@ def func_is_big_nparray(obj):
 
 
 def func_can_deeper(obj):
-    return not isinstance(obj, np.ndarray)
+    return not (type(obj) in (np.ndarray, np.matrix, np.memmap))
 
 
 def replace_values(obj, extracted_values, max_depth=10):
@@ -55,19 +56,29 @@ def replace_values(obj, extracted_values, max_depth=10):
         is_modified = True
         return (obj, is_modified)
 
-#    if hasattr(obj, "__dict__"):
-#        public_props = (name for name in obj.__dict__
-#              if not name.startswith('_') and not callable(getattr(obj, name)))
-#        for props in public_props:
-#            obj2set, tmp_is_modified = replace_values(getattr(obj, props),
-#                                                      extracted_values,
-#                                                      max_depth)
-#            if tmp_is_modified:
-#                is_modified = True
-#                try:
-#                    setattr(obj, props, obj2set)
-#                except:
-#                    pass
+    # StoreMem
+    if isinstance(obj, StoreMem):
+        obj2set, tmp_is_modified = replace_values(obj.dict,
+                                                      extracted_values,
+                                                      max_depth)
+        if tmp_is_modified:
+            is_modified = True
+            try:
+                obj.dict = obj2set
+            except:
+                pass
+
+    # ResultSet
+    if isinstance(obj, ResultSet):
+        obj2set, tmp_is_modified = replace_values(obj.results,
+                                                      extracted_values,
+                                                      max_depth)
+        if tmp_is_modified:
+            is_modified = True
+            try:
+                obj.results = obj2set
+            except:
+                pass
 
     # dictionary case
     if isinstance(obj, dict):
@@ -104,59 +115,24 @@ def extract_values(obj,
     """
     Example
     -------
-    >>> from epac.stores import extract_values
-    >>> from epac.stores import replace_values
+    >>> import numpy as np
+    >>> from epac.configuration import conf
+    >>> from epac.stores import epac_joblib
     >>> from epac.stores import TagObject
     >>>
-    >>> def func_is_need_extract(obj):
-    ...     if type(obj) is str:
-    ...         if(len(obj) >= 3):
-    ...             return True
-    ...     return False
-    ...
+    >>> conf.MEMM_THRESHOLD = 100
+    >>> npdata1 = np.random.random(size=(2, 2))
+    >>> npdata2 = np.random.random(size=(100, 5))
     >>>
-    >>>
-    >>> def func_can_deeper(obj):
-    ...     return type(obj) is not str
-    ...
-    >>>
-    >>>
-    >>> class TestC:
-    ...     def __init__(self):
-    ...         self.A = "C1A"
-    ...         self.B = "C2"
-    ...
-    >>>
-    >>>
-    >>> class TestD:
-    ...     def __init__(self):
-    ...         self.A = "D1"
-    ...         self.B = "D2"
-    ...         self.C = TestC()
-    ...
-    >>>
-    >>>
-    >>> obj = TestD()
-    >>> extracted_values, obj = extract_values(obj,
-    ...                                        func_is_need_extract,
-    ...                                        func_can_deeper)
-    >>> print obj.A
-    D1
-    >>> print obj.B
-    D2
-    >>> print isinstance(obj.C.A, TagObject)
+    >>> dict_data = {"1": npdata1, "2": npdata2}
+    >>> epac_joblib.dump(dict_data, "/tmp/123")
+    >>> isinstance(dict_data["2"], TagObject)
     True
-    >>> print obj.C.B
-    C2
-    >>> obj = replace_values(obj, extracted_values)
-    >>> print obj.A
-    D1
-    >>> print obj.B
-    D2
-    >>> print obj.C.A
-    C1A
-    >>> print obj.C.B
-    C2
+    >>> dict_data2 = epac_joblib.load("/tmp/123")
+    >>> np.all(dict_data2["1"] == npdata1)
+    True
+    >>> np.all(dict_data2["2"] == npdata2)
+    True
     """
     replaced_array = {}
     is_modified = False
@@ -174,52 +150,29 @@ def extract_values(obj,
     if max_depth < 0:
         return (replaced_array, obj, is_modified)
 
-#    if hasattr(obj, "__dict__"):
-#        public_props = (name for name in obj.__dict__
-#              if not name.startswith('_') and
-#                 not callable(getattr(obj, name)) and
-#                 getattr(obj, name) is not None)
-#        for props in public_props:
-#            if func_is_need_extract(getattr(obj, props)):
-#                replaced_object = TagObject()
-#                tag_value = getattr(obj, props)
-#                try:
-#                    setattr(obj, props, replaced_object)
-#                except:
-#                    pass
-#                replaced_array[replaced_object.hash_id] = tag_value
-#            else:
-#                can_deeper = False
-#                if func_can_deeper is None:
-#                    can_deeper = True
-#                elif func_can_deeper(obj):
-#                    can_deeper = True
-#
-#                if can_deeper:
-#                    pros_replaced_array, obj2set, tmp_is_modified = \
-#                        extract_values(getattr(obj, props),
-#                                       func_is_need_extract,
-#                                       func_can_deeper,
-#                                       max_depth)
-#                    if tmp_is_modified:
-#                        is_modified = True
-#                        try:
-#                            setattr(obj, props, obj2set)
-#                        except:
-#                            pass
-#                        replaced_array.update(pros_replaced_array)
+    # StoreMem
+    if isinstance(obj, StoreMem):
+        pros_replaced_array, obj2set, tmp_is_modified \
+                            = extract_values(obj.dict,
+                                             func_is_need_extract,
+                                             func_can_deeper,
+                                             max_depth)
+        if tmp_is_modified:
+            is_modified = True
+            StoreMem.dict = obj2set
+            replaced_array.update(pros_replaced_array)
+
     # ResultSet
     if isinstance(obj, ResultSet):
-        for key in obj.keys():
-            pros_replaced_array, obj2set, tmp_is_modified \
-                                = extract_values(obj[key],
-                                                 func_is_need_extract,
-                                                 func_can_deeper,
-                                                 max_depth)
-            if tmp_is_modified:
-                is_modified = True
-                obj[key] = obj2set
-                replaced_array.update(pros_replaced_array)
+        pros_replaced_array, obj2set, tmp_is_modified \
+                            = extract_values(obj.results,
+                                             func_is_need_extract,
+                                             func_can_deeper,
+                                             max_depth)
+        if tmp_is_modified:
+            is_modified = True
+            obj.results = obj2set
+            replaced_array.update(pros_replaced_array)
     # Dictionary case
     if isinstance(obj, dict):
         for key in obj:
@@ -244,6 +197,7 @@ def extract_values(obj,
                 is_modified = True
                 obj[iobj] = obj2set
                 replaced_array.update(pros_replaced_array)
+
     return (replaced_array, obj, is_modified)
 
 
@@ -314,7 +268,7 @@ class epac_joblib:
     def dump(obj, filename):
         filename_memobj = filename + "_memobj.enpy"
         filename_norobj = filename + "_norobj.enpy"
-        mem_obj, normal_obj = extract_values(obj,
+        mem_obj, normal_obj, _ = extract_values(obj,
                                              func_is_big_nparray,
                                              func_can_deeper)
         joblib.dump(mem_obj, filename_memobj)
@@ -328,7 +282,7 @@ class epac_joblib:
         outfile.close()
 
     @staticmethod
-    def load(filename, mmap_mode=None):
+    def load(filename, mmap_mode="r+"):
         filename_memobj = None
         filename_norobj = None
         mem_obj = None
