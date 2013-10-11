@@ -6,6 +6,7 @@ Reducers for EPAC
 @author: edouard.duchesnay@cea.fr
 """
 import numpy as np
+from scipy.stats import binom_test
 import re
 from abc import abstractmethod
 from epac.map_reduce.results import Result
@@ -58,7 +59,7 @@ class ClassificationReport(Reducer):
     >>> result = result.items()
     >>> result.sort()
     >>> result
-    [('key', 'SVC'), ('y/test/score_accuracy', 0.75), ('y/test/score_f1', array([ 0.66666667,  0.8       ])), ('y/test/score_precision', array([ 1.        ,  0.66666667])), ('y/test/score_recall', array([ 0.5,  1. ])), ('y/test/score_recall_mean', 0.75)]
+    [('key', 'SVC'), ('y/test/recall_mean_pvalue', 0.625), ('y/test/recall_pvalues', array([ 0.5 ,  0.25])), ('y/test/score_accuracy', 0.75), ('y/test/score_f1', array([ 0.66666667,  0.8       ])), ('y/test/score_precision', array([ 1.        ,  0.66666667])), ('y/test/score_recall', array([ 0.5,  1. ])), ('y/test/score_recall_mean', 0.75)]
     """
 
     def __init__(self, select_regexp=conf.TEST,
@@ -88,10 +89,35 @@ class ClassificationReport(Reducer):
         p, r, f1, s = precision_recall_fscore_support(y_true,
                                                       y_pred,
                                                       average=None)
+
+        # Compute p-value of recall for each class
+        def recall_test(recall, n_trials, apriori_p):
+            n_success = recall * n_trials
+            pval = binom_test(n_success, n=n_trials, p=apriori_p)
+            if recall > apriori_p:
+                return (pval / 2)
+            else:
+                return 1 - (pval / 2)
+
+        n_classes = len(s) # Number of classes
+        n_obs = len(y_true)
+        prior_p = s.astype(np.float)/s.sum() # A priori probability of each class
+        r_pvalues = np.zeros_like(r)
+        for class_index in range(n_classes):
+            n_trials = s[class_index]
+            #print "Class {class_index}: {n_success} success on {n_trials} trials".format(n_success=n_success, n_trials=n_trials, class_index=class_index)
+            r_pvalues[class_index] = recall_test(r[class_index], n_trials, prior_p[class_index])
+
+        # Compute p-value of mean recall
+        mean_r = r.mean()
+        mean_r_pvalue = binom_test(int(mean_r * n_obs), n=n_obs, p=.5)
+
         key, _ = key_pop(key_pred, -1)
         out[key_push(key, conf.SCORE_PRECISION)] = p
         out[key_push(key, conf.SCORE_RECALL)] = r
-        out[key_push(key, conf.SCORE_RECALL_MEAN)] = r.mean()
+        out[key_push(key, conf.SCORE_RECALL_PVALUES)] = r_pvalues
+        out[key_push(key, conf.SCORE_RECALL_MEAN)] = mean_r
+        out[key_push(key, conf.SCORE_RECALL_MEAN_PVALUE)] = mean_r_pvalue
         out[key_push(key, conf.SCORE_F1)] = f1
         out[key_push(key, conf.SCORE_ACCURACY)] = accuracy_score(y_true,
                                                                  y_pred)
@@ -155,3 +181,7 @@ class CVBestSearchRefitPReducer(Reducer):
             for k in key_split(best_key)])
         best_params = [dict(sig) for sig in key_split(best_key, eval=True)]
         return to_refit, best_params
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

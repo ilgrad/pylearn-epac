@@ -26,7 +26,9 @@ class conf:
     PREDICTION = "pred"
     SCORE_PRECISION = "score_precision"
     SCORE_RECALL = "score_recall"
+    SCORE_RECALL_PVALUES = 'recall_pvalues'
     SCORE_RECALL_MEAN = "score_recall_mean"
+    SCORE_RECALL_MEAN_PVALUE = 'recall_mean_pvalue'
     SCORE_F1 = "score_f1"
     SCORE_ACCURACY = "score_accuracy"
     BEST_PARAMS = "best_params"
