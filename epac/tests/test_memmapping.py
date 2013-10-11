@@ -15,13 +15,40 @@ import os
 #import tempfile
 import unittest
 import dill as pickle
-#import getopt
+import getopt
 from epac import StoreFs
 
 from epac.tests.utils import isequal, compare_two_node
 
 
-def create_mmat(nrows, ncols, default_values=None, dir=None, n_proc=None):
+def create_mmat(nrows, ncols, default_values=None, dir=None,
+                writing_mode=True):
+    ''' Create a random matrix with memory mapping (saved on the disk)
+
+    Create a matrix of the desired number of rows and columns, and fill it with
+    random numbers taken from the defaults_values list.
+
+    Parameters
+    ----------
+    nrows: int
+        number of rows the matrix
+
+    ncols: int
+        number of columns of the matrix
+
+    default_values: list of integers
+        Choose the random integers from this list to fill the matrix
+
+    dir: directory path
+        Path of the directory where the matrix will be saved
+        If None, save in /tmp
+
+    writing_mode: boolean
+        If True, generate the matrix
+        Otherwise, test if there is an existing matrix. If there is, load the
+        previously generated matrix, if not, generate it
+    '''
+    # Define the name of the matrix, depending on its size
     filename = 'tmp_rows_' + str(nrows) + '_cols_' + str(ncols)
     if dir is None:
         filepath = '/tmp/' + filename
@@ -30,7 +57,12 @@ def create_mmat(nrows, ncols, default_values=None, dir=None, n_proc=None):
             os.mkdir(dir)
         filepath = os.path.join(dir, filename)
 
-    if n_proc == 1:
+    # Test if the file already exists
+    existing_file = os.path.isfile(filepath)
+
+    if writing_mode or not existing_file:
+        # If the user wants, or if the file doesn't exist already,
+        # generate the matrix and fill it row by row
         mem_mat = np.memmap(filepath,
                             dtype='float32',
                             mode='w+',
@@ -45,6 +77,7 @@ def create_mmat(nrows, ncols, default_values=None, dir=None, n_proc=None):
                     insert_row[j] = default_values[pos]
                 mem_mat[i, :] = insert_row
     else:
+        # Load the matrix previously generated
         mem_mat = np.memmap(filepath,
                             dtype='float32',
                             mode='r+',
@@ -52,8 +85,30 @@ def create_mmat(nrows, ncols, default_values=None, dir=None, n_proc=None):
     return mem_mat
 
 
-def create_array(size, default_values=None, dir=None, n_proc=None):
-    ret_array = create_mmat(size, 1, default_values, dir=dir, n_proc=n_proc)
+def create_array(size, default_values=None, dir=None, writing_mode=True):
+    ''' Create a random array with memory mapping (saved on the disk)
+
+    Create a array of the desired size, and fill it with
+    random numbers taken from the defaults_values list.
+
+    Parameters
+    ----------
+    size: int
+        size of the array
+
+    default_values: list of integers
+        Choose the random integers from this list to fill the matrix
+
+    dir: directory path
+        Path of the directory where the matrix will be saved
+        If None, save in /tmp
+
+    writing_mode: boolean
+        If True, generate the matrix
+        Otherwise, load a previously generated matrix
+    '''
+    ret_array = create_mmat(size, 1, default_values=default_values, dir=dir,
+                            writing_mode=writing_mode)
     ret_array = ret_array[:, 0]
     return ret_array
 
@@ -85,8 +140,8 @@ class TestMemMapping(unittest.TestCase):
         If None, save in /tmp
     '''
 
-    def __init__(self, n_samples, n_features, memmap=False,
-                 n_proc=1, is_swf=False, dir=None, testname='test_memmapping'):
+    def __init__(self, n_samples, n_features, memmap,
+                 n_proc, is_swf, dir, testname='test_memmapping'):
         super(TestMemMapping, self).__init__(testname)
         self.n_samples = n_samples
         self.n_features = n_features
@@ -99,10 +154,13 @@ class TestMemMapping(unittest.TestCase):
         ## 1) Building dataset
         ## ============================================================
         if self.memmap:
+            # If the proc is 1, always generate the matrix
+            # Otherwise, load it if it exists, or create it if it doesn't
+            writing_mode = (self.n_proc == 1)
             X = create_mmat(self.n_samples, self.n_features, dir=self.dir,
-                            n_proc=self.n_proc)
+                            writing_mode=writing_mode)
             y = create_array(self.n_samples, [0, 1], dir=self.dir,
-                             n_proc=self.n_proc)
+                             writing_mode=writing_mode)
             Xy = dict(X=X, y=y)
         else:
             X, y = datasets.make_classification(n_samples=self.n_samples,
@@ -128,12 +186,14 @@ class TestMemMapping(unittest.TestCase):
                                             num_processes=self.n_proc,
                                             resource_id="jl237561@gabriel",
                                             login="jl237561",
-#                                            remove_finished_wf=False,
-#                                            remove_local_tree=False,
+                                            # remove_finished_wf=False,
+                                            # remove_local_tree=False,
                                             mmap_mode=mmap_mode,
                                             queue="Global_long")
 
             cv_svm = swf_engine.run(**Xy)
+
+            # Printing information about the jobs
             time.sleep(2)
             print ''
             sum_memory = 0
@@ -157,6 +217,7 @@ class TestMemMapping(unittest.TestCase):
         print "\n -> Reducing results"
         print cv_svm_reduce
 
+        # Creating the directory to save results, if it doesn't exist
         dirpath = "/tmp/tmp_save_tree/"
         if not os.path.isdir(dirpath):
             os.mkdir(dirpath)
@@ -171,54 +232,60 @@ class TestMemMapping(unittest.TestCase):
                 pickle.dump(cv_svm_reduce, filename)
 
         else:
-            ## 4.2) Compare results to the results for one process
+            ## 4.2) Loading the results for one process
             ## ===================================================
-            store = StoreFs(dirpath=dirpath, clear=False)
-            cv_svm_one_proc = store.load()
+            try:
+                store = StoreFs(dirpath=dirpath, clear=False)
+                cv_svm_one_proc = store.load()
 
-            with open("/tmp/tmp_save_results", 'r+') as filename:
-                cv_svm_reduce_one_proc = pickle.load(filename)
+                with open("/tmp/tmp_save_results", 'r+') as filename:
+                    cv_svm_reduce_one_proc = pickle.load(filename)
 
-            print "\nComparing %i proc with one proc" % self.n_proc
-            self.assertTrue(compare_two_node(cv_svm, cv_svm_one_proc))
-            self.assertTrue(isequal(cv_svm_reduce, cv_svm_reduce_one_proc))
+                ## 5.2) Comparing results to the results for one process
+                ## ===================================================
+                print "\nComparing %i proc with one proc" % self.n_proc
+                self.assertTrue(compare_two_node(cv_svm, cv_svm_one_proc))
+                self.assertTrue(isequal(cv_svm_reduce, cv_svm_reduce_one_proc))
+            except KeyError:
+                print "Warning: "
+                print "No previous tree detected, no possible "\
+                    "comparison of results"
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    #print repr(args)
-#    args = [10, 70, 'True', 1, 'False', None]
-    args[2] = (args[2] == 'True')
-    args[4] = (args[4] == 'True')
-    if len(args) == 5:
-        args.append(None)
+    # Default values on the test
+    n_samples = 50
+    n_features = 500
+    memmap = True
+    n_proc = 3
+    is_swf = False
+    directory = None
 
+    # Getting the arguments from the shell
+    optlist, args = getopt.gnu_getopt(sys.argv[1:], "", ["n_samples=",
+                                                         "n_features=",
+                                                         "memmap=",
+                                                         "n_proc=",
+                                                         "is_swf=",
+                                                         "dir="])
+    # Changing the default values depending on the given arguments
+    for opt in optlist:
+        if opt[0] == '--n_samples':
+            n_samples = int(opt[1])
+        elif opt[0] == '--n_features':
+            n_features = int(opt[1])
+        elif opt[0] == '--memmap':
+            memmap = (opt[1] == 'True')
+        elif opt[0] == '--n_proc':
+            n_proc = int(opt[1])
+        elif opt[0] == '--is_swf':
+            is_swf = (opt[1] == 'True')
+        elif opt[0] == '--dir':
+            directory = opt[1]
+
+    # Running the test with the given arguments
     suite = unittest.TestSuite()
-    suite.addTest(TestMemMapping(int(args[0]), int(args[1]),
-                                 args[2], int(args[3]), args[4], args[5]))
-#    suite.addTest(TestMemMapping(10, 80, True, 1, True, None))
-#    suite.addTest(TestMemMapping(10, 80, True, 2, True, None))
-
+    suite.addTest(TestMemMapping(n_samples=n_samples, n_features=n_features,
+                                 memmap=memmap, n_proc=n_proc, is_swf=is_swf,
+                                 dir=directory))
     unittest.TextTestRunner().run(suite)
-#
-#
-#    optlist, args = getopt.getopt(sys.argv[1:], ["n_samples=",
-#                                                 "n_features=",
-#                                                 "memmap=",
-#                                                 "n_proc=",
-#                                                 "is_swf=",
-#                                                 "dir="])
-#
-#    for opt in optlist:
-#        if opt[0] == '--n_samples':
-#            n_samples = int(opt[1])
-#        elif opt[0] == '--n_features':
-#            n_features = int(opt[1])
-#        elif opt[0] == '--memmap':
-#            memmap = (opt[1] == 'True')
-#        elif opt[0] == '--n_proc':
-#            n_proc = int(opt[1])
-#        elif opt[0] == '--is_swf':
-#            is_swf = (opt[1] == 'True')
-#        elif opt[0] == '--dir':
-#            dir = opt[1]

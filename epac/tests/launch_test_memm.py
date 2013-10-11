@@ -75,15 +75,18 @@ def print_process_mem_cost(process_name, delay=10):
 #################################
 
 n_samples = 500
-n_features_list = [50000 * 2 ** n for n in range(0, 7)]
-#n_features_list = [10000]
-list_memmap = [False, True]
-n_proc_list = range(1, 9)
-cluster_list = [False, True]
+#n_features_list = [50000 * 2 ** n for n in range(0, 7)]
+n_features_list = [10000]
+#list_memmap = [False, True]
+list_memmap = [True]
+#n_proc_list = range(1, 9)
+n_proc_list = [2]
+#cluster_list = [False, True]
+cluster_list = [False]
 directory = '/volatile'
 
 # Path of the file to write results
-filename = 'result_test.txt'
+filename = '/tmp/result_test.txt'
 
 # Clearing file from other tries
 open(filename, 'w+').close()
@@ -116,32 +119,38 @@ for memmap in list_memmap:
 
                 cmd = ""
                 if not is_on_cluster:
-                    cmd = "(unbuffer python %s %i %i %s %i %s %s >> %s &)" % \
-                          (process_name,
-                           n_samples,
-                           n_features,
-                           repr(memmap),
-                           n_proc,
-                           repr(is_on_cluster),
-                           directory,
-                           filename)
+                    # Run the test on the local machine and measure the memory
+                    # cost of the processes
+                    cmd = "(unbuffer python %s --n_samples=%i --n_features=%i"\
+                          " --memmap=%s --n_proc=%i --is_swf=%s --dir=%s "\
+                          ">> %s &)" % (process_name,
+                                        n_samples,
+                                        n_features,
+                                        memmap,
+                                        n_proc,
+                                        is_on_cluster,
+                                        directory,
+                                        filename)
                     os.system(cmd)
                     time.sleep(5)
                     print_process_mem_cost(process_name, 5)
                 else:
-                    cmd = "unbuffer python %s %i %i %s %i %s >> %s" % \
-                          (process_name,
-                           n_samples,
-                           n_features,
-                           memmap,
-                           n_proc,
-                           repr(is_on_cluster),
-                           filename)
+                    # Run the test on the cluster
+                    cmd = "unbuffer python %s --n_samples=%i --n_features=%i "\
+                          "--memmap=%s --n_proc=%i --is_swf=%s "\
+                          ">> %s" % (process_name,
+                                     n_samples,
+                                     n_features,
+                                     memmap,
+                                     n_proc,
+                                     is_on_cluster,
+                                     filename)
                     os.system(cmd)
                 finished_time = datetime.datetime.now()
 #                print "Finishing time = ", repr(finished_time)
                 print "Time cost=", repr((finished_time - start_time).seconds)
                 print "------------- Results ------------------"
+                # Get back all the results of the test
                 with open(filename, 'r+') as results:
                     print results.read()
                 # Clear file from this try
