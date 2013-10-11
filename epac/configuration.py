@@ -37,7 +37,8 @@ class conf:
     ML_CLASSIFICATION_MODE = None  # Set to True to force classification mode
     DICT_INDEX_FILE = "dict_index.txt"
     # when the data larger than 100MB, it needs memmory mapping
-    MEMM_THRESHOLD = 100000000L
+    # MEMM_THRESHOLD = 100000000L
+    MEMM_THRESHOLD = 100L
     # When split tree for parallel computing, the max depth we can split
     MAX_DEPTH_SPLIT_TREE = 4
 

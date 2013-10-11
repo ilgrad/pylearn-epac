@@ -17,6 +17,7 @@ import inspect
 import numpy as np
 from abc import abstractmethod
 from epac.configuration import conf
+from epac.map_reduce.results import ResultSet, Result
 
 
 class TagObject:
@@ -26,7 +27,7 @@ class TagObject:
 
 def func_is_big_nparray(obj):
     if isinstance(obj, np.ndarray):
-        num = 1
+        num = 8
         for ishape in obj.shape:
             num = num * ishape
         if num > conf.MEMM_THRESHOLD:
@@ -42,22 +43,58 @@ def replace_values(obj, extracted_values, max_depth=10):
     """
     See example in extract_values
     """
+    is_modified = False
     max_depth = max_depth - 1
     if max_depth < 0:
-        return obj
-    public_props = (name for name in dir(obj)
-          if not name.startswith('_') and not callable(getattr(obj, name)))
-    for props in public_props:
-        if isinstance(getattr(obj, props), TagObject):
-            tag_value = getattr(obj, props)
-            set_value = extracted_values[tag_value.hash_id]
-            setattr(obj, props, set_value)
-        else:
-            obj2set = replace_values(getattr(obj, props),
-                                     extracted_values,
-                                     max_depth)
-            setattr(obj, props, obj2set)
-    return obj
+        return (obj, is_modified)
+    # object is TagObject
+    if isinstance(obj, TagObject):
+        tag_value = obj
+        set_value = extracted_values[tag_value.hash_id]
+        obj = set_value
+        is_modified = True
+        return (obj, is_modified)
+
+#    if hasattr(obj, "__dict__"):
+#        public_props = (name for name in obj.__dict__
+#              if not name.startswith('_') and not callable(getattr(obj, name)))
+#        for props in public_props:
+#            obj2set, tmp_is_modified = replace_values(getattr(obj, props),
+#                                                      extracted_values,
+#                                                      max_depth)
+#            if tmp_is_modified:
+#                is_modified = True
+#                try:
+#                    setattr(obj, props, obj2set)
+#                except:
+#                    pass
+
+    # dictionary case
+    if isinstance(obj, dict):
+        for key in obj:
+            obj2set, tmp_is_modified = replace_values(obj[key],
+                                                      extracted_values,
+                                                      max_depth)
+            if tmp_is_modified:
+                is_modified = True
+                try:
+                    obj[key] = obj2set
+                except:
+                    pass
+
+    # list case
+    if isinstance(obj, list):
+        for iobj in xrange(len(obj)):
+            obj2set, tmp_is_modified = replace_values(obj[iobj],
+                                                      extracted_values,
+                                                      max_depth)
+            if tmp_is_modified:
+                is_modified = True
+                try:
+                    obj[iobj] = obj2set
+                except:
+                    pass
+    return (obj, is_modified)
 
 
 def extract_values(obj,
@@ -70,7 +107,6 @@ def extract_values(obj,
     >>> from epac.stores import extract_values
     >>> from epac.stores import replace_values
     >>> from epac.stores import TagObject
-    >>>
     >>>
     >>> def func_is_need_extract(obj):
     ...     if type(obj) is str:
@@ -123,42 +159,92 @@ def extract_values(obj,
     C2
     """
     replaced_array = {}
+    is_modified = False
     # When obj is replace-able
     if func_is_need_extract(obj):
         replaced_object = TagObject()
         tag_value = obj
         obj = replaced_object
         replaced_array[replaced_object.hash_id] = tag_value
-        return (replaced_array, obj)
+        is_modified = True
+        return (replaced_array, obj, is_modified)
 
     max_depth = max_depth - 1
+    # print "max_depth=", max_depth
     if max_depth < 0:
-        return (replaced_array, obj)
-    public_props = (name for name in dir(obj)
-          if not name.startswith('_') and not callable(getattr(obj, name)))
-    for props in public_props:
-        if func_is_need_extract(getattr(obj, props)):
-            replaced_object = TagObject()
-            tag_value = getattr(obj, props)
-            setattr(obj, props, replaced_object)
-            replaced_array[replaced_object.hash_id] = tag_value
-        else:
-            can_deeper = False
-            if func_can_deeper is None:
-                can_deeper = True
-            elif func_can_deeper(obj):
-                can_deeper = True
+        return (replaced_array, obj, is_modified)
 
-            if can_deeper:
-                pros_replaced_array, obj2set = \
-                    extract_values(getattr(obj, props),
-                                   func_is_need_extract,
-                                   func_can_deeper,
-                                   max_depth)
-                setattr(obj, props, obj2set)
+#    if hasattr(obj, "__dict__"):
+#        public_props = (name for name in obj.__dict__
+#              if not name.startswith('_') and
+#                 not callable(getattr(obj, name)) and
+#                 getattr(obj, name) is not None)
+#        for props in public_props:
+#            if func_is_need_extract(getattr(obj, props)):
+#                replaced_object = TagObject()
+#                tag_value = getattr(obj, props)
+#                try:
+#                    setattr(obj, props, replaced_object)
+#                except:
+#                    pass
+#                replaced_array[replaced_object.hash_id] = tag_value
+#            else:
+#                can_deeper = False
+#                if func_can_deeper is None:
+#                    can_deeper = True
+#                elif func_can_deeper(obj):
+#                    can_deeper = True
+#
+#                if can_deeper:
+#                    pros_replaced_array, obj2set, tmp_is_modified = \
+#                        extract_values(getattr(obj, props),
+#                                       func_is_need_extract,
+#                                       func_can_deeper,
+#                                       max_depth)
+#                    if tmp_is_modified:
+#                        is_modified = True
+#                        try:
+#                            setattr(obj, props, obj2set)
+#                        except:
+#                            pass
+#                        replaced_array.update(pros_replaced_array)
+    # ResultSet
+    if isinstance(obj, ResultSet):
+        for key in obj.keys():
+            pros_replaced_array, obj2set, tmp_is_modified \
+                                = extract_values(obj[key],
+                                                 func_is_need_extract,
+                                                 func_can_deeper,
+                                                 max_depth)
+            if tmp_is_modified:
+                is_modified = True
+                obj[key] = obj2set
                 replaced_array.update(pros_replaced_array)
-
-    return (replaced_array, obj)
+    # Dictionary case
+    if isinstance(obj, dict):
+        for key in obj:
+            pros_replaced_array, obj2set, tmp_is_modified \
+                                = extract_values(obj[key],
+                                                 func_is_need_extract,
+                                                 func_can_deeper,
+                                                 max_depth)
+            if tmp_is_modified:
+                is_modified = True
+                obj[key] = obj2set
+                replaced_array.update(pros_replaced_array)
+    # List case
+    if isinstance(obj, list):
+        for iobj in xrange(len(obj)):
+            pros_replaced_array, obj2set, tmp_is_modified \
+                                    = extract_values(obj[iobj],
+                                                     func_is_need_extract,
+                                                     func_can_deeper,
+                                                     max_depth)
+            if tmp_is_modified:
+                is_modified = True
+                obj[iobj] = obj2set
+                replaced_array.update(pros_replaced_array)
+    return (replaced_array, obj, is_modified)
 
 
 class epac_joblib:
@@ -169,16 +255,36 @@ class epac_joblib:
 
     Example
     -------
-    import numpy as np
-    from epac.stores import epac_joblib
-
-    npdata1 = np.random.random(size=(5,5))
-    npdata2 = np.random.random(size=(5,5))
-
-    dict_data = {"1": npdata1, "2": npdata2}
-    epac_joblib.dump(dict_data, "/tmp/123")
-    dict_data = epac_joblib.load("/tmp/123", "r")
-
+    >>> import numpy as np
+    >>> from epac.configuration import conf
+    >>> from epac.stores import epac_joblib
+    >>>
+    >>> conf.MEMM_THRESHOLD = 100
+    >>> npdata1 = np.random.random(size=(2, 2))
+    >>> npdata2 = np.random.random(size=(100, 5))
+    >>>
+    >>> dict_data = {"1": npdata1, "2": npdata2}
+    >>> epac_joblib.dump(dict_data, "/tmp/123")
+    >>> dict_data2 = epac_joblib.load("/tmp/123")
+    >>>
+    >>> np.all(dict_data2["1"] == npdata1)
+    True
+    >>> np.all(dict_data2["2"] == npdata2)
+    True
+    >>> from epac.stores import StoreMem
+    >>> from epac import Result, ResultSet
+    >>>
+    >>> store = StoreMem()
+    >>>
+    >>> r1 = Result('SVC(C=1)', a=npdata1, b=npdata2)
+    >>> r2 = Result('SVC(C=2)', a=npdata2, b=npdata1)
+    >>> set1 = ResultSet(r1, r2)
+    >>> store.save('SVC', set1)
+    >>> epac_joblib.dump(store, "/tmp/store")
+    >>> store = epac_joblib.load("/tmp/store")
+    >>>
+    >>> r3 = Result('SVC(C=3)', **dict(a=1, b=2))
+    >>> r4 = Result('SVC(C=4)', **dict(a=1, b=2))
     """
     @staticmethod
     def _epac_is_need_memm(obj):
@@ -239,7 +345,7 @@ class epac_joblib:
         mem_obj = joblib.load(filename_memobj, mmap_mode)
         normal_obj = epac_joblib._pickle_load(filename_norobj)
         # Replace mem_obj (extracted values)
-        normal_obj = replace_values(normal_obj, mem_obj)
+        normal_obj, _ = replace_values(normal_obj, mem_obj)
         return normal_obj
 
 
@@ -492,3 +598,8 @@ def dict_to_obj(obj_dict):
 #        return obj.tolist()
     else:
         return obj_dict
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
