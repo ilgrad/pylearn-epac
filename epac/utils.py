@@ -324,7 +324,7 @@ def export_leaves_csv(tree_root, filename):
             spamwriter.writerow(temp_list)
 
 
-def export_csv(tree, results, filename):
+def export_csv(tree_root, results, filename):
     '''Export the results to a CSV file
 
     Export the results of a top-down(run) or
@@ -332,7 +332,7 @@ def export_csv(tree, results, filename):
 
     Parameters
     ----------
-    tree: Workflow in study
+    tree_root: Workflow in study
 
     results: list or ResultSet to export
 
@@ -347,11 +347,12 @@ def export_csv(tree, results, filename):
     >>> from epac.utils import export_csv
     >>> import tempfile
     >>> _, filename1 = tempfile.mkstemp(suffix=".csv")
-    >>> X, y = datasets.make_classification(n_samples=12, n_features=10, n_informative=2, random_state=1)
+    >>> X, y = datasets.make_classification(n_samples=12, n_features=10, \
+                                            n_informative=2, random_state=1)
     >>> multi = Methods(SVM(C=1), SVM(C=10))
     >>> result_run = multi.run(X=X, y=y)
     >>> export_csv(multi, result_run, filename1)
-    >>> with open(filename1, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    >>> with open(filename1, 'rb') as csvfile:  #doctest: +NORMALIZE_WHITESPACE
     ...     print csvfile.read()
     key;y/true;y/pred
     LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
@@ -361,7 +362,7 @@ def export_csv(tree, results, filename):
     >>> _, filename2 = tempfile.mkstemp(suffix=".csv")
     >>> result_reduce = multi.reduce()
     >>> export_csv(multi, result_reduce, filename2)
-    >>> with open(filename2, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+    >>> with open(filename2, 'rb') as csvfile:  #doctest: +NORMALIZE_WHITESPACE
     ...     print csvfile.read()
     key;y/true;y/pred
     LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
@@ -369,40 +370,10 @@ def export_csv(tree, results, filename):
     <BLANKLINE>
     '''
 
-    with open(filename, 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=';',
-                                quoting=csv.QUOTE_MINIMAL)
-        if isinstance(results, ResultSet):
-            result_keys = results.values()[0].keys()
-            keys = []
-            if "key" in result_keys:
-                keys.append("key")
-                result_keys.remove("key")
-            keys.extend(result_keys)
-            spamwriter.writerow(keys)
-            for result in results.values():
-                temp_list = []
-                for key in keys:
-                    temp_list.append(result[key])
-                spamwriter.writerow(temp_list)
-        else:
-            result_keys = tree.get_leftmost_leaf().\
-                load_results().values()[0].keys()
-            keys = []
-            if "key" in result_keys:
-                keys.append("key")
-                result_keys.remove("key")
-            keys.extend(result_keys)
-            spamwriter.writerow(keys)
-            for leaf in tree.walk_leaves():
-                key = leaf.get_key().replace('CV/', '').replace('Methods/', '')
-                key = key.replace('Perms/', '')
-                result = leaf.load_results()
-                result.values()[0]['key'] = key
-                temp_list = []
-                for key in keys:
-                    temp_list.append(result.values()[0][key])
-                spamwriter.writerow(temp_list)
+    if isinstance(results, ResultSet):
+        export_resultset_csv(results, filename)
+    else:
+        export_leaves_csv(tree_root, filename)
 
 
 ## ============================================== ##
