@@ -28,7 +28,7 @@ class Estimator(Wrapper):
 
     Parameters
     ----------
-    wrapped_node: any class containing fit and transform or fit and predict functions
+    wrapped_node: any class with fit and transform or fit and predict functions
         any class implementing fit and transform
         or implementing fit and predict
 
@@ -97,8 +97,8 @@ class Estimator(Wrapper):
         elif hasattr(wrapped_node, "fit") and hasattr(wrapped_node, "predict"):
             is_fit_estimator = True
         if not is_fit_estimator:
-            raise ValueError("%s should implement fit and transform or fit and predict" %
-                            wrapped_node.__class__.__name__)
+            raise ValueError("%s should implement fit and transform or fit "
+                             "and predict" % wrapped_node.__class__.__name__)
         super(Estimator, self).__init__(wrapped_node=wrapped_node)
         if in_args_fit:
             self.in_args_fit = in_args_fit
@@ -120,7 +120,7 @@ class Estimator(Wrapper):
                     _func_get_args_names(self.wrapped_node.predict)
             if out_args_predict is None:
                 fit_predict_diff = list(set(self.in_args_fit).difference(
-                                            self.in_args_predict))
+                    self.in_args_predict))
                 if len(fit_predict_diff) > 0:
                     self.out_args_predict = fit_predict_diff
                 else:
@@ -130,14 +130,14 @@ class Estimator(Wrapper):
 
     def _wrapped_node_transform(self, **Xy):
         Xy_out = _as_dict(self.wrapped_node.transform(
-                            **_sub_dict(Xy, self.in_args_transform)),
-                            keys=self.in_args_transform)
+            **_sub_dict(Xy, self.in_args_transform)),
+            keys=self.in_args_transform)
         return Xy_out
 
     def _wrapped_node_predict(self, **Xy):
         Xy_out = _as_dict(self.wrapped_node.predict(
-                            **_sub_dict(Xy, self.in_args_predict)),
-                            keys=self.out_args_predict)
+            **_sub_dict(Xy, self.in_args_predict)),
+            keys=self.out_args_predict)
         return Xy_out
 
     def transform(self, **Xy):
@@ -183,33 +183,38 @@ class Estimator(Wrapper):
                 res = self.wrapped_node.fit(**_sub_dict(Xy_train,
                                             self.in_args_fit))
                 Xy_out_tr = self._wrapped_node_predict(**Xy_train)
-                Xy_out_tr = _dict_suffix_keys(Xy_out_tr,
+                Xy_out_tr = _dict_suffix_keys(
+                    Xy_out_tr,
                     suffix=conf.SEP + conf.TRAIN + conf.SEP + conf.PREDICTION)
                 Xy_out.update(Xy_out_tr)
                 # Test predict
                 Xy_out_te = self._wrapped_node_predict(**Xy_test)
-                Xy_out_te = _dict_suffix_keys(Xy_out_te,
+                Xy_out_te = _dict_suffix_keys(
+                    Xy_out_te,
                     suffix=conf.SEP + conf.TEST + conf.SEP + conf.PREDICTION)
                 Xy_out.update(Xy_out_te)
                 ## True test
                 Xy_test_true = _sub_dict(Xy_test, self.out_args_predict)
-                Xy_out_true = _dict_suffix_keys(Xy_test_true,
+                Xy_out_true = _dict_suffix_keys(
+                    Xy_test_true,
                     suffix=conf.SEP + conf.TEST + conf.SEP + conf.TRUE)
                 Xy_out.update(Xy_out_true)
             else:
                 res = self.wrapped_node.fit(**_sub_dict(Xy, self.in_args_fit))
                 Xy_out = self._wrapped_node_predict(**Xy)
-                Xy_out = _dict_suffix_keys(Xy_out,
+                Xy_out = _dict_suffix_keys(
+                    Xy_out,
                     suffix=conf.SEP + conf.PREDICTION)
                 ## True test
                 Xy_true = _sub_dict(Xy, self.out_args_predict)
-                Xy_out_true = _dict_suffix_keys(Xy_true,
+                Xy_out_true = _dict_suffix_keys(
+                    Xy_true,
                     suffix=conf.SEP + conf.TRUE)
                 Xy_out.update(Xy_out_true)
             return Xy_out
         else:
             raise ValueError("%s should implement either transform or predict"
-                            % self.wrapped_node.__class__.__name__)
+                             % self.wrapped_node.__class__.__name__)
 
 if __name__ == "__main__":
     import doctest

@@ -133,8 +133,8 @@ class StoreFs(Store):
             filepaths = []
             for base, dirs, files in os.walk(self.dirpath):
                 #print base, dirs, files
-                for filepath in [os.path.join(base, basename) for \
-                    basename in files]:
+                for filepath in [os.path.join(base, basename) for
+                                 basename in files]:
                     _, ext = os.path.splitext(filepath)
                     if not ext == ".npy":
                         filepaths.append(filepath)
@@ -156,7 +156,7 @@ class StoreFs(Store):
                     pass
                 else:
                     raise IOError('File %s has an unkown extension: %s' %
-                        (filepath, ext))
+                                  (filepath, ext))
             if key == "":  # No key provided assume a whole tree to load
                 tree = loaded.pop(conf.STORE_EXECUTION_TREE_PREFIX)
                 for key1 in loaded:

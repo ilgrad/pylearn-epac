@@ -34,7 +34,7 @@ class TestPipeline(unittest.TestCase):
 
         # = With SKLEARN
         pipe = sklearn.pipeline.Pipeline([('anova', SelectKBest(k=2)),
-                         ('svm', SVC(kernel="linear"))])
+                                          ('svm', SVC(kernel="linear"))])
         r_sklearn = pipe.fit(X, y).predict(X)
 
         key2cmp = 'y' + conf.SEP + conf.PREDICTION
@@ -73,8 +73,8 @@ class TestCV(unittest.TestCase):
         # = Comparison
         key2cmp = 'y' + conf.SEP + conf.TEST + conf.SEP + conf.PREDICTION
         for icv in range(n_folds):
-            comp = np.all(np.asarray(r_epac[0][key2cmp]) \
-                                    == np.asarray(r_sklearn[0]))
+            comp = np.all(np.asarray(r_epac[0][key2cmp])
+                          == np.asarray(r_sklearn[0]))
             self.assertTrue(comp, u'Diff CV: EPAC vs sklearn')
 
         # test reduce
@@ -93,7 +93,7 @@ class TestPerms(unittest.TestCase):
         rnd = 0
         # = With EPAC
         wf = Perms(SVC(kernel="linear"), n_perms=n_perms, permute="y",
-                          random_state=rnd, reducer=None)
+                   random_state=rnd, reducer=None)
         r_epac = wf.top_down(X=X, y=y)
         # = With SKLEARN
         clf = SVC(kernel="linear")
@@ -107,18 +107,16 @@ class TestPerms(unittest.TestCase):
 
         # = Comparison
         for iperm in range(n_perms):
-            comp = np.all(
-                    np.asarray(r_epac[iperm][key2cmp])
-                    ==
-                    np.asarray(r_sklearn[iperm]))
+            comp = np.all(np.asarray(r_epac[iperm][key2cmp]) ==
+                          np.asarray(r_sklearn[iperm]))
             self.assertTrue(comp, u'Diff Perm: EPAC vs sklearn')
         # test reduce
         for iperm in range(n_perms):
             r_epac_reduce = wf.reduce().values()[iperm][key2cmp]
-            comp = np.all(np.asarray(r_epac_reduce) 
+            comp = np.all(np.asarray(r_epac_reduce)
                           == np.asarray(r_sklearn[iperm]))
             self.assertTrue(comp, u'Diff Perm: EPAC reduce')
-    
+
     def test_perm2(self):
         from epac.tests.wfexamples2test import WFExample2
         X, y = datasets.make_classification(n_samples=20, n_features=5,
@@ -141,7 +139,7 @@ class TestCVBestSearchRefit(unittest.TestCase):
         key_y_pred = 'y' + conf.SEP + conf.PREDICTION
         # With EPAC
         methods = Methods(*[SVC(C=C, kernel=kernel)
-            for C in C_values for kernel in kernels])
+                            for C in C_values for kernel in kernels])
         wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
         wf.run(X=X, y=y)
         r_epac = wf.reduce().values()[0]
@@ -160,8 +158,9 @@ class TestCVBestSearchRefit(unittest.TestCase):
         for key_param in r_epac[conf.BEST_PARAMS][0]:
             if key_param in r_sklearn[conf.BEST_PARAMS]:
                 comp = r_sklearn[conf.BEST_PARAMS][key_param] == \
-                        r_epac[conf.BEST_PARAMS][0][key_param]
-                self.assertTrue(comp, \
+                    r_epac[conf.BEST_PARAMS][0][key_param]
+                self.assertTrue(
+                    comp,
                     u'Diff CVBestSearchRefitParallel: best parameters')
 
     def test_cvbestsearchrefit_select_k_best(self):
@@ -180,7 +179,7 @@ class TestCVBestSearchRefit(unittest.TestCase):
             # With EPAC
             methods = Methods(*[Pipe(SelectKBest(k=k),
                                      SVC(C=C_value, kernel="linear"))
-                                     for k in k_values])
+                                for k in k_values])
             wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
             wf.run(X=X, y=y)
             r_epac = wf.reduce().values()[0]
@@ -199,12 +198,14 @@ class TestCVBestSearchRefit(unittest.TestCase):
                 r_sklearn[conf.BEST_PARAMS]['anova__k']
             # - Comparisons
             comp = np.all(r_epac[key_y_pred] == r_sklearn[key_y_pred])
-            self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: prediction')
+            self.assertTrue(comp,
+                            u'Diff CVBestSearchRefitParallel: prediction')
             for key_param in r_epac[conf.BEST_PARAMS][0]:
                 if key_param in r_sklearn[conf.BEST_PARAMS]:
                     comp = r_sklearn[conf.BEST_PARAMS][key_param] == \
-                            r_epac[conf.BEST_PARAMS][0][key_param]
-                    self.assertTrue(comp, \
+                        r_epac[conf.BEST_PARAMS][0][key_param]
+                    self.assertTrue(
+                        comp,
                         u'Diff CVBestSearchRefitParallel: best parameters')
 
 
@@ -219,8 +220,8 @@ class TestMethods(unittest.TestCase):
 
     def test_constructor_avoid_collision_level2(self):
         # Test that level 2 collisions are avoided
-        pm = Methods(*[Pipe(SelectKBest(k=2), SVC(kernel="linear", C=C))\
-                          for C in [1, 10]])
+        pm = Methods(*[Pipe(SelectKBest(k=2), SVC(kernel="linear", C=C))
+                       for C in [1, 10]])
         leaves_key = [l.get_key() for l in pm.walk_leaves()]
         self.assertTrue(len(leaves_key) == len(set(leaves_key)),
                         u'Collision could not be avoided')
@@ -228,8 +229,8 @@ class TestMethods(unittest.TestCase):
     def test_constructor_cannot_avoid_collision_level2(self):
         # This should raise an exception since collision cannot be avoided
         self.assertRaises(ValueError, Methods,
-                         *[Pipe(SelectKBest(k=2), SVC(kernel="linear", C=C))\
-                          for C in [1, 1]])
+                          *[Pipe(SelectKBest(k=2), SVC(kernel="linear", C=C))
+                            for C in [1, 1]])
 
     def test_twomethods(self):
         key_y_pred = 'y' + conf.SEP + conf.PREDICTION
@@ -249,12 +250,12 @@ class TestMethods(unittest.TestCase):
         # Comparison
         for i_cls in range(2):
             comp = np.all(np.asarray(r_epac[i_cls][key_y_pred]) ==
-                                    np.asarray(r_sklearn[i_cls]))
+                          np.asarray(r_sklearn[i_cls]))
             self.assertTrue(comp, u'Diff Methods')
 
         # test reduce
         r_epac_reduce = [wf.reduce().values()[0][key_y_pred],
-            wf.reduce().values()[1][key_y_pred]]
+                         wf.reduce().values()[1][key_y_pred]]
         comp = np.all(np.asarray(r_epac_reduce) == np.asarray(r_sklearn))
         self.assertTrue(comp, u'Diff Perm / CV: EPAC reduce')
 

@@ -30,9 +30,9 @@ class TestPermCV(unittest.TestCase):
         rnd = 0
         # = With EPAC
         wf = Perms(CV(SVC(kernel="linear"), n_folds=n_folds,
-                            reducer=ClassificationReport(keep=True)),
-                            n_perms=n_perms, permute="y",
-                            random_state=rnd, reducer=None)
+                      reducer=ClassificationReport(keep=True)),
+                   n_perms=n_perms, permute="y",
+                   random_state=rnd, reducer=None)
         r_epac = wf.run(X=X, y=y)
         # = With SKLEARN
         from sklearn.cross_validation import StratifiedKFold
@@ -40,7 +40,7 @@ class TestPermCV(unittest.TestCase):
         r_sklearn = [[None] * n_folds for i in xrange(n_perms)]
         perm_nb = 0
         for perm in Permutations(n=y.shape[0], n_perms=n_perms,
-                                random_state=rnd):
+                                 random_state=rnd):
             y_p = y[perm]
             fold_nb = 0
             for idx_train, idx_test in StratifiedKFold(y=y_p,
@@ -57,10 +57,8 @@ class TestPermCV(unittest.TestCase):
         # Comparison
         for iperm in range(n_perms):
             for icv in range(n_folds):
-                comp = np.all(
-                            np.asarray(r_epac[iperm][icv][cmp_key]) ==
-                            np.asarray(r_sklearn[iperm][icv])
-                             )
+                comp = np.all(np.asarray(r_epac[iperm][icv][cmp_key]) ==
+                              np.asarray(r_sklearn[iperm][icv]))
                 self.assertTrue(comp, u'Diff Perm / CV: EPAC vs sklearn')
 
         # test reduce
@@ -91,17 +89,17 @@ class TestCVBestSearchRefit(unittest.TestCase):
         # = With EPAC
         pipelines = Methods(*[Pipe(SelectKBest(k=k),
                                    SVC(C=C, kernel="linear"))
-                                   for C in C_values
-                                   for k in k_values])
+                              for C in C_values
+                              for k in k_values])
         #print [n for n in pipelines.walk_leaves()]
         pipelines_cv = CVBestSearchRefit(pipelines,
-                        n_folds=n_folds_nested,
-                        random_state=random_state)
+                                         n_folds=n_folds_nested,
+                                         random_state=random_state)
         wf = Perms(CV(pipelines_cv, n_folds=n_folds,
                       reducer=ClassificationReport(keep=True)),
-                 n_perms=n_perms, permute="y",
-                 reducer=PvalPerms(keep=True),
-                 random_state=random_state)
+                   n_perms=n_perms, permute="y",
+                   reducer=PvalPerms(keep=True),
+                   random_state=random_state)
         wf.fit_predict(X=X, y=y)
         r_epac = wf.reduce().values()[0]
         for key in r_epac:

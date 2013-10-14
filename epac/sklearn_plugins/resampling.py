@@ -41,7 +41,7 @@ class Permutations(object):
         rng = check_random_state(self.random_state)
         if self.first_perm_is_id:
             yield np.arange(self.n)  # id permutation
-            for i in xrange(self.n_perms - 1):  # n_perms-1 random Permutationss
+            for i in xrange(self.n_perms - 1):  # n_perms-1 random Permutations
                 yield rng.permutation(self.n)
         else:
             for i in xrange(self.n_perms):  # n_perms random permutations

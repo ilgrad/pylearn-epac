@@ -62,7 +62,7 @@ class BaseNodeSplitter(BaseNode):
             return self.load_results()
         # 1) Build sub-aggregates over children
         children_results = [child.reduce(store_results=False) for
-            child in self.children]
+                            child in self.children]
         result_set = ResultSet(*children_results)
         if not self.reducer:
             return result_set
@@ -177,7 +177,7 @@ class CV(BaseNodeSplitter):
                 raise ValueError('"n_folds" should be set')
             from sklearn.cross_validation import KFold
             self._sclices = KFold(n=Xy["y"].shape[0], n_folds=self.n_folds,
-                           random_state=self.random_state)
+                                  random_state=self.random_state)
         elif self.cv_type == "loo":
             from sklearn.cross_validation import LeaveOneOut
             self._sclices = LeaveOneOut(n=Xy["y"].shape[0])
@@ -302,7 +302,7 @@ class Methods(BaseNodeSplitter):
         leaves_key = [l.get_key() for l in self.walk_leaves()]
         if len(leaves_key) != len(set(leaves_key)):
             raise ValueError("Some methods are identical, they could not be "
-                    "differentiated according to their arguments")
+                             "differentiated according to their arguments")
 
     def transform(self, **Xy):
         return Xy
@@ -310,7 +310,7 @@ class Methods(BaseNodeSplitter):
     def reduce(self, store_results=True):
         # 1) Build sub-aggregates over children
         children_results = [child.reduce(store_results=False) for
-            child in self.children]
+                            child in self.children]
         results = ResultSet(*children_results)
         if self.reducer:
             return self.reducer.reduce(results)
@@ -329,7 +329,7 @@ class PrevStateMethods(Methods):
         rets = []
         for node in self.children:
             cpXy = Xy
-            if not (prev_node == None):
+            if not (prev_node is None):
                 # from_obj, to_obj, exclude_parameters
                 copy_parameters(from_obj=prev_node.wrapped_node,
                                 to_obj=node.wrapped_node,
@@ -429,8 +429,8 @@ class CRSlicer(Slicer):
         elif isinstance(apply_on, str):
             self.apply_on = [apply_on]
         else:
-            raise ValueError("apply_on must be a string or a "\
-                "list of strings or None")
+            raise ValueError("apply_on must be a string or a "
+                             "list of strings or None")
 
     def set_sclices(self, slices):
         """
@@ -439,7 +439,7 @@ class CRSlicer(Slicer):
         if isinstance(slices, dict):
             self.slices =\
                 {k: slices[k].tolist() if isinstance(slices[k], np.ndarray)
-                else slices[k] for k in slices}
+                 else slices[k] for k in slices}
         else:
             self.slices = \
                 slices.tolist() if isinstance(slices, np.ndarray) else slices
@@ -461,21 +461,21 @@ class CRSlicer(Slicer):
                     Xy[data_key] = dat[self.slices[data_key]]
         # only for cross-validation
         if conf.TRAIN in self.slices.keys() \
-            and conf.TEST in self.slices.keys():
-                Xy[conf.KW_SPLIT_TRAIN_TEST] = True
-                for data_key in data_keys:
-                    dat = Xy.pop(data_key)
-                    for sample_set in self.slices:
-                        if len(dat.shape) == 2:
-                            if self.col_or_row:
-                                Xy[key_push(data_key, sample_set)] = \
-                                    dat[:, self.slices[sample_set]]
-                            else:
-                                Xy[key_push(data_key, sample_set)] = \
-                                    dat[self.slices[sample_set], :]
+                and conf.TEST in self.slices.keys():
+            Xy[conf.KW_SPLIT_TRAIN_TEST] = True
+            for data_key in data_keys:
+                dat = Xy.pop(data_key)
+                for sample_set in self.slices:
+                    if len(dat.shape) == 2:
+                        if self.col_or_row:
+                            Xy[key_push(data_key, sample_set)] = \
+                                dat[:, self.slices[sample_set]]
                         else:
                             Xy[key_push(data_key, sample_set)] = \
-                                dat[self.slices[sample_set]]
+                                dat[self.slices[sample_set], :]
+                    else:
+                        Xy[key_push(data_key, sample_set)] = \
+                            dat[self.slices[sample_set]]
         return Xy
 
 
@@ -504,11 +504,10 @@ class CRSplitter(BaseNodeSplitter):
     def __init__(self, node, indices_of_groups, col_or_row=True):
         super(CRSplitter, self).__init__()
         self.indices_of_groups = indices_of_groups
-        self.slicer = CRSlicer(
-            signature_name=self.__class__.__name__,\
-            nb=0,\
-            apply_on=None,
-            col_or_row=col_or_row)
+        self.slicer = CRSlicer(signature_name=self.__class__.__name__,
+                               nb=0,
+                               apply_on=None,
+                               col_or_row=col_or_row)
 
         self.uni_indices_of_groups = {}
         for key_indices_of_groups in indices_of_groups:
@@ -539,8 +538,8 @@ class CRSplitter(BaseNodeSplitter):
         i = 0
         slices = {}
         for key in self.uni_indices_of_groups:
-            indices = np.nonzero(np.asarray(self.indices_of_groups[key]) == \
-                        np.asarray(list_data[i]))
+            indices = np.nonzero(np.asarray(self.indices_of_groups[key]) ==
+                                 np.asarray(list_data[i]))
             indices = indices[0]
             slices[key] = indices
             i += 1
@@ -711,8 +710,8 @@ class ColumnSplitter(CRSplitter):
 
     def __init__(self, node, indices_of_groups):
         super(ColumnSplitter, self).__init__(node,
-                                            indices_of_groups,
-                                            col_or_row=True)
+                                             indices_of_groups,
+                                             col_or_row=True)
 
 
 class CVBestSearchRefitParallel(Wrapper):
@@ -768,9 +767,9 @@ class CVBestSearchRefitParallel(Wrapper):
         arg_max = kwargs.pop("arg_max") if "arg_max" in kwargs else True
         from epac.workflow.splitters import CV
         # methods = Methods(*tasks)
-        cv_node = CV(node=node,\
-                    reducer=ClassificationReport(keep=False),\
-                    **kwargs)
+        cv_node = CV(node=node,
+                     reducer=ClassificationReport(keep=False),
+                     **kwargs)
         self.add_child(cv_node)
         self.score = score
         self.arg_max = arg_max
@@ -801,7 +800,7 @@ class CVBestSearchRefitParallel(Wrapper):
 
     def reduce(self, store_results=True):
         children_results = [child.reduce(store_results=False) for
-            child in self.children]
+                            child in self.children]
         results = ResultSet(*children_results)
         if self.reducer:
             to_refit, best_params = self.reducer.reduce(results)
@@ -902,16 +901,17 @@ class CVBestSearchRefit(Wrapper):
         self.cv.top_down(**Xy)
         #  Pump-up results
         cv_result_set = self.cv.reduce(store_results=False)
-        key_val = [(result.key(), result[self.score]) \
-                for result in cv_result_set]
+        key_val = [(result.key(), result[self.score])
+                   for result in cv_result_set]
         scores = np.asarray(zip(*key_val)[1])
         scores_opt = np.max(scores) if self.arg_max else np.min(scores)
         idx_best = np.where(scores == scores_opt)[0][0]
         best_key = key_val[idx_best][0]
         # Find nodes that match the best
-        nodes_dict = {n.get_signature(): n for n in self.cv.walk_true_nodes() \
-            if n.get_signature() in key_split(best_key)}
-        to_refit = Pipe(*[nodes_dict[k].wrapped_node for k in key_split(best_key)])
+        nodes_dict = {n.get_signature(): n for n in self.cv.walk_true_nodes()
+                      if n.get_signature() in key_split(best_key)}
+        to_refit = Pipe(*[nodes_dict[k].wrapped_node
+                          for k in key_split(best_key)])
         best_params = [dict(sig) for sig in key_split(best_key, eval=True)]
         return to_refit, best_params
 

@@ -16,10 +16,10 @@ from sklearn import datasets
 
 def convert2memmap(np_mat):
     filename = path.join(mkdtemp(), 'newfile.dat')
-    mem_mat = np.memmap(filename,\
-                     dtype='float32',\
-                     mode='w+',\
-                     shape=np_mat.shape)
+    mem_mat = np.memmap(filename,
+                        dtype='float32',
+                        mode='w+',
+                        shape=np_mat.shape)
     mem_mat[:] = np_mat[:]
     return mem_mat
 
@@ -40,8 +40,8 @@ def func_memm_local():
     from sklearn.svm import SVC
     from epac import CV, Methods
     cv_svm_local = CV(Methods(*[SVC(kernel="linear"),
-                          SVC(kernel="rbf")]),
-                          n_folds=3)
+                                SVC(kernel="rbf")]),
+                      n_folds=3)
     from epac import LocalEngine
     local_engine = LocalEngine(cv_svm_local, num_processes=2)
     cv_svm = local_engine.run(**Xy)
@@ -62,8 +62,8 @@ def func_no_memm_local():
     from sklearn.svm import SVC
     from epac import CV, Methods
     cv_svm_local = CV(Methods(*[SVC(kernel="linear"),
-                          SVC(kernel="rbf")]),
-                          n_folds=3)
+                                SVC(kernel="rbf")]),
+                      n_folds=3)
     cv_svm_local.run(**Xy)
     print cv_svm_local.reduce()
 

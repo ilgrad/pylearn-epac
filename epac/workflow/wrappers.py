@@ -49,7 +49,7 @@ class Wrapper(BaseNode):
             return self.wrapped_node.__class__.__name__
         else:
             args_str = ",".join([str(k) + "=" + str(self.signature_args[k])
-                             for k in self.signature_args])
+                                 for k in self.signature_args])
             args_str = "(" + args_str + ")"
             return self.wrapped_node.__class__.__name__ + args_str
 
@@ -111,13 +111,15 @@ class TransformNode(Wrapper):
         if conf.KW_SPLIT_TRAIN_TEST in Xy:
             Xy_train, Xy_test = train_test_split(Xy)
             # catch args_transform in ds, transform, store output in a dict
-            Xy_out_tr = self.wrapped_node.transform(**_sub_dict(Xy_train,
-                            self.in_args_transform))
-            Xy_out_te = self.wrapped_node.transform(**_sub_dict(Xy_test,
-                            self.in_args_transform))
+            Xy_out_tr = self.wrapped_node.transform(**_sub_dict(
+                Xy_train,
+                self.in_args_transform))
+            Xy_out_te = self.wrapped_node.transform(**_sub_dict(
+                Xy_test,
+                self.in_args_transform))
             if type(Xy_out_tr) is not dict or type(Xy_out_te) is not dict:
                 raise ValueError("%s.transform should return a dictionary"
-                % (self.wrapped_node.__class__.__name__))
+                                 % (self.wrapped_node.__class__.__name__))
             Xy_out = train_test_merge(Xy_out_tr, Xy_out_te)
         else:
             # catch args_transform in ds, transform, store output in a dict
@@ -125,7 +127,7 @@ class TransformNode(Wrapper):
                                                  self.in_args_transform))
             if type(Xy_out) is not dict:
                 raise ValueError("%s.transform should return a dictionary"
-                % (self.wrapped_node.__class__.__name__))
+                                 % (self.wrapped_node.__class__.__name__))
         return Xy_out
 
 

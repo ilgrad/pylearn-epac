@@ -43,6 +43,7 @@ def copy_parameters(from_obj, to_obj, exclude_parameters):
             if argument in to_obj.__dict__:
                 to_obj.__dict__[argument] = from_obj.__dict__[argument]
 
+
 def get_next_number(str_value):
     start_pos = -1
     end_pos = -1
@@ -124,7 +125,7 @@ def dict_diff(*dicts):
     """
     # Find diff in keys
     union_keys, inter_keys, diff_keys = _list_union_inter_diff(*[d.keys()
-                                            for d in dicts])
+                                                               for d in dicts])
     diff_vals = dict()
     for k in diff_keys:
         diff_vals[k] = None
@@ -162,7 +163,7 @@ def _as_dict(v, keys):
         return {keys[0]: v}
     if len(keys) != len(v):
         raise ValueError("Do not know how to build a dictionnary with keys %s"
-            % keys)
+                         % keys)
     return {keys[i]: v[i] for i in xrange(len(keys))}
 
 
@@ -252,7 +253,7 @@ def export_resultset_csv(results, filename):
     <BLANKLINE>
     '''
     with open(filename, 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=';', \
+        spamwriter = csv.writer(csvfile, delimiter=';',
                                 quoting=csv.QUOTE_MINIMAL)
         result_keys = results.values()[0].keys()
         keys = []
@@ -302,9 +303,10 @@ def export_leaves_csv(tree_root, filename):
     <BLANKLINE>
     '''
     with open(filename, 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=';', \
+        spamwriter = csv.writer(csvfile, delimiter=';',
                                 quoting=csv.QUOTE_MINIMAL)
-        result_keys = tree_root.get_leftmost_leaf().load_results().values()[0].keys()
+        result_keys = tree_root.get_leftmost_leaf().\
+            load_results().values()[0].keys()
         keys = []
         if "key" in result_keys:
             keys.append("key")
@@ -384,7 +386,8 @@ def export_csv(tree, results, filename):
                     temp_list.append(result[key])
                 spamwriter.writerow(temp_list)
         else:
-            result_keys = tree.get_leftmost_leaf().load_results().values()[0].keys()
+            result_keys = tree.get_leftmost_leaf().\
+                load_results().values()[0].keys()
             keys = []
             if "key" in result_keys:
                 keys.append("key")

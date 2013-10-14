@@ -12,6 +12,7 @@ Created on 20 June 2013
 import numpy as np
 import copy
 
+
 def _is_numeric(obj):
     return isinstance(obj, (int, long, float, complex))
 
@@ -61,7 +62,7 @@ def compare_leaf_res(leaf_res1, leaf_res2):
     for i in range(len(leaf_res1)):
         for key in leaf_res1[i][leaf_res1[i].keys()[0]].keys():
             return (np.all(leaf_res1[i][leaf_res1[i].keys()[0]][key]
-                == leaf_res2[i][leaf_res2[i].keys()[0]][key]))
+                    == leaf_res2[i][leaf_res2[i].keys()[0]][key]))
 
 
 def compare_two_node(node1, node2):

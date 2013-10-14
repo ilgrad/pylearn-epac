@@ -15,10 +15,10 @@ from sklearn import datasets
 ## =======================================================
 def convert2memmap(np_mat):
     filename = path.join(mkdtemp(), 'newfile.dat')
-    mem_mat = np.memmap(filename,\
-                     dtype='float32',\
-                     mode='w+',\
-                     shape=np_mat.shape)
+    mem_mat = np.memmap(filename,
+                        dtype='float32',
+                        mode='w+',
+                        shape=np_mat.shape)
     mem_mat[:] = np_mat[:]
     return mem_mat
 
@@ -39,11 +39,11 @@ Xy = dict(X=X, y=y)
 from sklearn.svm import SVC
 from epac import CV, Methods
 cv_svm_local = CV(Methods(*[SVC(kernel="linear"),
-                      SVC(kernel="rbf")]),
-                      n_folds=3)
+                            SVC(kernel="rbf")]),
+                  n_folds=3)
 cv_svm_swf = CV(Methods(*[SVC(kernel="linear"),
-                      SVC(kernel="rbf")]),
-                      n_folds=3)
+                          SVC(kernel="rbf")]),
+                n_folds=3)
 
 ## 3) Run two workflows using local engine and soma-workflow
 ## =========================================================

@@ -140,7 +140,7 @@ class LocalEngine(Engine):
         from joblib import Parallel, delayed
         res_tree_root_list = \
             Parallel(n_jobs=len(input_list))(delayed(partial_map_process)(i)
-                    for i in input_list)
+                                             for i in input_list)
 
         for each_tree_root in res_tree_root_list:
             self.tree_root.merge_tree_store(each_tree_root)
@@ -162,10 +162,9 @@ class SomaWorkflowEngine(LocalEngine):
                  pw="",
                  remove_finished_wf=True,
                  remove_local_tree=True):
-        super(SomaWorkflowEngine, self).__init__(
-                        tree_root=tree_root,
-                        function_name=function_name,
-                        num_processes=num_processes)
+        super(SomaWorkflowEngine, self).__init__(tree_root=tree_root,
+                                                 function_name=function_name,
+                                                 num_processes=num_processes)
         if num_processes == -1:
             self.num_processes = 20
         self.resource_id = resource_id
@@ -175,8 +174,8 @@ class SomaWorkflowEngine(LocalEngine):
         self.remove_local_tree = remove_local_tree
 
     def _save_job_list(self,
-                        working_directory,
-                        nodesinput_list):
+                       working_directory,
+                       nodesinput_list):
         '''Write job list into working_directory as 0.job, 1.job, etc.
 
         Parameters
@@ -266,14 +265,14 @@ class SomaWorkflowEngine(LocalEngine):
         cur_work_dir = os.getcwd()
         os.chdir(tmp_work_dir_path)
         is_run_local = False
-        if not  self.resource_id or self.resource_id == "":
+        if not self.resource_id or self.resource_id == "":
             self.resource_id = socket.gethostname()
             is_run_local = True
         # print "is_run_local=", is_run_local
         if not is_run_local:
             ft_working_directory = FileTransfer(is_input=True,
-                                        client_path=tmp_work_dir_path,
-                                        name="working directory")
+                                                client_path=tmp_work_dir_path,
+                                                name="working directory")
         else:
             ft_working_directory = tmp_work_dir_path
 
@@ -299,23 +298,23 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===================
         if not is_run_local:
             jobs = [Job(command=[u"epac_mapper",
-                             u'--datasets', '"%s"' %
-                             (SomaWorkflowEngine.dataset_relative_path),
-                             u'--keysfile', '"%s"' %
-                             (nodesfile)],
-                    referenced_input_files=[ft_working_directory],
-                    referenced_output_files=[ft_working_directory],
-                    name="epac_job_key=%s" % (nodesfile),
-                    working_directory=ft_working_directory)
+                                 u'--datasets', '"%s"' %
+                                 (SomaWorkflowEngine.dataset_relative_path),
+                                 u'--keysfile', '"%s"' %
+                                 (nodesfile)],
+                        referenced_input_files=[ft_working_directory],
+                        referenced_output_files=[ft_working_directory],
+                        name="epac_job_key=%s" % (nodesfile),
+                        working_directory=ft_working_directory)
                     for nodesfile in keysfile_list]
         else:
             jobs = [Job(command=[u"epac_mapper",
-                             u'--datasets', '"%s"' %
-                             (SomaWorkflowEngine.dataset_relative_path),
-                             u'--keysfile', '"%s"' %
-                             (nodesfile)],
-                    name="epac_job_key=%s" % (nodesfile),
-                    working_directory=ft_working_directory)
+                                 u'--datasets', '"%s"' %
+                                 (SomaWorkflowEngine.dataset_relative_path),
+                                 u'--keysfile', '"%s"' %
+                                 (nodesfile)],
+                        name="epac_job_key=%s" % (nodesfile),
+                        working_directory=ft_working_directory)
                     for nodesfile in keysfile_list]
         soma_workflow = Workflow(jobs=jobs)
 
@@ -361,8 +360,8 @@ class SomaWorkflowEngine(LocalEngine):
         cur_work_dir = os.getcwd()
         os.chdir(tmp_work_dir_path)
         ft_working_directory = FileTransfer(is_input=True,
-                                        client_path=tmp_work_dir_path,
-                                        name="working directory")
+                                            client_path=tmp_work_dir_path,
+                                            name="working directory")
         ## Save the database and tree to working directory
         ## ===============================================
 #        np.savez(os.path.join(tmp_work_dir_path,
@@ -383,19 +382,20 @@ class SomaWorkflowEngine(LocalEngine):
         ## Build soma-workflow
         ## ===================
         jobs = [Job(command=[u"epac_mapper",
-                         u'--datasets', '"%s"' %
-                         (SomaWorkflowEngine.dataset_relative_path),
-                         u'--keysfile', '"%s"' %
-                         (nodesfile)],
-                referenced_input_files=[ft_working_directory],
-                referenced_output_files=[ft_working_directory],
-                name="epac_job_key=%s" % (nodesfile),
-                working_directory=ft_working_directory)
+                             u'--datasets', '"%s"' %
+                             (SomaWorkflowEngine.dataset_relative_path),
+                             u'--keysfile', '"%s"' %
+                             (nodesfile)],
+                    referenced_input_files=[ft_working_directory],
+                    referenced_output_files=[ft_working_directory],
+                    name="epac_job_key=%s" % (nodesfile),
+                    working_directory=ft_working_directory)
                 for nodesfile in keysfile_list]
         soma_workflow = Workflow(jobs=jobs)
         if soma_workflow_dirpath and soma_workflow_dirpath != "":
-            out_soma_workflow_file = os.path.join(soma_workflow_dirpath,
-                         SomaWorkflowEngine.open_me_by_soma_workflow_gui)
+            out_soma_workflow_file = os.path.join(
+                soma_workflow_dirpath,
+                SomaWorkflowEngine.open_me_by_soma_workflow_gui)
             Helper.serialize(out_soma_workflow_file, soma_workflow)
         os.chdir(cur_work_dir)
 

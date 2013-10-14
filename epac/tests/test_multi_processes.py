@@ -36,7 +36,6 @@ class EpacWorkflowTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-
     def test_examples_local_engine(self):
         list_all_examples = get_wf_example_classes()
         for example in list_all_examples:
@@ -50,9 +49,8 @@ class EpacWorkflowTest(unittest.TestCase):
                 local_engine = LocalEngine(tree_root=local_engine_wf,
                                            num_processes=self.n_cores)
                 local_engine_wf = local_engine.run(X=self.X, y=self.y)
-                sfw_engine = SomaWorkflowEngine(
-                        tree_root=sfw_engine_wf,
-                        num_processes=self.n_cores)
+                sfw_engine = SomaWorkflowEngine(tree_root=sfw_engine_wf,
+                                                num_processes=self.n_cores)
                 sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
                 self.assertTrue(compare_two_node(wf, local_engine_wf))
                 self.assertTrue(compare_two_node(wf, sfw_engine_wf))

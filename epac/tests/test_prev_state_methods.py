@@ -28,7 +28,7 @@ class TOY_CLF:
         len_beta = X.shape[1]
 
         min_err = 0
-        if not (self.v_beta == None):
+        if not (self.v_beta is None):
             min_err = self._get_error(self.v_beta, self.v_lambda, X, y)
 
         # Search the beta which minimizes the error function
@@ -36,7 +36,7 @@ class TOY_CLF:
         for i in xrange(10):
             v_beta = np.random.random(len_beta)
             err = self._get_error(v_beta, self.v_lambda, X, y)
-            if (self.v_beta == None) or err < min_err:
+            if (self.v_beta is None) or err < min_err:
                 self.v_beta = v_beta
                 min_err = err
 
@@ -53,11 +53,11 @@ class TestWorkFlow(unittest.TestCase):
                                             n_informative=2)
         Xy = {"X": X, "y": y}
         methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
-                                    for v_lambda in [2, 1]])
+                            for v_lambda in [2, 1]])
         methods.run(**Xy)
 
         ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
-                                    for v_lambda in [2, 1]])
+                                        for v_lambda in [2, 1]])
         ps_methods.run(**Xy)
         self.assertTrue(compare_two_node(methods, ps_methods))
         self.assertTrue(comp_2wf_reduce_res(methods, ps_methods))

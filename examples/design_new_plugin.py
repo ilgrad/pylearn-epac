@@ -24,6 +24,7 @@ X, y = datasets.make_classification(n_samples=12,
 class MySVC:
     def __init__(self, C=1.0):
         self.C = C
+
     def transform(self, X, y):
         from sklearn.svm import SVC
         svc = SVC(C=self.C)
@@ -42,7 +43,7 @@ class MyReducer(Reducer):
         # then you can design you own reducer!
         for res in result:
             precision, recall, f1_score, support = \
-                    precision_recall_fscore_support(res['y'], res['y/pred'])
+                precision_recall_fscore_support(res['y'], res['y/pred'])
             pred_list.append({res['key']: recall})
         return pred_list
 
@@ -76,8 +77,7 @@ two_svc.reduce()
 ### 6) Run using soma-workflow
 ### ===========================================================================
 from epac.map_reduce.engine import SomaWorkflowEngine
-sfw_engine = SomaWorkflowEngine(
-                    tree_root=two_svc,
-                    num_processes=2)
+sfw_engine = SomaWorkflowEngine(tree_root=two_svc,
+                                num_processes=2)
 two_svc = sfw_engine.run(**dict(X=X, y=y))
 two_svc.reduce()

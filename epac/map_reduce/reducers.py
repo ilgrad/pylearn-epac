@@ -70,12 +70,12 @@ class ClassificationReport(Reducer):
     def reduce(self, result):
         if self.select_regexp:
             inputs = [key3 for key3 in result
-                if re.search(self.select_regexp, str(key3))]
+                      if re.search(self.select_regexp, str(key3))]
         else:
             inputs = result.keys()
         if len(inputs) != 2:
-            raise KeyError("Need to find exactly two results to compute a score."
-            " Found %i: %s" % (len(inputs), inputs))
+            raise KeyError("Need to find exactly two results to compute a "
+                           "score. Found %i: %s" % (len(inputs), inputs))
         key_true = [k for k in inputs if k.find(conf.TRUE) != -1][0]
         key_pred = [k for k in inputs if k.find(conf.PREDICTION) != -1][0]
         y_true = result[key_true]
@@ -99,14 +99,16 @@ class ClassificationReport(Reducer):
             else:
                 return 1 - (pval / 2)
 
-        n_classes = len(s) # Number of classes
+        n_classes = len(s)  # Number of classes
         n_obs = len(y_true)
-        prior_p = s.astype(np.float)/s.sum() # A priori probability of each class
+        prior_p = s.astype(np.float)/s.sum()  # A priori probability of each class
         r_pvalues = np.zeros_like(r)
         for class_index in range(n_classes):
             n_trials = s[class_index]
             #print "Class {class_index}: {n_success} success on {n_trials} trials".format(n_success=n_success, n_trials=n_trials, class_index=class_index)
-            r_pvalues[class_index] = recall_test(r[class_index], n_trials, prior_p[class_index])
+            r_pvalues[class_index] = recall_test(r[class_index],
+                                                 n_trials,
+                                                 prior_p[class_index])
 
         # Compute p-value of mean recall
         mean_r = r.mean()
@@ -141,8 +143,8 @@ class PvalPerms(Reducer):
     def reduce(self, result):
         if self.select_regexp:
             select_keys = [key for key in result
-                if re.search(self.select_regexp, str(key))]
-                #if re.search(self.select_regexp) != -1]
+                           if re.search(self.select_regexp, str(key))]
+                           #if re.search(self.select_regexp) != -1]
         else:
             select_keys = result.keys()
         out = Result(key=result.key())
@@ -165,8 +167,8 @@ class CVBestSearchRefitPReducer(Reducer):
         from epac.workflow.pipeline import Pipe
         #  Pump-up results
         cv_result_set = result
-        key_val = [(result.key(), result[self.NodeBestSearchRefit.score]) \
-                for result in cv_result_set]
+        key_val = [(result.key(), result[self.NodeBestSearchRefit.score])
+                   for result in cv_result_set]
         scores = np.asarray(zip(*key_val)[1])
         scores_opt = np.max(scores)\
             if self.NodeBestSearchRefit.arg_max else np.min(scores)
@@ -174,11 +176,11 @@ class CVBestSearchRefitPReducer(Reducer):
         best_key = key_val[idx_best][0]
         # Find nodes that match the best
         nodes_dict = \
-            {n.get_signature(): \
-            n for n in self.NodeBestSearchRefit.children[0].walk_true_nodes() \
-            if n.get_signature() in key_split(best_key)}
-        to_refit = Pipe(*[nodes_dict[k].wrapped_node \
-            for k in key_split(best_key)])
+            {n.get_signature():
+             n for n in self.NodeBestSearchRefit.children[0].walk_true_nodes()
+             if n.get_signature() in key_split(best_key)}
+        to_refit = Pipe(*[nodes_dict[k].wrapped_node
+                        for k in key_split(best_key)])
         best_params = [dict(sig) for sig in key_split(best_key, eval=True)]
         return to_refit, best_params
 

@@ -17,6 +17,7 @@ from sklearn.metrics import precision_recall_fscore_support
 class MySVC:
     def __init__(self, C=1.0):
         self.C = C
+
     def transform(self, X, y):
         from sklearn.svm import SVC
         svc = SVC(C=self.C)
@@ -34,7 +35,7 @@ class MyReducer(Reducer):
         # then you can design you own reducer!
         for res in result:
             precision, recall, f1_score, support = \
-                    precision_recall_fscore_support(res['y'], res['y/pred'])
+                precision_recall_fscore_support(res['y'], res['y/pred'])
             pred_list.append({res['key']: recall})
         return pred_list
 
@@ -87,9 +88,8 @@ class TestDumpClass(unittest.TestCase):
         ### 4) Run using soma-workflow
         ### ==================================================================
         from epac.map_reduce.engine import SomaWorkflowEngine
-        sfw_engine = SomaWorkflowEngine(
-                            tree_root=two_svc_swf,
-                            num_processes=2)
+        sfw_engine = SomaWorkflowEngine(tree_root=two_svc_swf,
+                                        num_processes=2)
         two_svc_swf = sfw_engine.run(**dict(X=X, y=y))
         res_swf = two_svc_swf.reduce()
         if not repr(res_swf) == repr(res_local):

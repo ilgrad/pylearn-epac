@@ -69,8 +69,8 @@ class SplitNodesInput(SplitInput):
         dict_nodes_input = dict()
         for key in nodes_input:
             dict_out = export_nodes2num_processes(
-                    self.tree_root_node.get_node(nodes_input[key]),
-                    self.num_processes)
+                self.tree_root_node.get_node(nodes_input[key]),
+                self.num_processes)
             ## print "dict_out=" + repr(dict_out)
             ## Convert dict_out to dict of NodesInput
             for key_dict_out in dict_out:
@@ -79,7 +79,7 @@ class SplitNodesInput(SplitInput):
                 for each_node_key in list_of_node_key:
                     if not (key_dict_out in dict_nodes_input.keys()):
                         dict_nodes_input[key_dict_out] = \
-                                NodesInput(each_node_key)
+                            NodesInput(each_node_key)
                     else:
                         dict_nodes_input[key_dict_out].add(each_node_key)
             # print "dict_nodes_input=" + repr(dict_nodes_input)

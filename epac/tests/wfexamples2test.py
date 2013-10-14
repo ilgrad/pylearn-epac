@@ -60,11 +60,11 @@ class WFExample2(WorkflowExample):
         # SVM(linear,C=1)   SVM(linear,C=10)     Classifiers (Estimator)
         pipeline = Pipe(SelectKBest(k=2),
                         Methods(*[SVC(kernel="linear", C=C)
-                        for C in [1, 3]]))
+                                  for C in [1, 3]]))
         wf = Perms(CV(pipeline, n_folds=3),
-                        n_perms=3,
-                        permute="y",
-                        random_state=1)
+                   n_perms=3,
+                   permute="y",
+                   random_state=1)
         return wf
 
 
@@ -84,16 +84,17 @@ class WFExample3(WorkflowExample):
         else:
             k_values = range_log2(n_features, add_n=True)
         cls = Methods(*[Pipe(SelectKBest(k=k), SVC(C=C, kernel="linear"))
-                                   for C in C_values
-                                   for k in k_values])
+                        for C in C_values
+                        for k in k_values])
         pipeline = CVBestSearchRefit(cls,
                                      n_folds=n_folds_nested,
                                      random_state=random_state)
         wf = Perms(CV(pipeline, n_folds=n_folds),
-                        n_perms=n_perms,
-                        permute="y",
-                        random_state=random_state)
+                   n_perms=n_perms,
+                   permute="y",
+                   random_state=random_state)
         return wf
+
 
 class WFExample4(WorkflowExample):
 
@@ -111,15 +112,15 @@ class WFExample4(WorkflowExample):
         else:
             k_values = range_log2(n_features, add_n=True)
         cls = Methods(*[Pipe(SelectKBest(k=k), SVC(C=C, kernel="linear"))
-                                   for C in C_values
-                                   for k in k_values])
+                        for C in C_values
+                        for k in k_values])
         pipeline = CVBestSearchRefitParallel(cls,
-                                     n_folds=n_folds_nested,
-                                     random_state=random_state)
+                                             n_folds=n_folds_nested,
+                                             random_state=random_state)
         wf = Perms(CV(pipeline, n_folds=n_folds),
-                        n_perms=n_perms,
-                        permute="y",
-                        random_state=random_state)
+                   n_perms=n_perms,
+                   permute="y",
+                   random_state=random_state)
         return wf
 
 
@@ -146,7 +147,7 @@ class WFExample5(WorkflowExample):
         # SVM(linear,C=1)   SVM(linear,C=10)     Classifiers (Estimator)
         pipeline = Pipe(SelectKBest(k=2),
                         Methods(*[SVC(kernel="linear", C=C)
-                        for C in [1, 3]]))
+                                  for C in [1, 3]]))
         wf = CV(pipeline, n_folds=3, reducer=ClassificationReport(keep=True))
         return wf
 
@@ -158,22 +159,22 @@ class WFExample6(WorkflowExample):
         n_folds_nested = 3
         k_values = [1, 2]
         C_values = [1, 2]
-        pipelines = Methods(*[
-                            Pipe(SelectKBest(k=k),
-                            Methods(*[SVC(kernel="linear", C=C)
-                            for C in C_values]))
-                            for k in k_values])
+        pipelines = Methods(*[Pipe(SelectKBest(k=k),
+                                   Methods(*[SVC(kernel="linear", C=C)
+                                             for C in C_values]))
+                              for k in k_values])
         pipeline = CVBestSearchRefitParallel(pipelines,
-                                     n_folds=n_folds_nested)
+                                             n_folds=n_folds_nested)
         wf = CV(pipeline, n_folds=n_folds)
         return wf
+
 
 def get_wf_example_classes(base_class="WorkflowExample"):
     list_sub_classes = []
     for name, obj in inspect.getmembers(sys.modules[__name__]):
         if inspect.isclass(obj) \
-        and issubclass(obj, eval(base_class)) \
-        and name != base_class:
+                and issubclass(obj, eval(base_class)) \
+                and name != base_class:
             list_sub_classes.append(obj)
 #            print "==============================="
 #            print issubclass(obj, eval(base_class))

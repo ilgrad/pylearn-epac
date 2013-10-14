@@ -27,7 +27,7 @@ class TOY_CLF:
         len_beta = X.shape[1]
 
         min_err = 0
-        if not (self.v_beta == None):
+        if not (self.v_beta is None):
             print "v_beta has been initialized as = ", self.v_beta
             min_err = self._get_error(self.v_beta, self.v_lambda, X, y)
         else:
@@ -38,7 +38,7 @@ class TOY_CLF:
         for i in xrange(10):
             v_beta = np.random.random(len_beta)
             err = self._get_error(v_beta, self.v_lambda, X, y)
-            if (self.v_beta == None) or err < min_err:
+            if (self.v_beta is None) or err < min_err:
                 self.v_beta = v_beta
                 min_err = err
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     ## ================================================
     print "Methods ==================================="
     methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
-                                for v_lambda in [2, 1]])
+                        for v_lambda in [2, 1]])
     print methods.run(**Xy)
 
     ## 3) Build PrevStateMethods like Methods
@@ -77,5 +77,5 @@ if __name__ == "__main__":
     ##  4. Finally call TOY_CLF(v_lambda=1).transform
     print "PrevStateMethods =========================="
     ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
-                                for v_lambda in [2, 1]])
+                                    for v_lambda in [2, 1]])
     print ps_methods.run(**Xy)

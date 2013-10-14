@@ -144,8 +144,9 @@ class Result(ReduceInput):
         super(Result, self).__setitem__(arg_name, arg_val)
 
     def __repr__(self):
-        ordered_keys = _order_from_regexp(items=self.keys(),
-                           order_regexps=Result.PRINT_ORDER_REGEXP)
+        ordered_keys = _order_from_regexp(
+            items=self.keys(),
+            order_regexps=Result.PRINT_ORDER_REGEXP)
         s = "{"
         cpt = 1
         for k in ordered_keys:

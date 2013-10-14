@@ -21,11 +21,11 @@ import joblib
 if __name__ == '__main__':
 
     if V(dill.__version__) < V("0.2a"):
-        raise ValueError("dill version is too old to use, please use version "\
-                "on https://github.com/uqfoundation/dill")
+        raise ValueError("dill version is too old to use, please use version "
+                         "on https://github.com/uqfoundation/dill")
     if V(joblib.__version__) < V("0.7.1"):
-        raise ValueError("joblib version is too old to use, please use version "\
-                "on https://github.com/joblib/joblib")
+        raise ValueError("joblib version is too old to use, please use version"
+                         " on https://github.com/joblib/joblib")
 
     tmp_work_dir_path = tempfile.mkdtemp()
     cur_work_dir = os.getcwd()
@@ -42,11 +42,11 @@ echo %s
     os.chdir(cur_work_dir)
 
     job1 = Job(command=[u"touch", test_filepath],
-                    name="epac_job_test",
-                    working_directory=tmp_work_dir_path)
+               name="epac_job_test",
+               working_directory=tmp_work_dir_path)
     job2 = Job(command=["%s/readfile" % cur_file_dir, test_bash_script],
-                    name="epac_job_test",
-                    working_directory=tmp_work_dir_path)
+               name="epac_job_test",
+               working_directory=tmp_work_dir_path)
 
     soma_workflow = Workflow(jobs=[job1, job2])
 
@@ -60,7 +60,7 @@ echo %s
     nb_failed_jobs = len(Helper.list_failed_jobs(wf_id, controller))
     if nb_failed_jobs > 0:
         raise ValueError("Soma-workflow error, cannot use working directory")
-    
+
     if not os.path.isfile(os.path.join(tmp_work_dir_path, test_filepath)):
         raise ValueError("Soma-workflow cannot define working directory")
     else:

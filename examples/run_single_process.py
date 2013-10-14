@@ -42,15 +42,16 @@ def do_all(options):
     time_start = time.time()
     ## CV + Grid search of a pipeline with a nested grid search
     cls = Methods(*[Pipe(SelectKBest(k=k),
-                      SVC(kernel="linear", C=C))
-                      for C in C_values
-                      for k in k_values])
+                         SVC(kernel="linear", C=C))
+                    for C in C_values
+                    for k in k_values])
     pipeline = CVBestSearchRefit(cls,
-                  n_folds=options.n_folds_nested, random_state=random_state)
+                                 n_folds=options.n_folds_nested,
+                                 random_state=random_state)
     wf = Perms(CV(pipeline, n_folds=options.n_folds),
-             n_perms=options.n_perms,
-             permute="y",
-             random_state=random_state)
+               n_perms=options.n_perms,
+               permute="y",
+               random_state=random_state)
     print "Time ellapsed, tree construction:", time.time() - time_start
 
     ## 3) Run Workflow
@@ -77,21 +78,30 @@ if __name__ == "__main__":
     # parse command line options
     parser = optparse.OptionParser()
     parser.add_option('-n', '--n_samples',
-        help='(default %d)' % n_samples, default=n_samples, type="int")
+                      help='(default %d)' % n_samples,
+                      default=n_samples, type="int")
     parser.add_option('-p', '--n_features',
-        help='(default %d)' % n_features, default=n_features, type="int")
+                      help='(default %d)' % n_features,
+                      default=n_features, type="int")
     parser.add_option('-i', '--n_informative',
-        help='(default %d)' % n_informative, default=n_informative, type="int")
+                      help='(default %d)' % n_informative,
+                      default=n_informative, type="int")
     parser.add_option('-m', '--n_perms',
-        help='(default %d)' % n_perms, default=n_perms, type="int")
+                      help='(default %d)' % n_perms,
+                      default=n_perms, type="int")
     parser.add_option('-f', '--n_folds',
-        help='(default %d)' % n_folds, default=n_folds, type="int")
+                      help='(default %d)' % n_folds,
+                      default=n_folds, type="int")
     parser.add_option('-g', '--n_folds_nested',
-        help='(default %d)' % n_folds_nested, default=n_folds_nested, type="int")
+                      help='(default %d)' % n_folds_nested,
+                      default=n_folds_nested, type="int")
     parser.add_option('-k', '--k_max',
-        help='"auto": 1, 2, 4, ... n_features values. "fixed": 1, 2, 4, ..., k_max (default %s)' % k_max, default=k_max, type="string")
+                      help='"auto": 1, 2, 4, ... n_features values. '
+                      '"fixed": 1, 2, 4, ..., k_max (default %s)' % k_max,
+                      default=k_max, type="string")
     parser.add_option('-t', '--trace',
-        help='Trace execution (default %s)' % False, action='store_true', default=False)
+                      help='Trace execution (default %s)' % False,
+                      action='store_true', default=False)
 
     #argv = []
     #options, args = parser.parse_args(argv)

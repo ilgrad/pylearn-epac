@@ -30,19 +30,18 @@ class TestWorkFlow(unittest.TestCase):
 
     def test_peristence_load_and_fit_predict(self):
         X, y = datasets.make_classification(n_samples=20, n_features=10,
-                                        n_informative=2)
+                                            n_informative=2)
         n_folds = 2
         n_folds_nested = 3
         k_values = [1, 2]
         C_values = [1, 2]
-        pipelines = Methods(*[
-                            Pipe(SelectKBest(k=k),
-                            Methods(*[SVC(kernel="linear", C=C)
-                            for C in C_values]))
-                            for k in k_values])
+        pipelines = Methods(*[Pipe(SelectKBest(k=k),
+                                   Methods(*[SVC(kernel="linear", C=C)
+                                             for C in C_values]))
+                              for k in k_values])
 
         pipeline = CVBestSearchRefitParallel(pipelines,
-                                     n_folds=n_folds_nested)
+                                             n_folds=n_folds_nested)
 
         tree_mem = CV(pipeline, n_folds=n_folds,
                       reducer=ClassificationReport(keep=False))
@@ -62,11 +61,9 @@ class TestWorkFlow(unittest.TestCase):
         res_fs_withresults = tree_fs_withresults.reduce().values()[0]
         # Compare
         comp = np.all([
-            np.all(
-            np.asarray(res_mem[k]) == np.asarray(res_fs_noresults[k]))
-            and
-            np.all(np.asarray(res_fs_noresults[k]) ==
-            np.asarray(res_fs_withresults[k]))
+            np.all(np.asarray(res_mem[k]) == np.asarray(res_fs_noresults[k]))
+            and np.all(np.asarray(res_fs_noresults[k]) ==
+                       np.asarray(res_fs_withresults[k]))
             for k in res_mem])
         self.assertTrue(comp)
 
@@ -80,7 +77,7 @@ class TestWorkFlow(unittest.TestCase):
         kernels = ["linear", "rbf"]
         # With EPAC
         methods = Methods(*[SVC(C=C, kernel=kernel)
-            for C in C_values for kernel in kernels])
+                          for C in C_values for kernel in kernels])
         wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)
         # Save workflow
         # -------------
@@ -109,9 +106,11 @@ class TestWorkFlow(unittest.TestCase):
         # - Comparisons
         comp = np.all(r_epac[key_y_pred] == r_sklearn[key_y_pred])
         self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: prediction')
-        comp = np.all([r_epac[conf.BEST_PARAMS][0][p] == r_sklearn[conf.BEST_PARAMS][p]
-        for p in  r_sklearn[conf.BEST_PARAMS]])
-        self.assertTrue(comp, u'Diff CVBestSearchRefitParallel: best parameters')
+        comp = np.all([r_epac[conf.BEST_PARAMS][0][p] ==
+                       r_sklearn[conf.BEST_PARAMS][p]
+                       for p in r_sklearn[conf.BEST_PARAMS]])
+        self.assertTrue(comp,
+                        u'Diff CVBestSearchRefitParallel: best parameters')
 
 
 if __name__ == '__main__':

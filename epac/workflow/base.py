@@ -256,8 +256,8 @@ class BaseNode(object):
             return None
         elif regexp:
             if isinstance(regexp, str):
-                regexp = re.compile(regexp.replace("*", ".*").\
-                             replace("(", "\(").replace(")", "\)"))
+                regexp = re.compile(regexp.replace("*", ".*").
+                                    replace("(", "\(").replace(")", "\)"))
             if regexp.match(self.get_key()):
                 return [self.get_key()]
             nodes = list()
@@ -270,7 +270,7 @@ class BaseNode(object):
             return nodes
         else:
             raise ValueError("Provide at least a key for exact match"
-            "or a regexp for wild card matches")
+                             "or a regexp for wild card matches")
 
     def get_path_from_root(self):
         """Get path iterator from root.
@@ -368,7 +368,7 @@ class BaseNode(object):
             return self.__class__.__name__
         else:
             args_str = ",".join([str(k) + "=" + str(self.signature_args[k])
-                             for k in self.signature_args])
+                                 for k in self.signature_args])
             args_str = "(" + args_str + ")"
             return self.__class__.__name__ + args_str
 
@@ -478,7 +478,8 @@ class BaseNode(object):
         if not self.stop_top_down:
             if self.children:
                 # Call children func_name down to leaves
-                ret = [child.top_down(**Xy) for child in self.get_children_top_down()]
+                ret = [child.top_down(**Xy)
+                       for child in self.get_children_top_down()]
                 Xy = ret[0] if len(ret) == 1 else ret
             else:
                 result = Result(key=self.get_signature(), **Xy)
@@ -505,7 +506,7 @@ class BaseNode(object):
         if self.children:
             # 1) Build sub-aggregates over children
             children_result_set = [child.reduce(store_results=False) for
-                child in self.children]
+                                   child in self.children]
             result_set = ResultSet(*children_result_set)
             if self.reducer:
                 return self.reducer.reduce(result_set)
@@ -529,7 +530,7 @@ class BaseNode(object):
         """ Load ResultSet
         """
         return self.get_store(name=conf.RESULT_SET).load(
-                    key_push(self.get_key(), conf.RESULT_SET))
+            key_push(self.get_key(), conf.RESULT_SET))
 
     def save_state(self, state, name="default"):
         warnings.warn("deprecated save_state", DeprecationWarning)
@@ -579,12 +580,12 @@ class BaseNode(object):
             if node.store:
                 self.get_store().dict.update(node.store.dict)
         store.save(key=key_push(self.get_key(), conf.STORE_STORE_PREFIX),
-                       obj=self.store, protocol="bin")
+                   obj=self.store, protocol="bin")
 
     def save_node(self, store):
         """I/O (persistance) operation: save single node states ie.: store"""
         store.save(key=key_push(self.get_key(), conf.STORE_STORE_PREFIX),
-                       obj=self.store, protocol="bin")
+                   obj=self.store, protocol="bin")
 
     def merge_tree_store(self, another_tree_root):
         '''Merge all the stores from another_tree_root

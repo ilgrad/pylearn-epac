@@ -31,7 +31,7 @@ class Mapper(object):
 class MapperSubtrees(Mapper):
     '''The mapper runs function (usually as "transform") for NodesInput
     which is a dictionary of nodes.
-    
+
     Parameters
     ----------
     Xy:X matrix and y vertor
@@ -153,7 +153,7 @@ class MapperSubtrees(Mapper):
                     # do not process current node
                     break
                 node_common2curr = \
-                        self.tree_root.get_node(node_common2curr.get_key())
+                    self.tree_root.get_node(node_common2curr.get_key())
                 func = getattr(node_common2curr, self.function)
                 cpXy = func(**cpXy)
             curr_node = self.tree_root.get_node(curr_key)

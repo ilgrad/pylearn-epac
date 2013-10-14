@@ -26,7 +26,7 @@ pipe.run(X=X, y=y)
 # The downstream data-flow is a keyword arguments (dict) containing X and y.
 # It will pass through each processing node, SelectKBest(k=2) and SVM.
 # Each node calls the "transform" method, that take a dictionary as input
-# and produces a dictionary as output. The output is passed to the next node. 
+# and produces a dictionary as output. The output is passed to the next node.
 
 # The return value of the run is simply agregation of the outputs (dict) of
 # the leaf nodes
@@ -69,7 +69,8 @@ export_resultset_csv(multi.reduce(), 'my_result_reduce.csv')
 #                         Methods                  Methods (Splitter)
 #          /                        \
 # SVM(l1, C=1)  SVM(l1, C=10)  ..... SVM(l2, C=10) Classifiers (Estimator)
-svms = Methods(*[SVM(loss=loss, C=C) for loss in ("l1", "l2") for C in [1, 10]])
+svms = Methods(*[SVM(loss=loss, C=C)
+                 for loss in ("l1", "l2") for C in [1, 10]])
 svms.run(X=X, y=y)
 print svms.reduce()
 
@@ -121,7 +122,8 @@ print wf.reduce()
 #            Methods                   (Splitter)
 #        /          \
 #    LDA()          SVM() ...          Classifiers (Estimator)
-pipelines = Methods(*[Pipe(SelectKBest(k=k), Methods(LDA(), SVM())) for k in [1, 5]])
+pipelines = Methods(*[Pipe(SelectKBest(k=k), Methods(LDA(), SVM()))
+                      for k in [1, 5]])
 print [n for n in pipelines.walk_leaves()]
 best_cv = CVBestSearchRefit(pipelines)
 best_cv.run(X=X, y=y)
@@ -155,9 +157,8 @@ perms_cv_svm.reduce()
 
 # Run with soma-workflow for multi-processes
 from epac import SomaWorkflowEngine
-sfw_engine = SomaWorkflowEngine(
-                    tree_root=perms_cv_svm,
-                    num_processes=2,
-                    )
+sfw_engine = SomaWorkflowEngine(tree_root=perms_cv_svm,
+                                num_processes=2,
+                                )
 perms_cv_svm = sfw_engine.run(X=X, y=y)
 perms_cv_svm.reduce()
