@@ -36,10 +36,6 @@ def func_is_big_nparray(obj):
     return False
 
 
-def func_can_deeper(obj):
-    return not (type(obj) in (np.ndarray, np.matrix, np.memmap))
-
-
 def replace_values(obj, extracted_values, max_depth=10):
     """
     See example in extract_values
@@ -110,29 +106,38 @@ def replace_values(obj, extracted_values, max_depth=10):
 
 def extract_values(obj,
                    func_is_need_extract,
-                   func_can_deeper=None,
                    max_depth=10):
     """
     Example
     -------
     >>> import numpy as np
     >>> from epac.configuration import conf
-    >>> from epac.stores import epac_joblib
+    >>> from epac import Result, ResultSet
+    >>> from epac.stores import StoreMem
+    >>> from epac.stores import extract_values
+    >>> from epac.stores import replace_values
+    >>> from epac.stores import func_is_big_nparray
     >>> from epac.stores import TagObject
     >>>
     >>> conf.MEMM_THRESHOLD = 100
     >>> npdata1 = np.random.random(size=(2, 2))
     >>> npdata2 = np.random.random(size=(100, 5))
     >>>
-    >>> dict_data = {"1": npdata1, "2": npdata2}
-    >>> epac_joblib.dump(dict_data, "/tmp/123")
-    >>> isinstance(dict_data["2"], TagObject)
+    >>> store = StoreMem()
+    >>>
+    >>> r1 = Result('SVC(C=1)', a=npdata1, b=npdata2)
+    >>> r2 = Result('SVC(C=2)', a=npdata2, b=npdata1)
+    >>> set1 = ResultSet(r1, r2)
+    >>> store.save('SVC', set1)
+    >>> replaced_array, ext_obj, is_modified = extract_values(store, func_is_big_nparray)
+    >>> isinstance(ext_obj.dict['SVC']['SVC(C=2)']['a'], TagObject)
     True
-    >>> dict_data2 = epac_joblib.load("/tmp/123")
-    >>> np.all(dict_data2["1"] == npdata1)
+    >>> new_obj, _ = replace_values(ext_obj, replaced_array)
+    >>> isinstance(new_obj.dict['SVC']['SVC(C=2)']['a'], TagObject)
+    False
+    >>> isinstance(new_obj.dict['SVC']['SVC(C=2)']['a'], np.ndarray)
     True
-    >>> np.all(dict_data2["2"] == npdata2)
-    True
+
     """
     replaced_array = {}
     is_modified = False
@@ -155,7 +160,6 @@ def extract_values(obj,
         pros_replaced_array, obj2set, tmp_is_modified \
                             = extract_values(obj.dict,
                                              func_is_need_extract,
-                                             func_can_deeper,
                                              max_depth)
         if tmp_is_modified:
             is_modified = True
@@ -167,7 +171,6 @@ def extract_values(obj,
         pros_replaced_array, obj2set, tmp_is_modified \
                             = extract_values(obj.results,
                                              func_is_need_extract,
-                                             func_can_deeper,
                                              max_depth)
         if tmp_is_modified:
             is_modified = True
@@ -179,7 +182,6 @@ def extract_values(obj,
             pros_replaced_array, obj2set, tmp_is_modified \
                                 = extract_values(obj[key],
                                                  func_is_need_extract,
-                                                 func_can_deeper,
                                                  max_depth)
             if tmp_is_modified:
                 is_modified = True
@@ -191,7 +193,6 @@ def extract_values(obj,
             pros_replaced_array, obj2set, tmp_is_modified \
                                     = extract_values(obj[iobj],
                                                      func_is_need_extract,
-                                                     func_can_deeper,
                                                      max_depth)
             if tmp_is_modified:
                 is_modified = True
@@ -224,7 +225,7 @@ class epac_joblib:
     >>> np.all(dict_data2["1"] == npdata1)
     True
     >>> np.all(dict_data2["2"] == npdata2)
-    True
+    memmap(True, dtype=bool)
     >>> from epac.stores import StoreMem
     >>> from epac import Result, ResultSet
     >>>
@@ -269,8 +270,7 @@ class epac_joblib:
         filename_memobj = filename + "_memobj.enpy"
         filename_norobj = filename + "_norobj.enpy"
         mem_obj, normal_obj, _ = extract_values(obj,
-                                             func_is_big_nparray,
-                                             func_can_deeper)
+                                             func_is_big_nparray)
         joblib.dump(mem_obj, filename_memobj)
         epac_joblib._pickle_dump(normal_obj, filename_norobj)
 
