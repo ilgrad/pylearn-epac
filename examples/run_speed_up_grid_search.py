@@ -7,10 +7,10 @@ Created on Fri Oct  4 10:18:13 2013
 import numpy as np
 from sklearn import datasets
 from epac import Methods
-from epac.workflow.splitters import PrevStateMethods
+from epac.workflow.splitters import WarmStartMethods
 
 
-# PrevStateMethods can implement algorithm like ISTA
+# WarmStartMethods can implement algorithm like ISTA
 # (iterative shrinkage-thresholding algorithm)
 # see http://mechroom.technion.ac.il/~becka/papers/71654.pdf
 class TOY_CLF:
@@ -63,19 +63,19 @@ if __name__ == "__main__":
                         for v_lambda in [2, 1]])
     print methods.run(**Xy)
 
-    ## 3) Build PrevStateMethods like Methods
+    ## 3) Build WarmStartMethods like Methods
     ## ================================================
-    ##               PrevStateMethods
+    ##               WarmStartMethods
     ##             /                  \
     ##  TOY_CLF(v_lambda=2)    TOY_CLF(v_lambda=1)
     ##
-    ##  1. PrevStateMethods will look for different argumenets as signature
+    ##  1. WarmStartMethods will look for different argumenets as signature
     ##     For example, here is v_lambda, there are different for each leaf
     ##  2. And then run TOY_CLF(v_lambda=2).transform
-    ##  3. Except v_lambda, PrevStateMethods copy all the other parameters
+    ##  3. Except v_lambda, WarmStartMethods copy all the other parameters
     ##     from TOY_CLF(v_lambda=2) to TOY_CLF(v_lambda=1) as initialization
     ##  4. Finally call TOY_CLF(v_lambda=1).transform
-    print "PrevStateMethods =========================="
-    ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
+    print "WarmStartMethods =========================="
+    ps_methods = WarmStartMethods(*[TOY_CLF(v_lambda=v_lambda)
                                     for v_lambda in [2, 1]])
     print ps_methods.run(**Xy)

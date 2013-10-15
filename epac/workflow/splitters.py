@@ -317,11 +317,11 @@ class Methods(BaseNodeSplitter):
         return results
 
 
-class PrevStateMethods(Methods):
+class WarmStartMethods(Methods):
     """Run like methods but with previous state for initialization
     """
     def __init__(self, *nodes):
-        super(PrevStateMethods, self).__init__(*nodes)
+        super(WarmStartMethods, self).__init__(*nodes)
         self.stop_top_down = True
 
     def transform(self, **Xy):

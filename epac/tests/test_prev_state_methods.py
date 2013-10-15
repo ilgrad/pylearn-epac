@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 from sklearn import datasets
 from epac import Methods
-from epac.workflow.splitters import PrevStateMethods
+from epac.workflow.splitters import WarmStartMethods
 from epac.tests.utils import comp_2wf_reduce_res
 from epac.tests.utils import compare_two_node
 
@@ -56,7 +56,7 @@ class TestWorkFlow(unittest.TestCase):
                             for v_lambda in [2, 1]])
         methods.run(**Xy)
 
-        ps_methods = PrevStateMethods(*[TOY_CLF(v_lambda=v_lambda)
+        ps_methods = WarmStartMethods(*[TOY_CLF(v_lambda=v_lambda)
                                         for v_lambda in [2, 1]])
         ps_methods.run(**Xy)
         self.assertTrue(compare_two_node(methods, ps_methods))
