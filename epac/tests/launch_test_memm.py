@@ -75,14 +75,14 @@ def print_process_mem_cost(process_name, delay=10):
 #################################
 
 n_samples = 500
-#n_features_list = [50000 * 2 ** n for n in range(0, 7)]
-n_features_list = [10000]
-#list_memmap = [False, True]
-list_memmap = [True]
-#n_proc_list = range(1, 9)
-n_proc_list = [2]
-#cluster_list = [False, True]
-cluster_list = [False]
+n_features_list = [50000 * 2 ** n for n in range(0, 7)]
+#n_features_list = [10000]
+list_memmap = [False, True]
+#list_memmap = [True]
+n_proc_list = range(1, 9)
+#n_proc_list = [2]
+cluster_list = [False, True]
+#cluster_list = [False]
 directory = '/volatile'
 
 # Path of the file to write results
@@ -101,8 +101,8 @@ os.system('rm -rf /tmp/tmp*')
 if directory:
     os.system('rm -rf %s/tmp*' % directory)
 
-for memmap in list_memmap:
-    for n_features in n_features_list:
+for n_features in n_features_list:
+    for memmap in list_memmap:
         print "\n"
         print "==========================="
         print "------ %i features -------" % n_features
