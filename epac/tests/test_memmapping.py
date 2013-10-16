@@ -262,26 +262,26 @@ if __name__ == "__main__":
     directory = None
 
     # Getting the arguments from the shell
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], "", ["n_samples=",
-                                                         "n_features=",
-                                                         "memmap=",
-                                                         "n_proc=",
-                                                         "is_swf=",
-                                                         "dir="])
-    # Changing the default values depending on the given arguments
-    for opt in optlist:
-        if opt[0] == '--n_samples':
-            n_samples = int(opt[1])
-        elif opt[0] == '--n_features':
-            n_features = int(opt[1])
-        elif opt[0] == '--memmap':
-            memmap = (opt[1] == 'True')
-        elif opt[0] == '--n_proc':
-            n_proc = int(opt[1])
-        elif opt[0] == '--is_swf':
-            is_swf = (opt[1] == 'True')
-        elif opt[0] == '--dir':
-            directory = opt[1]
+#    optlist, args = getopt.gnu_getopt(sys.argv[1:], "", ["n_samples=",
+#                                                         "n_features=",
+#                                                         "memmap=",
+#                                                         "n_proc=",
+#                                                         "is_swf=",
+#                                                         "dir="])
+#    # Changing the default values depending on the given arguments
+#    for opt in optlist:
+#        if opt[0] == '--n_samples':
+#            n_samples = int(opt[1])
+#        elif opt[0] == '--n_features':
+#            n_features = int(opt[1])
+#        elif opt[0] == '--memmap':
+#            memmap = (opt[1] == 'True')
+#        elif opt[0] == '--n_proc':
+#            n_proc = int(opt[1])
+#        elif opt[0] == '--is_swf':
+#            is_swf = (opt[1] == 'True')
+#        elif opt[0] == '--dir':
+#            directory = opt[1]
 
     # Running the test with the given arguments
     suite = unittest.TestSuite()
