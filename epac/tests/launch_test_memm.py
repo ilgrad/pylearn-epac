@@ -86,7 +86,7 @@ cluster_list = [False, True]
 directory = '/volatile'
 
 # Path of the file to write results
-filename = '/tmp/result_test.txt'
+filename = 'result_test.txt'
 
 # Clearing file from other tries
 open(filename, 'w+').close()
