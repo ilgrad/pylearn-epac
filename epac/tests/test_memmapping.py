@@ -141,14 +141,14 @@ class TestMemMapping(unittest.TestCase):
     '''
 
     def __init__(self, n_samples, n_features, memmap,
-                 n_proc, is_swf, dir, testname='test_memmapping'):
+                 n_proc, is_swf, directory, testname='test_memmapping'):
         super(TestMemMapping, self).__init__(testname)
         self.n_samples = n_samples
         self.n_features = n_features
         self.memmap = memmap
         self.n_proc = n_proc
         self.is_swf = is_swf
-        self.dir = dir
+        self.directory = directory
 
     def test_memmapping(self):
         ## 1) Building dataset
@@ -157,9 +157,10 @@ class TestMemMapping(unittest.TestCase):
             # If the proc is 1, always generate the matrix
             # Otherwise, load it if it exists, or create it if it doesn't
             writing_mode = (self.n_proc == 1)
-            X = create_mmat(self.n_samples, self.n_features, dir=self.dir,
+            X = create_mmat(self.n_samples, self.n_features,
+                            dir=self.directory,
                             writing_mode=writing_mode)
-            y = create_array(self.n_samples, [0, 1], dir=self.dir,
+            y = create_array(self.n_samples, [0, 1], dir=self.directory,
                              writing_mode=writing_mode)
             Xy = dict(X=X, y=y)
         else:
@@ -218,7 +219,14 @@ class TestMemMapping(unittest.TestCase):
         print cv_svm_reduce
 
         # Creating the directory to save results, if it doesn't exist
-        dirpath = "/tmp/tmp_save_tree/"
+        dirname = 'tmp_save_tree/'
+        if self.directory is None:
+            directory = '/tmp'
+        else:
+            directory = self.directory
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+        dirpath = os.path.join(directory, dirname)
         if not os.path.isdir(dirpath):
             os.mkdir(dirpath)
 
@@ -228,7 +236,9 @@ class TestMemMapping(unittest.TestCase):
             store = StoreFs(dirpath=dirpath, clear=True)
             cv_svm.save_tree(store=store)
 
-            with open("/tmp/tmp_save_results", 'w+') as filename:
+            with open(os.path.join(directory, "tmp_save_results"), 'w+') \
+                    as filename:
+                print filename.name
                 pickle.dump(cv_svm_reduce, filename)
 
         else:
@@ -238,7 +248,8 @@ class TestMemMapping(unittest.TestCase):
                 store = StoreFs(dirpath=dirpath, clear=False)
                 cv_svm_one_proc = store.load()
 
-                with open("/tmp/tmp_save_results", 'r+') as filename:
+                with open(os.path.join(directory, "tmp_save_results"), 'r+') \
+                        as filename:
                     cv_svm_reduce_one_proc = pickle.load(filename)
 
                 ## 5.2) Comparing results to the results for one process
@@ -259,33 +270,33 @@ if __name__ == "__main__":
     memmap = True
     n_proc = 1
     is_swf = False
-    directory = None
+    directory = '/volatile'
 
-    # Getting the arguments from the shell
-    optlist, args = getopt.gnu_getopt(sys.argv[1:], "", ["n_samples=",
-                                                         "n_features=",
-                                                         "memmap=",
-                                                         "n_proc=",
-                                                         "is_swf=",
-                                                         "dir="])
-    # Changing the default values depending on the given arguments
-    for opt in optlist:
-        if opt[0] == '--n_samples':
-            n_samples = int(opt[1])
-        elif opt[0] == '--n_features':
-            n_features = int(opt[1])
-        elif opt[0] == '--memmap':
-            memmap = (opt[1] == 'True')
-        elif opt[0] == '--n_proc':
-            n_proc = int(opt[1])
-        elif opt[0] == '--is_swf':
-            is_swf = (opt[1] == 'True')
-        elif opt[0] == '--dir':
-            directory = opt[1]
+#    # Getting the arguments from the shell
+#    optlist, args = getopt.gnu_getopt(sys.argv[1:], "", ["n_samples=",
+#                                                         "n_features=",
+#                                                         "memmap=",
+#                                                         "n_proc=",
+#                                                         "is_swf=",
+#                                                         "dir="])
+#    # Changing the default values depending on the given arguments
+#    for opt in optlist:
+#        if opt[0] == '--n_samples':
+#            n_samples = int(opt[1])
+#        elif opt[0] == '--n_features':
+#            n_features = int(opt[1])
+#        elif opt[0] == '--memmap':
+#            memmap = (opt[1] == 'True')
+#        elif opt[0] == '--n_proc':
+#            n_proc = int(opt[1])
+#        elif opt[0] == '--is_swf':
+#            is_swf = (opt[1] == 'True')
+#        elif opt[0] == '--dir':
+#            directory = opt[1]
 
     # Running the test with the given arguments
     suite = unittest.TestSuite()
-    suite.addTest(TestMemMapping(n_samples=n_samples, n_features=n_features,
-                                 memmap=memmap, n_proc=n_proc, is_swf=is_swf,
-                                 dir=directory))
+    suite.addTest(TestMemMapping(n_samples, n_features,
+                                 memmap, n_proc, is_swf,
+                                 directory))
     unittest.TextTestRunner().run(suite)
