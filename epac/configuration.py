@@ -34,6 +34,8 @@ class conf:
     BEST_PARAMS = "best_params"
     RESULT_SET = "result_set"
     MEMMAP = "memmap"
+    MEMOBJ_SUFFIX = "_memobj.enpy"
+    NOROBJ_SUFFIX = "_norobj.enpy"
     ML_CLASSIFICATION_MODE = None  # Set to True to force classification mode
     DICT_INDEX_FILE = "dict_index.txt"
     # when the data larger than 100MB, it needs memmory mapping

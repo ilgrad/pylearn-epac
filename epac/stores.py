@@ -267,24 +267,24 @@ class epac_joblib:
 
     @staticmethod
     def dump(obj, filename):
-        filename_memobj = filename + "_memobj.enpy"
-        filename_norobj = filename + "_norobj.enpy"
+        filename_memobj = filename + conf.MEMOBJ_SUFFIX
+        filename_norobj = filename + conf.NOROBJ_SUFFIX
         mem_obj, normal_obj, _ = extract_values(obj,
                                              func_is_big_nparray)
         joblib.dump(mem_obj, filename_memobj)
         epac_joblib._pickle_dump(normal_obj, filename_norobj)
 
         outfile = open(filename, "w+")
-        outfile.write(filename_memobj)
+        outfile.write(conf.MEMOBJ_SUFFIX)
         outfile.write("\n")
-        outfile.write(filename_norobj)
+        outfile.write(conf.NOROBJ_SUFFIX)
         outfile.write("\n")
         outfile.close()
 
     @staticmethod
     def load(filename, mmap_mode="r+"):
-        filename_memobj = None
-        filename_norobj = None
+        filename_memobj = filename + conf.MEMOBJ_SUFFIX
+        filename_norobj = filename + conf.NOROBJ_SUFFIX
         mem_obj = None
         normal_obj = None
         # Read index file
