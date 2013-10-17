@@ -293,8 +293,8 @@ class epac_joblib:
         infile.close()
         for i in xrange(len(lines)):
             lines[i] = lines[i].strip("\n")
-        filename_memobj = lines[0]
-        filename_norobj = lines[1]
+        filename_memobj = filename + lines[0]
+        filename_norobj = filename + lines[1]
         # Load Memory obj and Normal obj
         mem_obj = joblib.load(filename_memobj, mmap_mode)
         normal_obj = epac_joblib._pickle_load(filename_norobj)
