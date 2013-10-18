@@ -11,6 +11,7 @@ import dill as pickle
 from epac.configuration import conf
 from epac.workflow.base import key_push, key_pop
 from epac.map_reduce.results import ResultSet
+import json
 
 
 def copy_parameters(from_obj, to_obj, exclude_parameters):
@@ -449,6 +450,36 @@ def train_test_merge(Xy_train, Xy_test):
     return Xy_train
 
 
+def save_dictionary_path(dataset_dir, **Xy_path):
+    '''Save a dictionary to a directory
+    Save a numpy dictionary (with path only) to a directory.
+
+    Example
+    -------
+    from sklearn import datasets
+    import numpy as np
+    from epac.utils import save_dictionary_path
+    X, y = datasets.make_classification(n_samples=500,
+                                        n_features=500,
+                                        n_informative=2,
+                                        random_state=1)
+    path_X = "/tmp/data_X"
+    path_y = "/tmp/data_y"
+    np.save(path_X, X)
+    np.save(path_y, y)
+
+    Xy = dict(X=path_X, y=path_y)
+    save_dictionary_path("/tmp/save_datasets_data", **Xy)
+
+    '''
+    if not os.path.exists(dataset_dir):
+        os.makedirs(dataset_dir)
+    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
+    file_dict_index = open(index_filepath, "w+")
+    json.dump(Xy_path, file_dict_index)
+    file_dict_index.close()
+
+
 def save_dictionary(dataset_dir, **Xy):
     '''Save a dictionary to a directory
     Save a dictionary to a directory. This dictionary may contain
@@ -459,7 +490,7 @@ def save_dictionary(dataset_dir, **Xy):
     from sklearn import datasets
     from epac.utils import save_dictionary
     X, y = datasets.make_classification(n_samples=500,
-                                        n_features=200000,
+                                        n_features=500,
                                         n_informative=2,
                                         random_state=1)
     Xy = dict(X=X, y=y)
@@ -467,19 +498,12 @@ def save_dictionary(dataset_dir, **Xy):
     '''
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
-    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
-    file_dict_index = open(index_filepath, "w+")
-    file_dict_index.write(repr(len(Xy)) + "\n")
-    for key in Xy:
-        filepath = os.path.join(dataset_dir, key + ".npy")
-        file_dict_index.write(key)
-        file_dict_index.write("\n")
-        file_dict_index.write(filepath)
-        file_dict_index.write("\n")
-    file_dict_index.close()
+    path_Xy = dict()
     for key in Xy:
         filepath = os.path.join(dataset_dir, key + ".npy")
         np.save(filepath, Xy[key])
+        path_Xy[key] = filepath
+    save_dictionary_path(dataset_dir, **path_Xy)
 
 
 def is_need_mem(filepath):
@@ -496,6 +520,8 @@ def load_dictionary(dataset_dir):
     Example
     -------
     from epac.utils import load_dictionary
+    from epac.configuration import conf
+    conf.MEMM_THRESHOLD = 100
     Xy = load_dictionary("/tmp/save_datasets_data")
     '''
     if not os.path.exists(dataset_dir):
@@ -504,19 +530,26 @@ def load_dictionary(dataset_dir):
     if not os.path.isfile(index_filepath):
         return None
     file_dict_index = open(index_filepath, "r")
-    len_dict = file_dict_index.readline()
+    path_Xy = json.load(file_dict_index)
+    file_dict_index.close()
     res = {}
-    for i in range(int(len_dict)):
-        key = file_dict_index.readline()
-        key = key.strip("\n")
-        filepath = file_dict_index.readline()
-        filepath = filepath.strip("\n")
+    for key in path_Xy:
+        data = None
+        filepath = path_Xy[key]
         if is_need_mem(filepath):
             data = np.load(filepath, "r+")
         else:
             data = np.load(filepath)
         res[key] = data
     return res
+
+
+def trim_filepath(filepath):
+    filepath = filepath.strip('\n')
+    filepath = filepath.strip()
+    filepath = filepath.replace("'", '')
+    filepath = filepath.replace('"', '')
+    return filepath
 
 
 def clean_tree_stores(tree_root):

@@ -22,6 +22,7 @@ from epac.errors import NoSomaWFError, NoEpacTreeRootError
 from epac.configuration import conf
 from epac.map_reduce.split_input import SplitNodesInput
 from epac.map_reduce.inputs import NodesInput
+from epac.map_reduce.exports import save_job_list
 
 import joblib
 from epac.utils import save_dictionary
@@ -173,46 +174,6 @@ class SomaWorkflowEngine(LocalEngine):
         self.remove_finished_wf = remove_finished_wf
         self.remove_local_tree = remove_local_tree
 
-    def _save_job_list(self,
-                       working_directory,
-                       nodesinput_list):
-        '''Write job list into working_directory as 0.job, 1.job, etc.
-
-        Parameters
-        ----------
-        working_directory: string
-            directory to write job list
-
-        nodesinput_list: list of NodesInput
-            This is for parallel computing for each element in the list.
-            All of them are saved separately in working_directory.
-
-        Example
-        -------
-        >>> from epac.map_reduce.engine import SomaWorkflowEngine
-        >>> nodesinput_list = [{'Perms/Perm(nb=0)': 'Perms/Perm(nb=0)'},
-        ...                    {'Perms/Perm(nb=1)': 'Perms/Perm(nb=1)'},
-        ...                    {'Perms/Perm(nb=2)': 'Perms/Perm(nb=2)'}]
-        >>> working_directory =  "/tmp"
-        >>> swf_engine = SomaWorkflowEngine(None)
-        >>> swf_engine._save_job_list(working_directory, nodesinput_list)
-        ['./0.job', './1.job', './2.job']
-        '''
-        keysfile_list = list()
-        jobi = 0
-        for nodesinput in nodesinput_list:
-            keysfile = "." + os.path.sep + repr(jobi) + "." + conf.SUFFIX_JOB
-            keysfile_list.append(keysfile)
-            # print "in_working_directory="+in_working_directory
-            # print "keysfile="+keysfile
-            abs_keysfile = os.path.join(working_directory, keysfile)
-            f = open(abs_keysfile, 'w')
-            for key_signature in nodesinput:
-                f.write("%s\n" % key_signature)
-            f.close()
-            jobi = jobi + 1
-        return keysfile_list
-
     def run(self, **Xy):
         '''Run soma-workflow without gui
 
@@ -292,8 +253,7 @@ class SomaWorkflowEngine(LocalEngine):
         split_node_input = SplitNodesInput(self.tree_root,
                                            num_processes=self.num_processes)
         nodesinput_list = split_node_input.split(node_input)
-        keysfile_list = self._save_job_list(tmp_work_dir_path,
-                                            nodesinput_list)
+        keysfile_list = save_job_list(tmp_work_dir_path, nodesinput_list)
         ## Build soma-workflow
         ## ===================
         if not is_run_local:

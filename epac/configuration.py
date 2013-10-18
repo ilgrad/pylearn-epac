@@ -13,6 +13,7 @@ import numpy as np
 
 class conf:
     TRACE_TOPDOWN = False
+    REDUCE_TAB_FILENAME = "reduce_tab.csv"
     STORE_FS_PICKLE_SUFFIX = ".pkl"
     STORE_FS_JSON_SUFFIX = ".json"
     STORE_EXECUTION_TREE_PREFIX = "execution_tree"

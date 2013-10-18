@@ -17,13 +17,8 @@ from epac import conf, StoreFs, MapperSubtrees
 from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.engine import SomaWorkflowEngine
 from epac.utils import load_dictionary
+from epac.utils import trim_filepath
 import joblib
-
-# load all the class definition so that can be load classes, like methods
-
-#def load_datasets(datasets_filepath):
-#    Xy = np.load(datasets_filepath)
-#    return {k: Xy[k] for k in Xy.keys()}
 
 
 if __name__ == "__main__":
@@ -42,7 +37,15 @@ if __name__ == "__main__":
                       'represents a key node')
     parser.add_option('-x', '--function',
                       help='Function to execute. Default "fit_predict"')
-    # argv = ['epac_mapper', '--datasets=./dataset', '--keysfile=./0.job']
+    parser.add_option('-t', '--treedir',
+                      help='directory to save tree')
+    # argv = ['epac_mapper',
+    #         '--datasets',
+    #         '/tmp/dataset',
+    #         '--keysfile',
+    #         '/tmp/workflow/./0.job',
+    #         '--treedir',
+    #         '/tmp/tree']
     # options, args = parser.parse_args(argv)
     # os.chdir("/tmp/tmp2HoBEk")
     options, args = parser.parse_args(sys.argv)
@@ -56,8 +59,7 @@ if __name__ == "__main__":
     if options.datasets:
         datasets_filepath = repr(options.datasets)
         # To remove quote signs in the path
-        datasets_filepath = datasets_filepath.replace("'", '')
-        datasets_filepath = datasets_filepath.replace('"', '')
+        datasets_filepath = trim_filepath(datasets_filepath)
     else:
         raise ValueError("key(s) is not provided use: --datasets")
 
@@ -72,18 +74,14 @@ if __name__ == "__main__":
         listkey = keys.split(";")
     elif options.keysfile:
         relative_filepath = options.keysfile
-        relative_filepath = relative_filepath.replace("'", '')
-        relative_filepath = relative_filepath.replace('"', '')
+        relative_filepath = trim_filepath(relative_filepath)
         key_lines = None
         f = open(relative_filepath, 'r')
         key_lines = f.readlines()
         f.close()
         if key_lines:
             for key_line in key_lines:
-                key_line = key_line.strip('\n')
-                key_line = key_line.strip()
-                key_line = key_line.replace("'", '')
-                key_line = key_line.replace('"', '')
+                key_line = trim_filepath(key_line)
                 listkey.append(key_line)
     else:
         raise ValueError("key(s) is not provided use: --key")
@@ -108,6 +106,10 @@ if __name__ == "__main__":
     Xy = load_dictionary(datasets_filepath)
 
     tree_root_relative_path = SomaWorkflowEngine.tree_root_relative_path
+    if options.treedir:
+        tree_root_relative_path = options.treedir
+        tree_root_relative_path = trim_filepath(tree_root_relative_path)
+
     store_fs = StoreFs(tree_root_relative_path)
     tree = store_fs.load(key=conf.STORE_EXECUTION_TREE_PREFIX)
 

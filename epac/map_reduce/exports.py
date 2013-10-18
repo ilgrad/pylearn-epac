@@ -135,6 +135,45 @@ def _gen_keysfile_list_from_nodes_list(
     return keysfile_list
 
 
+def save_job_list(working_directory,
+                   nodesinput_list):
+    '''Write job list into working_directory as 0.job, 1.job, etc.
+
+    Parameters
+    ----------
+    working_directory: string
+        directory to write job list
+
+    nodesinput_list: list of NodesInput
+        This is for parallel computing for each element in the list.
+        All of them are saved separately in working_directory.
+
+    Example
+    -------
+    >>> from epac.map_reduce.exports import save_job_list
+    >>> nodesinput_list = [{'Perms/Perm(nb=0)': 'Perms/Perm(nb=0)'},
+    ...                    {'Perms/Perm(nb=1)': 'Perms/Perm(nb=1)'},
+    ...                    {'Perms/Perm(nb=2)': 'Perms/Perm(nb=2)'}]
+    >>> working_directory =  "/tmp"
+    >>> save_job_list(working_directory, nodesinput_list)
+    ['./0.job', './1.job', './2.job']
+    '''
+    keysfile_list = list()
+    jobi = 0
+    for nodesinput in nodesinput_list:
+        keysfile = "." + os.path.sep + repr(jobi) + "." + conf.SUFFIX_JOB
+        keysfile_list.append(keysfile)
+        # print "in_working_directory="+in_working_directory
+        # print "keysfile="+keysfile
+        abs_keysfile = os.path.join(working_directory, keysfile)
+        f = open(abs_keysfile, 'w')
+        for key_signature in nodesinput:
+            f.write("%s\n" % key_signature)
+        f.close()
+        jobi = jobi + 1
+    return keysfile_list
+
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
