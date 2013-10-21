@@ -16,7 +16,7 @@ import numpy as np
 from epac import conf, StoreFs, MapperSubtrees
 from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.engine import SomaWorkflowEngine
-from epac.utils import load_dictionary
+from epac.utils import load_dataset
 from epac.utils import trim_filepath
 import joblib
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # datasets_filepath ="/tmp/tmpO8D3dG_datasets.npz"
     # keys="fs:///tmp/tmpXyC_XE/ParPerm/Perm(nb=0)"
 
-    Xy = load_dictionary(datasets_filepath)
+    Xy = load_dataset(datasets_filepath)
 
     tree_root_relative_path = SomaWorkflowEngine.tree_root_relative_path
     if options.treedir:

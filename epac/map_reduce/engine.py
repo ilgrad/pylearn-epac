@@ -25,7 +25,7 @@ from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.exports import save_job_list
 
 import joblib
-from epac.utils import save_dictionary
+from epac.utils import save_dataset
 
 
 class Engine(object):
@@ -241,7 +241,7 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===============================================
         # np.savez(os.path.join(tmp_work_dir_path,
         # SomaWorkflowEngine.dataset_relative_path), **Xy)
-        save_dictionary(SomaWorkflowEngine.dataset_relative_path, **Xy)
+        save_dataset(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
             SomaWorkflowEngine.tree_root_relative_path))
@@ -326,7 +326,7 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===============================================
 #        np.savez(os.path.join(tmp_work_dir_path,
 #                 SomaWorkflowEngine.dataset_relative_path), **Xy)
-        save_dictionary(SomaWorkflowEngine.dataset_relative_path, **Xy)
+        save_dataset(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
             SomaWorkflowEngine.tree_root_relative_path))

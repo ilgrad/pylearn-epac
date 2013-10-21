@@ -450,7 +450,7 @@ def train_test_merge(Xy_train, Xy_test):
     return Xy_train
 
 
-def save_dictionary_path(dataset_dir, **Xy_path):
+def save_dataset_path(dataset_dir, **Xy_path):
     '''Save a dictionary to a directory
     Save a numpy dictionary (with path only) to a directory.
 
@@ -458,7 +458,7 @@ def save_dictionary_path(dataset_dir, **Xy_path):
     -------
     from sklearn import datasets
     import numpy as np
-    from epac.utils import save_dictionary_path
+    from epac.utils import save_dataset_path
     X, y = datasets.make_classification(n_samples=500,
                                         n_features=500,
                                         n_informative=2,
@@ -469,7 +469,7 @@ def save_dictionary_path(dataset_dir, **Xy_path):
     np.save(path_y, y)
 
     Xy = dict(X=path_X, y=path_y)
-    save_dictionary_path("/tmp/save_datasets_data", **Xy)
+    save_dataset_path("/tmp/save_datasets_data", **Xy)
 
     '''
     if not os.path.exists(dataset_dir):
@@ -480,7 +480,7 @@ def save_dictionary_path(dataset_dir, **Xy_path):
     file_dict_index.close()
 
 
-def save_dictionary(dataset_dir, **Xy):
+def save_dataset(dataset_dir, **Xy):
     '''Save a dictionary to a directory
     Save a dictionary to a directory. This dictionary may contain
     numpy array, numpy.memmap
@@ -488,13 +488,13 @@ def save_dictionary(dataset_dir, **Xy):
     Example
     -------
     from sklearn import datasets
-    from epac.utils import save_dictionary
+    from epac.utils import save_dataset
     X, y = datasets.make_classification(n_samples=500,
                                         n_features=500,
                                         n_informative=2,
                                         random_state=1)
     Xy = dict(X=X, y=y)
-    save_dictionary("/tmp/save_datasets_data", **Xy)
+    save_dataset("/tmp/save_datasets_data", **Xy)
     '''
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
@@ -503,7 +503,7 @@ def save_dictionary(dataset_dir, **Xy):
         filepath = os.path.join(dataset_dir, key + ".npy")
         np.save(filepath, Xy[key])
         path_Xy[key] = filepath
-    save_dictionary_path(dataset_dir, **path_Xy)
+    save_dataset_path(dataset_dir, **path_Xy)
 
 
 def is_need_mem(filepath):
@@ -513,16 +513,16 @@ def is_need_mem(filepath):
     return False
 
 
-def load_dictionary(dataset_dir):
+def load_dataset(dataset_dir):
     '''Load a dictionary
-    Load a dictionary from save_dictionary
+    Load a dictionary from save_dataset
 
     Example
     -------
-    from epac.utils import load_dictionary
+    from epac.utils import load_dataset
     from epac.configuration import conf
     conf.MEMM_THRESHOLD = 100
-    Xy = load_dictionary("/tmp/save_datasets_data")
+    Xy = load_dataset("/tmp/save_datasets_data")
     '''
     if not os.path.exists(dataset_dir):
         return None
