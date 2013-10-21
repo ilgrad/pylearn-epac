@@ -26,7 +26,7 @@ Command::
      200000    |  400MB |   2kB  |  2381MB |  286s |  5885MB |  211s |  7941MB |  243s |  7049MB |  269s |
      400000    |  800MB |   2kB  |  4729MB |  598s | 16245MB |  566s | 15663MB |  683s | 15094MB |  660s |
      800000    | 1600MB |   2kB  | 10928MB | 1248s |   SYSTEM ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |
-    1600000    | 3200MB |   2kB  |   MEMORY ERROR  |   MEMORY ERROR  |   MEMORY ERROR  |   MEMORY ERROR  |
+    1600000    | 3200MB |   2kB  |   MEMORY ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |
 ```
 
 ```
@@ -36,7 +36,7 @@ Command::
      200000    |  400MB |   2kB  |  9663MB |  325s | 10157MB |  352s |  9299MB |  352s | 10237MB |  311s |
      400000    |  800MB |   2kB  |   MEMORY ERROR  |   MEMORY ERROR  |   MEMORY ERROR  |   MEMORY ERROR  |
      800000    | 1600MB |   2kB  |   SYSTEM ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |
-    1600000    | 3200MB |   2kB  |   MEMORY ERROR  |   MEMORY ERROR  |   MEMORY ERROR  |   MEMORY ERROR  |
+    1600000    | 3200MB |   2kB  |   SYSTEM ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |   SYSTEM ERROR  |
 ```
 Without memory mapping, with 16GB available
 -------------------------------------------
@@ -92,7 +92,8 @@ Command::
      200000    |  400MB |   2kB  |  2442MB |  888s |  2440MB |  2440MB |  765s |  2437MB |  2437MB |  2173MB |  477s |
      400000    |  800MB |   2kB  |  4845MB | 1599s |  4842MB |  4842MB | 1316s |  4845MB |  4835MB |  4835MB | 1042s |
      800000    | 1600MB |   2kB  |  9651MB | 3292s | 11451MB |  9645MB | 2914s |  9632MB |  9632MB |  9651MB | 2339s |
-    1600000    | 3200MB |   2kB  |   000MB |  000s |   000MB |   000MB |  000s |   000MB |   000MB |   000MB |  000s |
+    1600000    | 3200MB |   2kB  | 19264MB | 7812s | 19252MB | 19252MB | 5890s | 19226MB | 19226MB | 19264MB | 4104s |
+    3200000    | 3200MB |   2kB  |   MEMORY ERROR  |        MEMORY ERROR       |             MEMORY ERROR            |
 ```
 ```
     n_features | Size X | Size Y |                    4 processes                |
@@ -102,7 +103,8 @@ Command::
      200000    |  400MB |   2kB  |  1907MB |  1907MB |  1904MB |  1904MB |  342s |
      400000    |  800MB |   2kB  |  3776MB |  3770MB |  3776MB |  3770MB |  891s |
      800000    | 1600MB |   2kB  |  7501MB |  7501MB |  7514MB |  7514MB | 1712s |
-    1600000    | 3200MB |   2kB  |   000MB |   000MB |   000MB |   000MB |  000s |
+    1600000    | 3200MB |   2kB  | 18114MB | 14963MB | 14989MB | 14963MB | 3601s |
+    3200000    | 3200MB |   2kB  |                  MEMORY ERROR                 |
 ```
 ```
     n_features | Size X | Size Y |                          5 processes                    |
@@ -112,7 +114,8 @@ Command::
      200000    |  400MB |   2kB  |  1904MB |  1904MB |  2440MB |  1904MB |  1904MB |  434s |
      400000    |  800MB |   2kB  |  3776MB |  3770MB |  3770MB |  4842MB |  3770MB |  942s |
      800000    | 1600MB |   2kB  |  7501MB |  7514MB |  7501MB |  9645MB |  7501MB | 1900s |
-    1600000    | 3200MB |   2kB  |   000MB |   000MB |   000MB |   000MB |   000MB |  000s |
+    1600000    | 3200MB |   2kB  | 19251MB |  9587MB | 12062MB | 10329MB | 12381MB | 8350s |
+    3200000    | 3200MB |   2kB  |                       MEMORY ERROR                      |
 ```
 ```
     n_features | Size X | Size Y |                            6 processes                            |
@@ -122,7 +125,8 @@ Command::
      200000    |  400MB |   2kB  |  1904MB |  1904MB |  1904MB |  1907MB |  1907MB |  1904MB |  352s |
      400000    |  800MB |   2kB  |  3776MB |  3776MB |  3770MB |  3770MB |  3770MB |  3770MB |  644s |
      800000    | 1600MB |   2kB  |  7501MB |  7514MB |  7501MB |  7501MB |  7514MB |  7501MB | 1675s |
-    1600000    | 3200MB |   2kB  |   000MB |   000MB |   000MB |   000MB |   000MB |   000MB |  000s |
+    1600000    | 3200MB |   2kB  | 13254MB | 13304MB | 13475MB | 11402MB | 14963MB | 14963MB |11756s |
+    3200000    | 3200MB |   2kB  |                            MEMORY ERROR                           |
 ```
 ```
     n_features | Size X | Size Y |                     7 processes (only 6 jobs)                     |
@@ -132,7 +136,8 @@ Command::
      200000    |  400MB |   2kB  |  1904MB |  1904MB |  1907MB |  1904MB |  1904MB |  1907MB |  355s |
      400000    |  800MB |   2kB  |  3770MB |  3776MB |  3776MB |  3770MB |  3770MB |  3770MB |  631s |
      800000    | 1600MB |   2kB  |  7514MB |  7501MB |  7514MB |  7501MB |  7501MB |  7501MB | 1443s |
-    1600000    | 3200MB |   2kB  |   000MB |   000MB |   000MB |   000MB |   000MB |   000MB |  000s |
+    1600000    | 3200MB |   2kB  |  8864MB |  8175MB |  9110MB |  8527MB |  9906MB | 14989MB |20223s |
+    3200000    | 3200MB |   2kB  |                            MEMORY ERROR                           |
 ```
 ```
     n_features | Size X | Size Y |                     8 processes (only 6 jobs)                     |
@@ -142,7 +147,8 @@ Command::
      200000    |  400MB |   2kB  |  1904MB |  1904MB |  1904MB |  1907MB |  1907MB |  1904MB |  350s |
      400000    |  800MB |   2kB  |  3770MB |  3770MB |  3770MB |  3776MB |  3770MB |  3776MB |  643s |
      800000    | 1600MB |   2kB  |  7514MB |  7501MB |  7514MB |  7501MB |  7501MB |  7501MB | 1404s |
-    1600000    | 3200MB |   2kB  |   000MB |   000MB |   000MB |   000MB |   000MB |   000MB |  000s |
+    1600000    | 3200MB |   2kB  | 12262MB | 10702MB | 12572MB | 12259MB | 12080MB | 12262MB | 4641s |
+    3200000    | 3200MB |   2kB  |                            MEMORY ERROR                           |
 ```
 
 Without memory mapping, on the cluster
@@ -165,7 +171,8 @@ Command::
      200000    |  2707MB |  866s |  2706MB |  2706MB |  561s |  2704MB |  2704MB |  2707MB |  455s |
      400000    |  5376MB | 1660s |  5373MB |  5373MB | 1140s |  5370MB |  5376MB |  5370MB | 1001s |
      800000    | 10714MB | 3457s | 10708MB | 10708MB | 2310s | 10701MB | 10701MB | 10714MB | 2479s |
-    1600000    | 21389MB | 7562s |         VALUE ERROR       |              VALUE ERROR            |
+    1600000    | 21364MB | 7278s | 16980MB | 13586MB | 8641s | 16606MB | 17525MB | 18908MB | 5902s |
+    3200000    |   MEMORY ERROR  |        MEMORY ERROR       |             MEMORY ERROR            |
 ```
 ```
     n_features |                    4 processes                |
@@ -175,7 +182,8 @@ Command::
      200000    |  2171MB |  2173MB |  2173MB |  2171MB |  413s |
      400000    |  4304MB |  4308MB |  4304MB |  4307MB |  862s |
      800000    |  8576MB |  8570MB |  8576MB |  8570MB | 1976s |
-    1600000    |                   VALUE ERROR                 |
+    1600000    | 11628MB | 17086MB | 10058MB | 17114MB | 5357s |
+    3200000    |                  MEMORY ERROR                 |
 ```
 ```
     n_features |                          5 processes                    |
@@ -185,7 +193,8 @@ Command::
      200000    |  2171MB |  2706MB |  2171MB |  2171MB |  2173MB |  468s |
      400000    |  5373MB |  4303MB |  4304MB |  4307MB |  4304MB | 1010s |
      800000    |  8570MB |  8576MB | 10708MB |  8570MB |  8570MB | 2170s |
-    1600000    |                        VALUE ERROR                      |
+    1600000    | 13068MB | 21349MB | 15769MB | 12900MB | 17114MB | 5133s |
+    3200000    |                       MEMORY ERROR                      |
 ```
 ```
     n_features |                                  6 processes                      |
@@ -195,7 +204,8 @@ Command::
      200000    |  2171MB |  2171MB |  2173MB |  2171MB |  2173MB |  2171MB |  348s |
      400000    |  4304MB |  4304MB |  4307MB |  4304MB |  4307MB |  4304MB |  908s |
      800000    |  8576MB |  8570MB |  8570MB |  8570MB |  8570MB |  8576MB | 1607s |
-    1600000    |                             VALUE ERROR                           |
+    1600000    | 17114MB | 17101MB | 14096MB | 15647MB | 12592MB | 13655MB | 3408s |
+    3200000    |                            MEMORY ERROR                           |
 ```
 ```
     n_features |                     7 processes (only 6 jobs)                     |
@@ -205,7 +215,8 @@ Command::
      200000    |  2173MB |  2171MB |  2171MB |  2171MB |  2171MB |  2173MB |  339s |
      400000    |  4307MB |  4304MB |  4307MB |  4304MB |  4304MB |  4304MB |  817s |
      800000    |  8576MB |  8570MB |  8576MB |  8570MB |  8570MB |  8570MB | 1640s |
-    1600000    |                             VALUE ERROR                           |
+    1600000    | 13768MB | 17101MB | 14841MB | 17114MB | 12559MB | 14369MB | 3748s |
+    3200000    |                            MEMORY ERROR                           |
 ```
 ```
     n_features |                     8 processes (only 6 jobs)                     |
@@ -215,6 +226,6 @@ Command::
      200000    |  2173MB |  2173MB |  2171MB |  2171MB |  2171MB |  2171MB |  339s |
      400000    |  4304MB |  4304MB |  4304MB |  4304MB |  4307MB |  4307MB |  780s |
      800000    |  8576MB |  8570MB |  8570MB |  8570MB |  8570MB |  8576MB | 1538s |
-    1600000    |                             VALUE ERROR                           |
+    1600000    | 10375MB | 13456MB | 13368MB | 12271MB | 12881MB |  8415MB | 7246s |
+    3200000    |                            MEMORY ERROR                           |
 ```
-
