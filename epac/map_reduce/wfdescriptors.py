@@ -140,8 +140,24 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
     '''
     Example
     -------
+    # =======================================================================
+    # 1 Configuration on computing resource
+    #   (which means cluster, or distributed resource management system DRMS)
+    #   ! Replace $HOME as your home directory, or it will raise error
+    #     1.1 Define a translation file for example in $HOME/translation_example as
+    #         ```
+    #         soma_workflow_shared_dir $HOME/soma_workflow_shared_dir
+    #         ```
+    #     1.2 Add an option in soma-workflow configuration
+    #         for example, $HOME/.soma-workflow.cfg
+    #         ```
+    #         PATH_TRANSLATION_FILES = EPAC{$HOME/translation_example}
+    #         ```
+    #
+    # =======================================================================
+
     # =================================================================
-    # Build dataset dir
+    # Build dataset on computing resource
     # =================================================================
     from sklearn import datasets
     from epac.utils import save_dataset_path
@@ -150,27 +166,31 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
                                         n_features=500,
                                         n_informative=2,
                                         random_state=1)
-    path_X = "/tmp/data_X.npy"
-    path_y = "/tmp/data_y.npy"
+    # These pathes can be arbitrary, not mandatory in $HOME/soma_workflow_shared_dir
+    path_X = "$HOME/soma_workflow_shared_dir/dataset/data_X.npy"
+    path_y = "$HOME/soma_workflow_shared_dir/dataset/data_y.npy"
     np.save(path_X, X)
     np.save(path_y, y)
-    dataset_dir_path = "/tmp/dataset"
+    # Save paths in "$HOME/soma_workflow_shared_dir/dataset"
+    # dataset_dir_path should be in "$HOME/soma_workflow_shared_dir"
+    dataset_dir_path = "$HOME/soma_workflow_shared_dir/dataset"
     path_Xy = {"X":path_X, "y":path_y}
     save_dataset_path(dataset_dir_path, **path_Xy)
 
-    # =================================================================
-    # Build epac tree (epac workflow) and save them on disk
-    # =================================================================
+    # =====================================================================
+    # Build epac tree (epac workflow) and save them on computing resource
+    # =====================================================================
     import os
     from epac import Methods
     from epac import StoreFs
     from sklearn.svm import LinearSVC as SVM
-    epac_tree_dir_path = "/tmp/tree"
+    epac_tree_dir_path = "$HOME/soma_workflow_shared_dir/tree"
     if not os.path.exists(epac_tree_dir_path):
         os.makedirs(epac_tree_dir_path)
     multi = Methods(SVM(C=1), SVM(C=10))
     store = StoreFs(epac_tree_dir_path, clear=True)
     multi.save_tree(store=store)
+
 
     # =================================================================
     # Export scripts to workflow directory
@@ -205,9 +225,9 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
                                            namespace="EPAC",
                                            uuid="soma_workflow_shared_dir")
         # Reduce output on remote machine
-        out_dir =  FileTransfer(is_input=False,
-                                       client_path="/tmp/out_dir",
-                                       name="reduce_output")
+        out_dir = FileTransfer(is_input=False,
+                                client_path="/tmp/out_dir",
+                                name="reduce_output")
         # workflow file for soma-workflow
         soma_workflow_file = os.path.join(workflow_dir,
                                           "soma_workflow")
