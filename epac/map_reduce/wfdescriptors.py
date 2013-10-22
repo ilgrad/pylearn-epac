@@ -10,7 +10,15 @@ from epac import StoreFs
 from epac.map_reduce.exports import save_job_list
 from epac.map_reduce.split_input import SplitNodesInput
 from epac.map_reduce.inputs import NodesInput
+from epac.utils import save_dataset_path
 
+
+def export_jobs(tree_root, num_processes, dir_path):
+    node_input = NodesInput(tree_root.get_key())
+    split_node_input = SplitNodesInput(tree_root,
+                                       num_processes=num_processes)
+    nodesinput_list = split_node_input.split(node_input)
+    save_job_list(dir_path, nodesinput_list)
 
 def export_bash_jobs(filename, map_cmds, reduce_cmds):
     fileout = open(filename, "w+")
@@ -136,17 +144,17 @@ class WorkflowDescriptor(object):
         export_bash_jobs(filename_bash_jobs, map_cmds, reduce_cmds)
 
 
-class SomaWorkflowDescriptor(WorkflowDescriptor):
+class SomaWorkflowDescriptor:
     '''
     Example
     -------
     # =======================================================================
     # 1 Configuration on computing resource
     #   (which means cluster, or distributed resource management system DRMS)
-    #   ! Replace $HOME as your home directory, or it will raise error
-    #     1.1 Define a translation file for example in $HOME/translation_example as
+    #   ! Replace $HOME as your home directory, ohterwise it will raise error
+    #     1.1 Define a translation file, for example, in $HOME/translation_example as
     #         ```
-    #         soma_workflow_shared_dir $HOME/soma_workflow_shared_dir
+    #         tr_soma_workflow_shared_dir $HOME/soma_workflow_shared_dir
     #         ```
     #     1.2 Add an option in soma-workflow configuration
     #         for example, $HOME/.soma-workflow.cfg
@@ -156,9 +164,9 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
     #
     # =======================================================================
 
-    # =================================================================
+    # =======================================================================
     # Build dataset on computing resource
-    # =================================================================
+    # =======================================================================
     from sklearn import datasets
     from epac.utils import save_dataset_path
     import numpy as np
@@ -177,9 +185,9 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
     path_Xy = {"X":path_X, "y":path_y}
     save_dataset_path(dataset_dir_path, **path_Xy)
 
-    # =====================================================================
-    # Build epac tree (epac workflow) and save them on computing resource
-    # =====================================================================
+    # ======================================================================
+    # Build epac tree (epac workflow) on computing resource
+    # ======================================================================
     import os
     from epac import Methods
     from epac import StoreFs
@@ -190,11 +198,14 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
     multi = Methods(SVM(C=1), SVM(C=10))
     store = StoreFs(epac_tree_dir_path, clear=True)
     multi.save_tree(store=store)
+    num_processes = 2
+    dir_path = "$HOME/soma_workflow_shared_dir/jobs"
+    export_jobs(multi, num_processes, dir_path)
 
 
-    # =================================================================
+    # =====================================================================
     # Export scripts to workflow directory
-    # =================================================================
+    # =====================================================================
     from epac.map_reduce.wfdescriptors import SomaWorkflowDescriptor
     # to save results in outdir, for example, the results of reducer
     out_dir_path = "/tmp/outdir"
@@ -204,12 +215,31 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
                                      out_dir_path)
     swf_desc.export(workflow_dir=workflow_dir, num_processes=2)
     '''
-    def __init__(self, dataset_dir_path, epac_tree_dir_path, out_dir_path):
-        super(SomaWorkflowDescriptor, self).__init__(dataset_dir_path,
-                                                     epac_tree_dir_path,
-                                                     out_dir_path)
+    def __init__(self,
+                 namespace,
+                 uuid,
+                 path_Xy,
+                 tree_root):
+        self.namespace = namespace
+        self.uuid = uuid
+        self.path_Xy = path_Xy
+        self.tree_root = tree_root
 
-    def export(self, workflow_dir, num_processes):
+    def export(self,
+               client_working_dir,
+               num_processes):
+        dataset_name = "dataset"
+        tree_name = "tree"
+        # Save dataset and tree
+        client_dataset_path = os.path.join(client_working_dir, dataset_name)
+        client_tree_path = os.path.join(client_working_dir, tree_name)
+        save_dataset_path(client_dataset_path, **self.path_Xy)
+        if not os.path.exists(client_tree_path):
+            os.makedirs(client_tree_path)
+        store = StoreFs(client_tree_path, clear=True)
+        self.tree_root.save_tree(store=store)
+
+
         from soma_workflow.client import Job
         from soma_workflow.client import Group
         from soma_workflow.client import Workflow
@@ -217,19 +247,19 @@ class SomaWorkflowDescriptor(WorkflowDescriptor):
         from soma_workflow.client import FileTransfer
         from soma_workflow.client import Helper
         # dataset on remote machine
-        dataset_dir = SharedResourcePath(relative_path="dataset",
-                                         namespace="EPAC",
-                                         uuid="soma_workflow_shared_dir")
+        dataset_dir = SharedResourcePath(relative_path=dataset_name,
+                                         namespace=self.namespace,
+                                         uuid="tr_soma_workflow_shared_dir")
         # Tree on remote machine
-        epac_tree_dir = SharedResourcePath(relative_path="tree",
-                                           namespace="EPAC",
-                                           uuid="soma_workflow_shared_dir")
+        epac_tree_dir = SharedResourcePath(relative_path=tree_name,
+                                           namespace=self.namespace,
+                                           uuid="tr_soma_workflow_shared_dir")
         # Reduce output on remote machine
         out_dir = FileTransfer(is_input=False,
                                 client_path="/tmp/out_dir",
                                 name="reduce_output")
         # workflow file for soma-workflow
-        soma_workflow_file = os.path.join(workflow_dir,
+        soma_workflow_file = os.path.join(client_working_dir,
                                           "soma_workflow")
         # Split tree for each map task
         self.workflow_dir = workflow_dir
