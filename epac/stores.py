@@ -554,6 +554,17 @@ def dict_to_obj(obj_dict):
         return obj_dict
 
 
+def save_tree(tree_root, dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    store = StoreFs(dir_path, clear=True)
+    tree_root.save_tree(store=store)
+
+
+def load_tree(dir_path):
+    store_fs = StoreFs(dirpath=dir_path)
+    return store_fs.load()
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

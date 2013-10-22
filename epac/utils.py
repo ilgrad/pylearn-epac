@@ -13,7 +13,6 @@ from epac.workflow.base import key_push, key_pop
 from epac.map_reduce.results import ResultSet
 import json
 
-
 def copy_parameters(from_obj, to_obj, exclude_parameters):
     """
     Example

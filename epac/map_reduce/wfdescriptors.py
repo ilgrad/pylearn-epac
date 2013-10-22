@@ -11,6 +11,8 @@ from epac.map_reduce.exports import save_job_list
 from epac.map_reduce.split_input import SplitNodesInput
 from epac.map_reduce.inputs import NodesInput
 from epac.utils import save_dataset_path
+from epac.stores import save_tree
+from epac.stores import load_tree
 
 
 def export_jobs(tree_root, num_processes, dir_path):
@@ -20,14 +22,7 @@ def export_jobs(tree_root, num_processes, dir_path):
     split_node_input = SplitNodesInput(tree_root,
                                        num_processes=num_processes)
     nodesinput_list = split_node_input.split(node_input)
-    save_job_list(dir_path, nodesinput_list)
-
-
-def save_tree(tree_root, dir_path):
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    store = StoreFs(dir_path, clear=True)
-    tree_root.save_tree(store=store)
+    return save_job_list(dir_path, nodesinput_list)
 
 
 def export_bash_jobs(filename, map_cmds, reduce_cmds):
@@ -45,7 +40,7 @@ def export_bash_jobs(filename, map_cmds, reduce_cmds):
     fileout.close()
 
 
-class WorkflowDescriptor(object):
+class BashWorkflowDescriptor(object):
     '''
     Parameters
     ----------
@@ -84,27 +79,28 @@ class WorkflowDescriptor(object):
     # =================================================================
     import os
     from epac import Methods
-    from epac import StoreFs
+    from epac.stores import save_tree
     from sklearn.svm import LinearSVC as SVM
     epac_tree_dir_path = "/tmp/tree"
     if not os.path.exists(epac_tree_dir_path):
         os.makedirs(epac_tree_dir_path)
     multi = Methods(SVM(C=1), SVM(C=10))
-    store = StoreFs(epac_tree_dir_path, clear=True)
-    multi.save_tree(store=store)
+    save_tree(multi, epac_tree_dir_path)
 
     # =================================================================
     # Export scripts to workflow directory
     # =================================================================
-    from epac.map_reduce.wfdescriptors import WorkflowDescriptor
+    from epac.map_reduce.wfdescriptors import BashWorkflowDescriptor
     # to save results in outdir, for example, the results of reducer
     out_dir_path = "/tmp/outdir"
     workflow_dir = "/tmp/workflow"
-    wf_desc = WorkflowDescriptor(dataset_dir_path,
+    wf_desc = BashWorkflowDescriptor(dataset_dir_path,
                                  epac_tree_dir_path,
                                  out_dir_path)
     wf_desc.export(workflow_dir=workflow_dir, num_processes=2)
-
+    # =================================================================
+    # Goto "workflow_dir" to run bash script
+    # =================================================================
     '''
     def __init__(self, dataset_dir_path, epac_tree_dir_path, out_dir_path):
         self.dataset_dir_path = dataset_dir_path
@@ -123,13 +119,10 @@ class WorkflowDescriptor(object):
         self.workflow_dir = workflow_dir
         if not os.path.exists(self.workflow_dir):
             os.makedirs(self.workflow_dir)
-        store_fs = StoreFs(dirpath=self.epac_tree_dir_path)
-        tree_root = store_fs.load()
-        node_input = NodesInput(tree_root.get_key())
-        split_node_input = SplitNodesInput(tree_root,
-                                           num_processes=num_processes)
-        nodesinput_list = split_node_input.split(node_input)
-        keysfile_list = save_job_list(workflow_dir, nodesinput_list)
+        tree_root = load_tree(self.epac_tree_dir_path)
+        keysfile_list = export_jobs(tree_root,
+                                    num_processes,
+                                    workflow_dir)
         map_cmds = []
         reduce_cmds = []
         for i in xrange(len(keysfile_list)):
@@ -154,7 +147,7 @@ class WorkflowDescriptor(object):
         export_bash_jobs(filename_bash_jobs, map_cmds, reduce_cmds)
 
 
-class SomaWorkflowDescriptor:
+class SharePathSomaWorkflowDescriptor:
     '''
     Example
     -------
@@ -219,13 +212,13 @@ class SomaWorkflowDescriptor:
     jobs_dir_path = os.path.join(root, jobs_relative_path)
     multi = Methods(SVM(C=1), SVM(C=10))
     save_tree(multi, epac_tree_dir_path)
-    export_jobs(multi, num_processes, jobs_dir_path)
+    res = export_jobs(multi, num_processes, jobs_dir_path)
     # =====================================================================
     # Export scripts to workflow directory on computing resource
     # =====================================================================
-    from epac.map_reduce.wfdescriptors import SomaWorkflowDescriptor
+    from epac.map_reduce.wfdescriptors import SharePathSomaWorkflowDescriptor
     # to save results in outdir, for example, the results of reducer
-    swf_desc = SomaWorkflowDescriptor(namespace=namespace,
+    swf_desc = SharePathSomaWorkflowDescriptor(namespace=namespace,
                                       uuid=uuid,
                                       root=root,
                                       dataset_relative_path=dataset_relative_path,
@@ -234,6 +227,10 @@ class SomaWorkflowDescriptor:
                                       output_relative_path=output_relative_path)
     script_path = os.path.join(root, script_relative_path)
     swf_desc.export(script_path=script_path)
+    # =======================================================================
+    # Now, you can copy $HOME/soma_workflow_shared_dir/soma_workflow
+    # to your local computer (client) and run with soma_workflow_gui
+    # =======================================================================
     '''
     def __init__(self,
                  namespace,
