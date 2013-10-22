@@ -646,6 +646,7 @@ def get_list_from_lists(lists, nb):
         ret_list.append(lists[i][pos_indices[i]])
     return ret_list
 
+
 if __name__ == "__main__":
 #    from epac.utils import get_list_from_lists
 #    alist = [1]
