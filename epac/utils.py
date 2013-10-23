@@ -220,7 +220,7 @@ def try_fun_num_trials(func, ntrials=3, **kwarg):
     return func(**kwarg)
 
 
-def export_resultset_csv(results, filename):
+def export_resultset_csv(results, filename, delimiter=';'):
     '''
     Export the results to a CSV file
 
@@ -232,6 +232,10 @@ def export_resultset_csv(results, filename):
 
     filename: Relative or absolute path to the CSV file
         If the file doesn't exist, create it
+
+    delimiter: separator between each value of the csv file
+        Caution : using ' ' as delimitor can result in messed-up files
+                  as there are spaces in the result arrays
 
     Example
     -------
@@ -253,7 +257,7 @@ def export_resultset_csv(results, filename):
     <BLANKLINE>
     '''
     with open(filename, 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=';',
+        spamwriter = csv.writer(csvfile, delimiter=delimiter,
                                 quoting=csv.QUOTE_MINIMAL)
         result_keys = results.values()[0].keys()
         keys = []
@@ -269,7 +273,7 @@ def export_resultset_csv(results, filename):
             spamwriter.writerow(temp_list)
 
 
-def export_leaves_csv(tree_root, filename):
+def export_leaves_csv(tree_root, filename, delimiter=';'):
     '''
     Export the results to a CSV file
 
@@ -281,6 +285,10 @@ def export_leaves_csv(tree_root, filename):
 
     filename: Relative or absolute path to the CSV file
         If the file doesn't exist, create it
+
+    delimiter: separator between each value of the csv file
+        Caution : using ' ' as delimitor can result in messed-up files
+                  as there are spaces in the result arrays
 
     Example
     -------
@@ -303,7 +311,7 @@ def export_leaves_csv(tree_root, filename):
     <BLANKLINE>
     '''
     with open(filename, 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=';',
+        spamwriter = csv.writer(csvfile, delimiter=delimiter,
                                 quoting=csv.QUOTE_MINIMAL)
         result_keys = tree_root.get_leftmost_leaf().\
             load_results().values()[0].keys()
@@ -324,7 +332,7 @@ def export_leaves_csv(tree_root, filename):
             spamwriter.writerow(temp_list)
 
 
-def export_csv(tree_root, results, filename):
+def export_csv(tree_root, results, filename, delimiter=';'):
     '''Export the results to a CSV file
 
     Export the results of a top-down(run) or
@@ -338,6 +346,10 @@ def export_csv(tree_root, results, filename):
 
     filename: Relative or absolute path to the CSV file
         If the file doesn't exist, create it
+
+    delimiter: separator between each value of the csv file
+        Caution : using ' ' as delimitor can result in messed-up files
+                  as there are spaces in the result arrays
 
     Example
     -------
@@ -371,9 +383,9 @@ def export_csv(tree_root, results, filename):
     '''
 
     if isinstance(results, ResultSet):
-        export_resultset_csv(results, filename)
+        export_resultset_csv(results, filename, delimiter=delimiter
     else:
-        export_leaves_csv(tree_root, filename)
+        export_leaves_csv(tree_root, filename, delimiter=delimiter)
 
 
 ## ============================================== ##
