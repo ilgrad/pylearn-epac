@@ -210,7 +210,7 @@ class SomaWorkflowDescriptor(object):
                                      out_dir_path)
     wf_desc.export(workflow_dir=workflow_dir, num_processes=2)
     # =================================================================
-    # Goto "workflow_dir" to run soma-workflow file
+    # Goto "workflow_dir" to run soma-workflow using soma_workflow_gui
     # =================================================================
     '''
     def __init__(self, dataset_dir_path, epac_tree_dir_path, out_dir_path):
