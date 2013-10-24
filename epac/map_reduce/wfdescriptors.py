@@ -66,11 +66,12 @@ class BashWorkflowDescriptor(object):
                                         n_features=500,
                                         n_informative=2,
                                         random_state=1)
-    path_X = "/tmp/data_X.npy"
-    path_y = "/tmp/data_y.npy"
+    working_dir_root = "/tmp"
+    path_X = os.path.join(working_dir_root, "data_X.npy") #It could be any path
+    path_y = os.path.join(working_dir_root, "data_y.npy") #It could be any path
     np.save(path_X, X)
     np.save(path_y, y)
-    dataset_dir_path = "/tmp/dataset"
+    dataset_dir_path = os.path.join(working_dir_root, "dataset")
     path_Xy = {"X":path_X, "y":path_y}
     save_dataset_path(dataset_dir_path, **path_Xy)
 
@@ -81,7 +82,7 @@ class BashWorkflowDescriptor(object):
     from epac import Methods
     from epac.stores import save_tree
     from sklearn.svm import LinearSVC as SVM
-    epac_tree_dir_path = "/tmp/tree"
+    epac_tree_dir_path = os.path.join(working_dir_root, "tree")
     if not os.path.exists(epac_tree_dir_path):
         os.makedirs(epac_tree_dir_path)
     multi = Methods(SVM(C=1), SVM(C=10))
@@ -92,8 +93,8 @@ class BashWorkflowDescriptor(object):
     # =================================================================
     from epac.map_reduce.wfdescriptors import BashWorkflowDescriptor
     # to save results in outdir, for example, the results of reducer
-    out_dir_path = "/tmp/outdir"
-    workflow_dir = "/tmp/workflow"
+    out_dir_path = os.path.join(working_dir_root, "outdir")
+    workflow_dir = os.path.join(working_dir_root, "workflow")
     wf_desc = BashWorkflowDescriptor(dataset_dir_path,
                                  epac_tree_dir_path,
                                  out_dir_path)
@@ -145,6 +146,140 @@ class BashWorkflowDescriptor(object):
         reduce_cmds.append(reduce_cmd)
         filename_bash_jobs = os.path.join(workflow_dir, "bash_jobs.sh")
         export_bash_jobs(filename_bash_jobs, map_cmds, reduce_cmds)
+
+
+class SomaWorkflowDescriptor(object):
+    '''
+    Parameters
+    ----------
+    dataset_dir_path: string
+        The path which the saved dataset located. You can use
+        epac.utils.save_dataset_path or epac.utils.save_dataset_path
+        to save dictionary. Some examples are shown in
+        epac.utils.save_dataset_path and epac.utils.save_dataset.
+    epac_tree_dir_path: string
+        The path where the epac tree is located.
+    out_dir_path: string
+        The path where the results have been saved.
+
+    Example
+    -------
+    # =================================================================
+    # Build dataset dir on computing resource
+    #   (which means cluster, or distributed resource management system DRMS)
+    # =================================================================
+    from sklearn import datasets
+    from epac.utils import save_dataset_path
+    import numpy as np
+    X, y = datasets.make_classification(n_samples=500,
+                                        n_features=500,
+                                        n_informative=2,
+                                        random_state=1)
+    working_dir_root = "$HOME"
+    working_dir_root = os.path.expandvars(working_dir_root)
+    path_X = os.path.join(working_dir_root, "data_X.npy") #It could be any path
+    path_y = os.path.join(working_dir_root, "data_y.npy") #It could be any path
+    np.save(path_X, X)
+    np.save(path_y, y)
+    dataset_dir_path = os.path.join(working_dir_root, "dataset")
+    path_Xy = {"X":path_X, "y":path_y}
+    save_dataset_path(dataset_dir_path, **path_Xy)
+
+    # =================================================================
+    # Build epac tree (epac workflow) and save them on computing resource
+    # =================================================================
+    import os
+    from epac import Methods
+    from epac.stores import save_tree
+    from sklearn.svm import LinearSVC as SVM
+    epac_tree_dir_path = os.path.join(working_dir_root, "tree")
+    if not os.path.exists(epac_tree_dir_path):
+        os.makedirs(epac_tree_dir_path)
+    multi = Methods(SVM(C=1), SVM(C=10))
+    save_tree(multi, epac_tree_dir_path)
+
+    # =================================================================
+    # Export soma-workflow to workflow directory on computing resource
+    # =================================================================
+    from epac.map_reduce.wfdescriptors import SomaWorkflowDescriptor
+    # to save results in outdir, for example, the results of reducer
+    out_dir_path = os.path.join(working_dir_root, "outdir")
+    workflow_dir = os.path.join(working_dir_root, "workflow")
+    wf_desc = SomaWorkflowDescriptor(dataset_dir_path,
+                                     epac_tree_dir_path,
+                                     out_dir_path)
+    wf_desc.export(workflow_dir=workflow_dir, num_processes=2)
+    # =================================================================
+    # Goto "workflow_dir" to run soma-workflow file
+    # =================================================================
+    '''
+    def __init__(self, dataset_dir_path, epac_tree_dir_path, out_dir_path):
+        self.dataset_dir_path = dataset_dir_path
+        self.epac_tree_dir_path = epac_tree_dir_path
+        self.out_dir_path = out_dir_path
+
+    def export(self, workflow_dir, num_processes):
+        '''
+        Parameters
+        ----------
+        workflow_dir: string
+            the directory to export workflow
+        num_processes: integer
+            the number of processes you want to run
+        '''
+        from soma_workflow.client import Job
+        from soma_workflow.client import Group
+        from soma_workflow.client import Workflow
+        from soma_workflow.client import Helper
+
+        self.workflow_dir = workflow_dir
+        soma_workflow_file = os.path.join(self.workflow_dir, "soma_workflow")
+        if not os.path.exists(self.workflow_dir):
+            os.makedirs(self.workflow_dir)
+        tree_root = load_tree(self.epac_tree_dir_path)
+        keysfile_list = export_jobs(tree_root,
+                                    num_processes,
+                                    workflow_dir)
+        # Building mapper task
+        dependencies = []
+        map_jobs = []
+        for i in xrange(len(keysfile_list)):
+            key_path = os.path.join(workflow_dir, keysfile_list[i])
+            map_cmd = []
+            map_cmd.append("epac_mapper")
+            map_cmd.append("--datasets")
+            map_cmd.append(self.dataset_dir_path)
+            map_cmd.append("--keysfile")
+            map_cmd.append(key_path)
+            map_cmd.append("--treedir")
+            map_cmd.append(self.epac_tree_dir_path)
+            map_job = Job(command=map_cmd,
+                          name="map_step",
+                          referenced_input_files=[],
+                          referenced_output_files=[])
+            map_jobs.append(map_job)
+        group_map_jobs = Group(elements=map_jobs,
+                               name="all map jobs")
+        # Building reduce task
+        reduce_cmd = []
+        reduce_cmd.append("epac_reducer")
+        reduce_cmd.append("--treedir")
+        reduce_cmd.append(self.epac_tree_dir_path)
+        reduce_cmd.append("--outdir")
+        reduce_cmd.append(self.out_dir_path)
+        reduce_job = Job(command=reduce_cmd,
+                         name="reduce_step",
+                         referenced_input_files=[],
+                         referenced_output_files=[])
+        for map_job in map_jobs:
+            dependencies.append((map_job, reduce_job))
+        jobs = map_jobs + [reduce_job]
+        # Build workflow and save into disk
+        workflow = Workflow(jobs=jobs,
+                            dependencies=dependencies,
+                            root_group=[group_map_jobs,
+                                        reduce_job])
+        Helper.serialize(soma_workflow_file, workflow)
 
 
 class SharePathSomaWorkflowDescriptor:
