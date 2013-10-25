@@ -107,6 +107,12 @@ class CV(BaseNodeSplitter):
     cv_type: string
         Values: "stratified", "random", "loo". Default "stratified".
 
+    cv_key: string
+        Name of the variable used to compute the sub-dataset indices.
+        If cv_type is "random" or "loo", only the size of its first dimension is used.
+        If cv_type is "stratified", the values are the labels used in stratification.
+        Default: "y".
+
     random_state : int or RandomState
         Pseudo-random number generator state used for random sampling.
 
@@ -134,12 +140,13 @@ class CV(BaseNodeSplitter):
      """
 
     def __init__(self, node, n_folds=5, random_state=None,
-                 cv_type="stratified", reducer=ClassificationReport(),
+                 cv_type="stratified", cv_key="y", reducer=ClassificationReport(),
                  **kwargs):
         super(CV, self).__init__(**kwargs)
         self.n_folds = n_folds
         self.random_state = random_state
         self.cv_type = cv_type
+        self.cv_key = cv_key
         self.reducer = reducer
         self.slicer = CRSlicer(signature_name="CV",
                                nb=0,
@@ -165,22 +172,22 @@ class CV(BaseNodeSplitter):
 
     def transform(self, **Xy):
         # Set the slicing
-        if not "y" in Xy:
-            raise ValueError('"y" should be provided')
+        if not self.cv_key in Xy:
+            raise ValueError('"%s" should be provided' % self.cv_key)
         if self.cv_type == "stratified":
             if not self.n_folds:
                 raise ValueError('"n_folds" should be set')
             from sklearn.cross_validation import StratifiedKFold
-            self._sclices = StratifiedKFold(y=Xy["y"], n_folds=self.n_folds)
+            self._sclices = StratifiedKFold(y=Xy[self.cv_key], n_folds=self.n_folds)
         elif self.cv_type == "random":
             if not self.n_folds:
                 raise ValueError('"n_folds" should be set')
             from sklearn.cross_validation import KFold
-            self._sclices = KFold(n=Xy["y"].shape[0], n_folds=self.n_folds,
+            self._sclices = KFold(n=Xy[self.cv_key].shape[0], n_folds=self.n_folds,
                                   random_state=self.random_state)
         elif self.cv_type == "loo":
             from sklearn.cross_validation import LeaveOneOut
-            self._sclices = LeaveOneOut(n=Xy["y"].shape[0])
+            self._sclices = LeaveOneOut(n=Xy[self.cv_key].shape[0])
         return Xy
 
     def get_parameters(self):
