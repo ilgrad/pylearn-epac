@@ -383,7 +383,7 @@ def export_csv(tree_root, results, filename, delimiter=';'):
     '''
 
     if isinstance(results, ResultSet):
-        export_resultset_csv(results, filename, delimiter=delimiter
+        export_resultset_csv(results, filename, delimiter=delimiter)
     else:
         export_leaves_csv(tree_root, filename, delimiter=delimiter)
 
