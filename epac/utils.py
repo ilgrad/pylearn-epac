@@ -13,6 +13,28 @@ from epac.workflow.base import key_push, key_pop
 from epac.map_reduce.results import ResultSet
 import json
 
+
+def estimate_dataset_size(**Xy):
+    '''
+
+    Example
+    -------
+    from epac.utils import estimate_dataset_size
+    import numpy as np
+    X = np.random.random((1,1000))
+    y = np.random.random((1,1000))
+    Xy = {"X":X, "y":y}
+    estimate_dataset_size(**Xy)
+    '''
+    if type(Xy) is dict:
+        size_in_bytes = 0
+        for key in Xy:
+            if type(Xy[key]) is np.ndarray:
+                size_in_bytes += Xy[key].size * Xy[key].itemsize
+        return size_in_bytes
+    return 0
+
+
 def copy_parameters(from_obj, to_obj, exclude_parameters):
     """
     Example

@@ -14,6 +14,7 @@ import tempfile
 import numpy as np
 import sys
 import socket
+import joblib
 
 from abc import ABCMeta, abstractmethod
 
@@ -23,8 +24,7 @@ from epac.configuration import conf
 from epac.map_reduce.split_input import SplitNodesInput
 from epac.map_reduce.inputs import NodesInput
 from epac.map_reduce.exports import save_job_list
-
-import joblib
+from epac.utils import estimate_dataset_size
 from epac.utils import save_dataset
 
 
@@ -241,6 +241,8 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===============================================
         # np.savez(os.path.join(tmp_work_dir_path,
         # SomaWorkflowEngine.dataset_relative_path), **Xy)
+        db_size = estimate_dataset_size(**Xy)
+        db_size = int(db_size / (1024 * 1024))  # convert it into mega byte
         save_dataset(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
@@ -265,7 +267,8 @@ class SomaWorkflowEngine(LocalEngine):
                         referenced_input_files=[ft_working_directory],
                         referenced_output_files=[ft_working_directory],
                         name="epac_job_key=%s" % (nodesfile),
-                        working_directory=ft_working_directory)
+                        working_directory=ft_working_directory,
+                        native_specification="-l pmem=%dmb" % db_size)
                     for nodesfile in keysfile_list]
         else:
             jobs = [Job(command=[u"epac_mapper",
@@ -274,7 +277,8 @@ class SomaWorkflowEngine(LocalEngine):
                                  u'--keysfile', '"%s"' %
                                  (nodesfile)],
                         name="epac_job_key=%s" % (nodesfile),
-                        working_directory=ft_working_directory)
+                        working_directory=ft_working_directory,
+                        native_specification="-l pmem=%dmb" % db_size)
                     for nodesfile in keysfile_list]
         soma_workflow = Workflow(jobs=jobs)
 
@@ -326,6 +330,8 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===============================================
 #        np.savez(os.path.join(tmp_work_dir_path,
 #                 SomaWorkflowEngine.dataset_relative_path), **Xy)
+        db_size = estimate_dataset_size(**Xy)
+        db_size = int(db_size / (1024 * 1024))  # convert it into mega byte
         save_dataset(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
@@ -349,7 +355,8 @@ class SomaWorkflowEngine(LocalEngine):
                     referenced_input_files=[ft_working_directory],
                     referenced_output_files=[ft_working_directory],
                     name="epac_job_key=%s" % (nodesfile),
-                    working_directory=ft_working_directory)
+                    working_directory=ft_working_directory,
+                    native_specification="-l pmem=%dmb" % db_size)
                 for nodesfile in keysfile_list]
         soma_workflow = Workflow(jobs=jobs)
         if soma_workflow_dirpath and soma_workflow_dirpath != "":
