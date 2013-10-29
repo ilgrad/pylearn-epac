@@ -171,6 +171,7 @@ class SomaWorkflowDescriptor(object):
     from sklearn import datasets
     from epac.utils import save_dataset_path
     import numpy as np
+    import os
     X, y = datasets.make_classification(n_samples=500,
                                         n_features=500,
                                         n_informative=2,
@@ -210,7 +211,8 @@ class SomaWorkflowDescriptor(object):
                                      out_dir_path)
     wf_desc.export(workflow_dir=workflow_dir, num_processes=2)
     # =================================================================
-    # Goto "workflow_dir" to run soma-workflow using soma_workflow_gui
+    # 1. Goto "workflow_dir" and copy soma_workflow to your local machine
+    # 2. Run soma_workflow using soma_workflow_gui
     # =================================================================
     '''
     def __init__(self, dataset_dir_path, epac_tree_dir_path, out_dir_path):
