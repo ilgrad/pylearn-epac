@@ -268,7 +268,7 @@ class SomaWorkflowEngine(LocalEngine):
                         referenced_output_files=[ft_working_directory],
                         name="epac_job_key=%s" % (nodesfile),
                         working_directory=ft_working_directory,
-                        native_specification="-l pmem=%dmb" % db_size)
+                        native_specification="-l pmem=%mb" % db_size)
                     for nodesfile in keysfile_list]
         else:
             jobs = [Job(command=[u"epac_mapper",
@@ -278,7 +278,7 @@ class SomaWorkflowEngine(LocalEngine):
                                  (nodesfile)],
                         name="epac_job_key=%s" % (nodesfile),
                         working_directory=ft_working_directory,
-                        native_specification="-l pmem=%dmb" % db_size)
+                        native_specification="-l pmem=%mb" % db_size)
                     for nodesfile in keysfile_list]
         soma_workflow = Workflow(jobs=jobs)
 
@@ -356,7 +356,7 @@ class SomaWorkflowEngine(LocalEngine):
                     referenced_output_files=[ft_working_directory],
                     name="epac_job_key=%s" % (nodesfile),
                     working_directory=ft_working_directory,
-                    native_specification="-l pmem=%dmb" % db_size)
+                    native_specification="-l pmem=%mb" % db_size)
                 for nodesfile in keysfile_list]
         soma_workflow = Workflow(jobs=jobs)
         if soma_workflow_dirpath and soma_workflow_dirpath != "":

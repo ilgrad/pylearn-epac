@@ -50,7 +50,12 @@ class EpacWorkflowTest(unittest.TestCase):
                                            num_processes=self.n_cores)
                 local_engine_wf = local_engine.run(X=self.X, y=self.y)
                 sfw_engine = SomaWorkflowEngine(tree_root=sfw_engine_wf,
-                                                num_processes=self.n_cores)
+                                                num_processes=self.n_cores,
+                                                resource_id="ed203246@gabriel",
+                                                login="ed203246",
+                                                remove_finished_wf=False,
+                                                remove_local_tree=False
+                                                )
                 sfw_engine_wf = sfw_engine.run(X=self.X, y=self.y)
                 self.assertTrue(compare_two_node(wf, local_engine_wf))
                 self.assertTrue(compare_two_node(wf, sfw_engine_wf))
