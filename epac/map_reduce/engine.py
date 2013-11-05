@@ -243,6 +243,8 @@ class SomaWorkflowEngine(LocalEngine):
         # SomaWorkflowEngine.dataset_relative_path), **Xy)
         db_size = estimate_dataset_size(**Xy)
         db_size = int(db_size / (1024 * 1024))  # convert it into mega byte
+        if db_size < 10:
+            db_size = 10 # don't be too low
         save_dataset(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,
