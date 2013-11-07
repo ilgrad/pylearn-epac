@@ -53,7 +53,7 @@ class TestPermCV(unittest.TestCase):
                 fold_nb += 1
             perm_nb += 1
 
-        cmp_key = 'y' + conf.SEP + conf.TEST + conf.SEP + conf.PREDICTION
+        cmp_key = 'y' + conf.SEP + conf.PREDICTION + conf.SEP + conf.TEST
         # Comparison
         for iperm in range(n_perms):
             for icv in range(n_folds):

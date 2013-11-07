@@ -27,6 +27,16 @@ def key_push(key, basename):
     else:
         return key or basename
 
+def key_join(*items):
+    return conf.SEP.join(items)
+
+def key_contain_item(key, item):
+    return len([key for s in key_split(key) if s == item])
+
+
+def key_strip_item(key, item):
+    return conf.SEP.join([s for s in key_split(key) if s != item])
+
 
 def key_pop(key, index=-1):
     """Split the key into head / tail.

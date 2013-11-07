@@ -11,8 +11,7 @@ import re
 from abc import abstractmethod
 from epac.map_reduce.results import Result
 from epac.configuration import conf
-from epac.workflow.base import key_push, key_pop
-from epac.workflow.base import key_split
+from epac.workflow.base import key_push, key_pop, key_join, key_split
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 
 ## ======================================================================== ##
@@ -55,31 +54,47 @@ class ClassificationReport(Reducer):
     -------
     >>> from epac import ClassificationReport
     >>> reducer = ClassificationReport()
-    >>> result = reducer.reduce({'key': "SVC", 'y/test/pred': [0, 1, 1, 1], 'y/test/true': [0, 0, 1, 1]})
+    >>> result = reducer.reduce({'key': "SVC", 'y/pred/test': [0, 1, 1, 1], 'y/true/test': [0, 0, 1, 1], 'y/pred/train': [0, 1, 1, 1]})
     >>> result = result.items()
     >>> result.sort()
     >>> result
-    [('key', 'SVC'), ('y/test/recall_mean_pvalue', 0.625), ('y/test/recall_pvalues', array([ 0.5 ,  0.25])), ('y/test/score_accuracy', 0.75), ('y/test/score_f1', array([ 0.66666667,  0.8       ])), ('y/test/score_precision', array([ 1.        ,  0.66666667])), ('y/test/score_recall', array([ 0.5,  1. ])), ('y/test/score_recall_mean', 0.75)]
+    [('key', 'SVC'), ('y/recall_mean_pvalue/test', 0.625), ('y/recall_pvalues/test', array([ 0.5 ,  0.25])), ('y/score_accuracy/test', 0.75), ('y/score_f1/test', array([ 0.66666667,  0.8       ])), ('y/score_precision/test', array([ 1.        ,  0.66666667])), ('y/score_recall/test', array([ 0.5,  1. ])), ('y/score_recall_mean/test', 0.75)]
     """
 
-    def __init__(self, select_regexp=conf.TEST,
+    def __init__(self,# select_regexp=conf.TEST,
                  keep=False):
-        self.select_regexp = select_regexp
+        #self.select_regexp = select_regexp
         self.keep = keep
 
     def reduce(self, result):
-        if self.select_regexp:
-            inputs = [key3 for key3 in result
-                      if re.search(self.select_regexp, str(key3))]
-        else:
-            inputs = result.keys()
-        if len(inputs) != 2:
+        from epac.utils import train_test_split
+        from epac import key_contain_item
+        
+        result_train, result_test = train_test_split(result)
+        key_true = [k for k in result_test if key_contain_item(k, conf.TRUE)]
+        key_pred = [k for k in result_test if key_contain_item(k, conf.PREDICTION)]
+        if len(key_true) != 1 or len(key_true) != 1:
             raise KeyError("Need to find exactly two results to compute a "
-                           "score. Found %i: %s" % (len(inputs), inputs))
-        key_true = [k for k in inputs if k.find(conf.TRUE) != -1][0]
-        key_pred = [k for k in inputs if k.find(conf.PREDICTION) != -1][0]
-        y_true = result[key_true]
-        y_pred = result[key_pred]
+                           "score. Found %s %s" % \
+                           (", ".join(key_true), ", ".join(key_true)))
+        key_true = key_true[0]
+        key_pred = key_pred[0]
+        y_true = result_test[key_true]
+        y_pred = result_test[key_pred]
+#        if self.select_regexp:
+#            
+#            inputs = [key3 for key3 in result
+#                      if re.search(self.select_regexp, str(key3))]
+#        else:
+#            inputs = result.keys()
+#        if len(inputs) != 2:
+#            raise KeyError("Need to find exactly two results to compute a "
+#                           "score. Found %i: %s" % (len(inputs), inputs))
+#                           
+#        key_true = [k for k in inputs if k.find(conf.TRUE) != -1][0]
+#        key_pred = [k for k in inputs if k.find(conf.PREDICTION) != -1][0]
+#        y_true = result[key_true]
+#        y_pred = result[key_pred]
         try:  # If list of arrays (CV, LOO, etc.) concatenate them
             y_true = np.concatenate(y_true)
             y_pred = np.concatenate(y_pred)
@@ -114,15 +129,15 @@ class ClassificationReport(Reducer):
         mean_r = r.mean()
         mean_r_pvalue = binom_test(int(mean_r * n_obs), n=n_obs, p=.5)
 
-        key, _ = key_pop(key_pred, -1)
-        out[key_push(key, conf.SCORE_PRECISION)] = p
-        out[key_push(key, conf.SCORE_RECALL)] = r
-        out[key_push(key, conf.SCORE_RECALL_PVALUES)] = r_pvalues
-        out[key_push(key, conf.SCORE_RECALL_MEAN)] = mean_r
-        out[key_push(key, conf.SCORE_RECALL_MEAN_PVALUE)] = mean_r_pvalue
-        out[key_push(key, conf.SCORE_F1)] = f1
-        out[key_push(key, conf.SCORE_ACCURACY)] = accuracy_score(y_true,
-                                                                 y_pred)
+        key, _ = key_pop(key_pred, 0)
+        out[key_join(key, conf.SCORE_PRECISION, conf.TEST)] = p
+        out[key_join(key, conf.SCORE_RECALL, conf.TEST)] = r
+        out[key_join(key, conf.SCORE_RECALL_PVALUES, conf.TEST)] = r_pvalues
+        out[key_join(key, conf.SCORE_RECALL_MEAN, conf.TEST)] = mean_r
+        out[key_join(key, conf.SCORE_RECALL_MEAN_PVALUE, conf.TEST)] = mean_r_pvalue
+        out[key_join(key, conf.SCORE_F1, conf.TEST)] = f1
+        out[key_join(key, conf.SCORE_ACCURACY, conf.TEST)] = \
+            accuracy_score(y_true, y_pred)
         if self.keep:
             out.update(result)
         return out

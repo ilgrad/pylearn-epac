@@ -71,7 +71,7 @@ class TestCV(unittest.TestCase):
             r_sklearn.append(clf.predict(X_test))
 
         # = Comparison
-        key2cmp = 'y' + conf.SEP + conf.TEST + conf.SEP + conf.PREDICTION
+        key2cmp = 'y' +  conf.SEP + conf.PREDICTION + conf.SEP + conf.TEST
         for icv in range(n_folds):
             comp = np.all(np.asarray(r_epac[0][key2cmp])
                           == np.asarray(r_sklearn[0]))

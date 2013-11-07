@@ -767,9 +767,10 @@ class CVBestSearchRefitParallel(Wrapper):
     def __init__(self, node, **kwargs):
         super(CVBestSearchRefitParallel, self).__init__(wrapped_node=None)
         #### 'y/test/score_recall_mean'
-        default_score = "y" + conf.SEP + \
-                        conf.TEST + conf.SEP + \
-                        conf.SCORE_RECALL_MEAN
+        default_score = conf.SCORE_RECALL_MEAN
+#        default_score = "y" + conf.SEP + \
+#                        conf.TEST + conf.SEP + \
+#                        conf.SCORE_RECALL_MEAN
         score = kwargs.pop("score") if "score" in kwargs else default_score
         arg_max = kwargs.pop("arg_max") if "arg_max" in kwargs else True
         from epac.workflow.splitters import CV

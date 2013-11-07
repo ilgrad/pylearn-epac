@@ -9,7 +9,8 @@ import os
 import csv
 import dill as pickle
 from epac.configuration import conf
-from epac.workflow.base import key_push, key_pop
+from epac.workflow.base import key_push, key_pop, key_split, \
+    key_contain_item, key_strip_item
 from epac.map_reduce.results import ResultSet
 
 
@@ -415,15 +416,15 @@ def train_test_split(Xy):
     >>> print train_test_split(dict(a=1, b=2))
     ({'a': 1, 'b': 2}, {'a': 1, 'b': 2})
     """
-    keys_train = [k for k in Xy if (key_pop(k)[1] == conf.TRAIN)]
-    keys_test = [k for k in Xy if (key_pop(k)[1] == conf.TEST)]
+    keys_train = [k for k in Xy if key_contain_item(k, conf.TRAIN)]
+    keys_test = [k for k in Xy if key_contain_item(k, conf.TEST)]
     if not keys_train and not keys_test:
         return Xy, Xy
     if keys_train and keys_test:
-        Xy_train = {key_pop(k)[0]: Xy[k] for k in keys_train}
-        Xy_test = {key_pop(k)[0]: Xy[k] for k in keys_test}
+        Xy_train = {key_strip_item(k, conf.TRAIN): Xy[k] for k in keys_train}
+        Xy_test = {key_strip_item(k, conf.TEST): Xy[k] for k in keys_test}
         return Xy_train, Xy_test
-    raise KeyError("data-flow could not be splitted")
+    raise KeyError("dictionary could not be splitted")
 
 
 def train_test_merge(Xy_train, Xy_test):

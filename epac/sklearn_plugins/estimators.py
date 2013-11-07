@@ -185,19 +185,19 @@ class Estimator(Wrapper):
                 Xy_out_tr = self._wrapped_node_predict(**Xy_train)
                 Xy_out_tr = _dict_suffix_keys(
                     Xy_out_tr,
-                    suffix=conf.SEP + conf.TRAIN + conf.SEP + conf.PREDICTION)
+                    suffix=conf.SEP + conf.PREDICTION + conf.SEP + conf.TRAIN)
                 Xy_out.update(Xy_out_tr)
                 # Test predict
                 Xy_out_te = self._wrapped_node_predict(**Xy_test)
                 Xy_out_te = _dict_suffix_keys(
                     Xy_out_te,
-                    suffix=conf.SEP + conf.TEST + conf.SEP + conf.PREDICTION)
+                    suffix=conf.SEP + conf.PREDICTION + conf.SEP + conf.TEST)
                 Xy_out.update(Xy_out_te)
                 ## True test
                 Xy_test_true = _sub_dict(Xy_test, self.out_args_predict)
                 Xy_out_true = _dict_suffix_keys(
                     Xy_test_true,
-                    suffix=conf.SEP + conf.TEST + conf.SEP + conf.TRUE)
+                    suffix=conf.SEP + conf.TRUE + conf.SEP + conf.TEST)
                 Xy_out.update(Xy_out_true)
             else:
                 res = self.wrapped_node.fit(**_sub_dict(Xy, self.in_args_fit))

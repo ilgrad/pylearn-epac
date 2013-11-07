@@ -11,7 +11,8 @@ from epac.workflow.splitters import Perms, Methods, CV
 from epac.workflow.splitters import CVBestSearchRefit
 from epac.workflow.splitters import CVBestSearchRefitParallel
 from epac.workflow.splitters import ColumnSplitter, RowSplitter, CRSplitter
-from epac.workflow.base import BaseNode, key_pop, key_split
+from epac.workflow.base import BaseNode, key_pop, key_split, \
+    key_contain_item, key_strip_item
 from epac.configuration import conf, debug
 from epac.map_reduce.results import ResultSet, Result
 from epac.utils import train_test_merge, train_test_split, dict_diff
@@ -46,6 +47,7 @@ __all__ = ['BaseNode',
            'train_test_merge',
            'key_pop',
            'key_split',
+           'key_contain_item', 'key_strip_item',
            'dict_diff',
            'export_csv',
            'export_resultset_csv',

@@ -10,12 +10,14 @@ Created on Mon Jan 21 19:55:46 2013
 from sklearn import datasets
 from sklearn.svm import LinearSVC as SVM
 from sklearn.lda import LDA
+from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
 X, y = datasets.make_classification(n_samples=12, n_features=10,
                                     n_informative=2, random_state=1)
 
-# Build sequential Pipeline
-# -------------------------
+## Sequential Pipeline
+## ===================
+
 # 2  SelectKBest (Estimator)
 # |
 # SVM Classifier (Estimator)
@@ -86,7 +88,8 @@ print anovas_svm.reduce()
 
 
 # Cross-validation
-# ----------------
+# ================
+
 # CV of LDA
 #      CV                 (Splitter)
 #  /   |   \
@@ -102,7 +105,8 @@ print cv.reduce()
 
 
 # Model selection using CV
-# ------------------------
+# ========================
+
 # CVBestSearchRefit
 #      Methods       (Splitter)
 #      /    \
@@ -134,6 +138,9 @@ cv = CV(best_cv)
 cv.run(X=X, y=y)
 cv.reduce()
 
+## Combine Permutation + cross validation
+## ======================================
+
 # Perms + Cross-validation of SVM(linear) and SVM(rbf)
 # -------------------------------------
 #           Perms        Perm (Splitter)
@@ -162,3 +169,13 @@ sfw_engine = SomaWorkflowEngine(tree_root=perms_cv_svm,
                                 )
 perms_cv_svm = sfw_engine.run(X=X, y=y)
 perms_cv_svm.reduce()
+
+## More complex pipeline
+## =====================
+
+# PCA + SVM
+pca_svms = Pipe(PCA(n_components=2), Methods(SVM(C=1.0), SVM(C=2.0)))
+cv = CV(pca_svms, cv_key="y", cv_type="stratified", n_folds=2,
+        reducer=None)
+cv.run(X=X, y=y)  # top-down process to call transform
+cv.reduce()       # buttom-up process

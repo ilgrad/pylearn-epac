@@ -8,26 +8,28 @@ Created on Thu Jul 25 17:05:28 2013
 
 import numpy as np
 from sklearn import datasets
+from sklearn.decomposition import PCA
 from epac import CV
 from epac.map_reduce.reducers import Reducer
 from epac.map_reduce.results import Result
-from epac import Methods
+from epac import Methods, Pipe
 from sklearn.metrics import accuracy_score
 
 X, y = datasets.make_classification(n_samples=10,
                                     n_features=50,
                                     n_informative=2,
                                     random_state=None)
-#import numpy as np
-#y = y[np.random.permutation(len(y))]
 
-# A User node should implement fit + predict or fit + transfrom
-# ===============================================================
+# User defined node
+# =================
 
-# Predict can return an array. In this case EPAC will
-# put the prediction in a Result (a dictionnary). with key = "y/pred". y being the
-# difference between input agrument of fit and predict. The true y will also figure
-# in the result with key "y/true"
+# Methods: fit + predict or fit + transfrom
+# Input: arrays
+# Output: fit None, predict array or ad dictionary
+# EPAC puts the prediction in a Result (a dictionnary)
+
+# Create a new classifier
+
 class MySVM:
     def __init__(self, C=1.0):
         self.C = C
@@ -44,7 +46,8 @@ cv = CV(svms, cv_key="y", cv_type="stratified", n_folds=2,
 cv.run(X=X, y=y)  # top-down process to call transform
 cv.reduce()       # buttom-up process
 
-from sklearn.decomposition import PCA
+# Extends PCA with predict
+
 class MyPCA(PCA):
     """PCA with predict method"""
     def predict(self, X):
@@ -53,14 +56,79 @@ class MyPCA(PCA):
         return np.dot(self.transform(X), self.components_) + self.mean_
 
 pcas = Methods(MyPCA(n_components=1), MyPCA(n_components=2))
-cv = CV(pcas, n_folds=2, reducer=None)
-cv.run(X=X, y=y)  # top-down process to call transform
+cv = CV(pcas, n_folds=2, cv_key="X", cv_type="random", reducer=None)
+cv.run(X=X)  # top-down process to call transform
 cv.reduce()       # buttom-up process
 
+# Result and ResultSet 
+# ====================
 
-# User defined reducer receive a ResultSet (list of dict) and returns a Result
-# ============================================================================
+# Reducer take input results (ResultSet) and produce result (Result) or
+# ResultSet. So it is necessary to understand how EPAC handle results using
+# Result and ResultSet.
+#
+# Result
+# ------
+#
+# EPAC puts the prediction in a Result (a dictionnary), the keys are formed
+# as <data_name>[/<train|test>]/<true|pred>
+#
+# <data_name>: is the difference between the input agruments of fit and predict.
+# Example, fit(X, y), predict(X), key will be "y".
+# If no differences, fit(X), predict(X), key will be "X". 
+#
+# <true|pred>. Prediction on test/train set are suffixed by test/train.
+#
+# <train|test>. If the workflow contains a cross-validation, Results keys
+# will be suffixed by train or test: example "y/train" and "y/test". 
+#
+# Finally, EPAC add a key "key" corresponding to the signature of the node.
+# Example: "SVC(C=1)" or "SVC(C=2)"
+#
+# ResultSet
+# ---------
+#
+# Through the reducing phase (bottum-up process) EPAC agregate Result into
+# ResultSet which is a collection of Result.
+# Examples
+# --------
 
+from sklearn.svm import SVC
+from epac import CV, Methods
+X, y = datasets.make_classification(n_samples=4, random_state=0)
+svms.run(X=X, y=y)
+result_set = svms.reduce()
+print result_set
+#ResultSet(
+#[{'key': MySVM(C=1.0), 'y/true': [0 1 0 1], 'y/pred': [0 1 0 1]},
+# {'key': MySVM(C=2.0), 'y/true': [0 1 0 1], 'y/pred': [0 1 0 1]}]) 
+
+# With a CV
+cv_svm = CV(svms, reducer=None, n_folds=2, random_state=0)
+cv_svm.run(X=X, y=y)
+result_set = cv_svm.reduce()  # Return a ResultSet ie.: a list of Results
+print result_set
+#ResultSet(
+#[{'key': CV(nb=0)/MySVM(C=1.0), 'y/true/test': [0 1], 'y/pred/test': [0 0], 'y/pred/train': [0 1]},
+# {'key': CV(nb=0)/MySVM(C=2.0), 'y/true/test': [0 1], 'y/pred/test': [0 0], 'y/pred/train': [0 1]},
+# {'key': CV(nb=1)/MySVM(C=1.0), 'y/true/test': [0 1], 'y/pred/test': [0 0], 'y/pred/train': [0 1]},
+# {'key': CV(nb=1)/MySVM(C=2.0), 'y/true/test': [0 1], 'y/pred/test': [0 0], 'y/pred/train': [0 1]}])
+
+result = result_set['CV(nb=0)/MySVM(C=1.0)']
+print result
+from epac.utils import train_test_split
+result_train, result_test = train_test_split(result)
+
+ 
+# User defined reducer
+# ====================
+
+# Method: reduce
+# Input: ResultSet (list of dict)
+# Output: single Result (dict) or ResultSet (list of dict)
+
+# Details
+# Each Result is a dict with keys 
 class KeepBest(Reducer):
     """This reducer keep only the best classifier and return a single result"""
     def reduce(self, result_set):
