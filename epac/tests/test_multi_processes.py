@@ -51,8 +51,8 @@ class EpacWorkflowTest(unittest.TestCase):
                 local_engine_wf = local_engine.run(X=self.X, y=self.y)
                 sfw_engine = SomaWorkflowEngine(tree_root=sfw_engine_wf,
                                                 num_processes=self.n_cores,
-                                                resource_id="ed203246@gabriel",
-                                                login="ed203246",
+                                                #resource_id="ed203246@gabriel",
+                                                #login="ed203246",
                                                 remove_finished_wf=False,
                                                 remove_local_tree=False
                                                 )
