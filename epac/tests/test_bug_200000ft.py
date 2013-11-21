@@ -17,17 +17,19 @@ Xy = dict(X=X, y=y)
 ## =======================================================
 print " -> Pt2 : X and y created, building workflow"
 from sklearn import svm, cross_validation
-kfold = cross_validation.KFold(n=len(X), n_folds=3)
-svc = svm.SVC(C=1, kernel='linear')
-print [svc.fit(X[train], y[train]).score(X[test], y[test]) for train, test in kfold]
-#from epac import CV, Methods
-#cv_svm_local = CV(Methods(*[svm.SVC(kernel="linear"),
-#                            svm.SVC(kernel="rbf")]),
-#                  n_folds=3)
-print " -> Pt3 : Workflow built, running"
-#cv_svm = None
-#n_proc = 2
-## Running on the local machine
-#from epac import LocalEngine
-#local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
-#cv_svm = local_engine.run(**Xy)
+#kfold = cross_validation.KFold(n=len(X), n_folds=3)
+#svc = svm.SVC(C=1, kernel='linear')
+#print [svc.fit(X[train], y[train]).score(X[test], y[test]) for train, test in kfold]
+from epac import CV, Methods
+cv_svm_local = CV(Methods(*[svm.SVC(kernel="linear"),
+                            svm.SVC(kernel="rbf")]),
+                  n_folds=3)
+print " -> Pt3 : Workflow built, defining local engine"
+cv_svm = None
+n_proc = 2
+# Running on the local machine
+from epac import LocalEngine
+local_engine = LocalEngine(cv_svm_local, num_processes=n_proc)
+print " -> Pt4 : Running"
+cv_svm = local_engine.run(**Xy)
+print " -> Success with %i procs!" % n_proc
