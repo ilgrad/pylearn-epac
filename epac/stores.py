@@ -9,8 +9,17 @@ Stores for EPAC
 
 import os
 import shutil
+import sys
 # import pickle
-import dill as pickle
+try:
+    import dill as pickle
+except ImportError:
+    import pickle
+    errmsg = "warning: Cannot import dill. Falling back to pickle."\
+             "There may be problem when running soma-workflow on cluster "\
+             "using EPAC\n"
+    sys.stderr.write(errmsg)
+
 import joblib
 import json
 import inspect
@@ -568,3 +577,4 @@ def load_tree(dir_path):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
