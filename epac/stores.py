@@ -10,16 +10,6 @@ Stores for EPAC
 import os
 import shutil
 import sys
-# import pickle
-try:
-    import dill as pickle
-except ImportError:
-    import pickle
-    errmsg = "warning: Cannot import dill. Falling back to pickle."\
-             "There may be problem when running soma-workflow on cluster "\
-             "using EPAC\n"
-    sys.stderr.write(errmsg)
-
 import joblib
 import json
 import inspect
@@ -27,6 +17,19 @@ import numpy as np
 from abc import abstractmethod
 from epac.configuration import conf
 from epac.map_reduce.results import ResultSet
+
+# Import dill if installed and recent enough, otherwise falls back to pickle
+from distutils.version import LooseVersion as V
+try:
+    errmsg = "Falling back to pickle. "\
+             "There may be problem when running soma-workflow on cluster "\
+             "using EPAC\n"
+    import dill as pickle
+    if V(pickle.__version__) < V("0.2a"):
+        sys.stderr.write("warning: dill version is too old to use. " + errmsg)
+except ImportError:
+    import pickle
+    sys.stderr.write("warning: Cannot import dill. " + errmsg)
 
 
 class TagObject:

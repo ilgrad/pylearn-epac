@@ -6,6 +6,7 @@ Created on Fri Oct 18 10:42:47 2013
 """
 
 import os
+import sys
 from epac import StoreFs
 from epac.map_reduce.exports import save_job_list
 from epac.map_reduce.split_input import SplitNodesInput
@@ -13,6 +14,7 @@ from epac.map_reduce.inputs import NodesInput
 from epac.utils import save_dataset_path
 from epac.stores import save_tree
 from epac.stores import load_tree
+from epac.errors import NoSomaWFError
 
 
 def export_jobs(tree_root, num_processes, dir_path):
@@ -229,10 +231,18 @@ class SomaWorkflowDescriptor(object):
         num_processes: integer
             the number of processes you want to run
         '''
-        from soma_workflow.client import Job
-        from soma_workflow.client import Group
-        from soma_workflow.client import Workflow
-        from soma_workflow.client import Helper
+        try:
+            from soma_workflow.client import Job
+            from soma_workflow.client import Group
+            from soma_workflow.client import Workflow
+            from soma_workflow.client import Helper
+        except ImportError:
+            errmsg = "No soma-workflow is found. "\
+                "Please verify your soma-worklow"\
+                "on your computer (e.g. PYTHONPATH) \n"
+            sys.stderr.write(errmsg)
+            sys.stdout.write(errmsg)
+            raise NoSomaWFError
 
         self.workflow_dir = workflow_dir
         soma_workflow_file = os.path.join(self.workflow_dir, "soma_workflow")
@@ -386,12 +396,20 @@ class SharePathSomaWorkflowDescriptor:
         self.output_relative_path = output_relative_path
 
     def export(self, script_path):
+        try:
+            from soma_workflow.client import Job
+            from soma_workflow.client import Group
+            from soma_workflow.client import Workflow
+            from soma_workflow.client import SharedResourcePath
+            from soma_workflow.client import Helper
+        except ImportError:
+            errmsg = "No soma-workflow is found. "\
+                "Please verify your soma-worklow"\
+                "on your computer (e.g. PYTHONPATH) \n"
+            sys.stderr.write(errmsg)
+            sys.stdout.write(errmsg)
+            raise NoSomaWFError
 
-        from soma_workflow.client import Job
-        from soma_workflow.client import Group
-        from soma_workflow.client import Workflow
-        from soma_workflow.client import SharedResourcePath
-        from soma_workflow.client import Helper
         # dataset on remote machine
         dataset_dir = SharedResourcePath(
                         relative_path=self.dataset_relative_path,
