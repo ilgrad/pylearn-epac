@@ -36,12 +36,12 @@ class TestGetSWFEngineInfo(unittest.TestCase):
                                         remove_local_tree=False,
                                         queue="Global_long")
         swf_engine.run(**Xy)
-        # print "engine_info ================"
+        print "engine_info ================"
         for job_info in swf_engine.engine_info:
-#            print "  job_info================="
-#            print "  mem_cost= ", job_info.mem_cost
-#            print "  vmem_cost= ", job_info.vmem_cost
-#            print "  time_cost= ", job_info.time_cost
+            print "  job_info================="
+            print "  mem_cost= ", job_info.mem_cost
+            print "  vmem_cost= ", job_info.vmem_cost
+            print "  time_cost= ", job_info.time_cost
             self.assertTrue(job_info.time_cost > 0)
 
 if __name__ == "__main__":

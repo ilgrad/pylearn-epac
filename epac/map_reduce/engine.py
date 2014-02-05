@@ -14,7 +14,6 @@ import tempfile
 import numpy as np
 import sys
 import socket
-import joblib
 
 from abc import ABCMeta, abstractmethod
 
@@ -29,7 +28,7 @@ from epac.utils import save_dataset
 
 
 
-        
+
 
 class Engine(object):
     __metaclass__ = ABCMeta
@@ -327,7 +326,8 @@ class SomaWorkflowEngine(LocalEngine):
         >>> ## =======================================================
         >>> sfw_engine = SomaWorkflowEngine(tree_root=tree_root_node,
         ...                                 function_name="transform",
-        ...                                 num_processes=3)
+        ...                                 num_processes=3,
+                                            remove_finished_wf=False)
         >>> tree_root_node = sfw_engine.run(**Xy)
         light mode
         >>> ## Run reduce process
@@ -368,10 +368,6 @@ class SomaWorkflowEngine(LocalEngine):
         ## ===============================================
         # np.savez(os.path.join(tmp_work_dir_path,
         # SomaWorkflowEngine.dataset_relative_path), **Xy)
-        db_size = estimate_dataset_size(**Xy)
-        db_size = int(db_size / (1024 * 1024))  # convert it into mega byte
-        if db_size < 10:
-            db_size = 10 # don't be too low
         save_dataset(SomaWorkflowEngine.dataset_relative_path, **Xy)
         store = StoreFs(dirpath=os.path.join(
             tmp_work_dir_path,

@@ -565,9 +565,10 @@ def is_need_mem(filepath):
         return True
     return False
 
-def load_dictionary(dataset_dir, mmap_mode="auto"):
+
+def load_dataset(dataset_dir, mmap_mode="auto"):
     '''Load a dictionary
-    Load a dictionary from save_dictionary
+    Load a dictionary from save_dataset
 
     Parameters
     ----------
@@ -577,41 +578,6 @@ def load_dictionary(dataset_dir, mmap_mode="auto"):
     mmap_mode: {None, ‘r+’, ‘r’, ‘w+’, ‘c’, 'auto'}, optional :
         'auto' means that the system determine if we use memory mapping or not.
         See numpy.load for the meaning of the other arguments.
-
-    Example
-    -------
-    from epac.utils import load_dictionary
-    Xy = load_dictionary("/tmp/save_datasets_data")
-    '''
-    if not os.path.exists(dataset_dir):
-        return None
-    index_filepath = os.path.join(dataset_dir, conf.DICT_INDEX_FILE)
-    if not os.path.isfile(index_filepath):
-        return None
-    file_dict_index = open(index_filepath, "r")
-    len_dict = file_dict_index.readline()
-    res = {}
-    for i in range(int(len_dict)):
-        key = file_dict_index.readline()
-        key = key.strip("\n")
-        filepath = file_dict_index.readline()
-        filepath = filepath.strip("\n")
-        if not mmap_mode:
-            data = np.load(filepath)
-        elif (not "auto" in mmap_mode) and mmap_mode:
-            data = np.load(filepath, mmap_mode)
-        elif ("auto" in mmap_mode) and is_need_mem(filepath):
-            data = np.load(filepath, "r+")
-        else:
-            data = np.load(filepath)
-
-        res[key] = data
-    return res
-
-
-def load_dataset(dataset_dir):
-    '''Load a dictionary
-    Load a dictionary from save_dataset
 
     Example
     -------
@@ -632,7 +598,11 @@ def load_dataset(dataset_dir):
     for key in path_Xy:
         data = None
         filepath = path_Xy[key]
-        if is_need_mem(filepath):
+        if not mmap_mode:
+            data = np.load(filepath)
+        elif (not "auto" in mmap_mode) and mmap_mode:
+            data = np.load(filepath, mmap_mode)
+        elif ("auto" in mmap_mode) and is_need_mem(filepath):
             data = np.load(filepath, "r+")
         else:
             data = np.load(filepath)
