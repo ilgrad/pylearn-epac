@@ -82,7 +82,7 @@
 <div class="viewcode-block" id="MapperSubtrees"><a class="viewcode-back" href="../../../api/map_reduce/mappers.html#epac.map_reduce.mappers.MapperSubtrees">[docs]</a><span class="k">class</span> <span class="nc">MapperSubtrees</span><span class="p">(</span><span class="n">Mapper</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;The mapper runs function (usually as &quot;transform&quot;) for NodesInput</span>
 <span class="sd">    which is a dictionary of nodes.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Xy:X matrix and y vertor</span>
@@ -151,8 +151,8 @@
 <span class="sd">    &gt;&gt;&gt; ## ==================</span>
 <span class="sd">    &gt;&gt;&gt; tree_root_node.reduce()</span>
 <span class="sd">    ResultSet(</span>
-<span class="sd">    [{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8},</span>
-<span class="sd">     {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8}])</span>
+<span class="sd">    [{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.6  0.6], &#39;y/test/score_recall_mean/pval&#39;: [ 0.5], &#39;y/test/score_recall/pval&#39;: [ 0.   0.5], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.   0.5], &#39;y/test/score_precision/pval&#39;: [ 0.5  0. ], &#39;y/test/score_precision&#39;: [ 0.6  0.6], &#39;y/test/score_recall&#39;: [ 0.6  0.6], &#39;y/test/score_accuracy&#39;: 0.6, &#39;y/test/score_recall_mean&#39;: 0.6},</span>
+<span class="sd">     {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.6  0.6], &#39;y/test/score_recall_mean/pval&#39;: [ 0.5], &#39;y/test/score_recall/pval&#39;: [ 0.   0.5], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.   0.5], &#39;y/test/score_precision/pval&#39;: [ 0.5  0. ], &#39;y/test/score_precision&#39;: [ 0.6  0.6], &#39;y/test/score_recall&#39;: [ 0.6  0.6], &#39;y/test/score_accuracy&#39;: 0.6, &#39;y/test/score_recall_mean&#39;: 0.6}])</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
 <div class="viewcode-block" id="MapperSubtrees.__init__"><a class="viewcode-back" href="../../../api/map_reduce/mappers.html#epac.map_reduce.mappers.MapperSubtrees.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -204,7 +204,7 @@
                     <span class="c"># do not process current node</span>
                     <span class="k">break</span>
                 <span class="n">node_common2curr</span> <span class="o">=</span> \
-                        <span class="bp">self</span><span class="o">.</span><span class="n">tree_root</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_common2curr</span><span class="o">.</span><span class="n">get_key</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree_root</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">node_common2curr</span><span class="o">.</span><span class="n">get_key</span><span class="p">())</span>
                 <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node_common2curr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
                 <span class="n">cpXy</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">cpXy</span><span class="p">)</span>
             <span class="n">curr_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_root</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">curr_key</span><span class="p">)</span>
@@ -224,7 +224,7 @@
 </div></div>
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">doctest</span>
-    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
 </pre></div>
 
           </div>

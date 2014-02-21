@@ -95,16 +95,26 @@ epac tree</dd>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## ==================</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8}])</span>
+<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.6  0.6], &#39;y/test/score_recall_mean/pval&#39;: [ 0.5], &#39;y/test/score_recall/pval&#39;: [ 0.   0.5], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.   0.5], &#39;y/test/score_precision/pval&#39;: [ 0.5  0. ], &#39;y/test/score_precision&#39;: [ 0.6  0.6], &#39;y/test/score_recall&#39;: [ 0.6  0.6], &#39;y/test/score_accuracy&#39;: 0.6, &#39;y/test/score_recall_mean&#39;: 0.6},</span>
+<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.6  0.6], &#39;y/test/score_recall_mean/pval&#39;: [ 0.5], &#39;y/test/score_recall/pval&#39;: [ 0.   0.5], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.   0.5], &#39;y/test/score_precision/pval&#39;: [ 0.5  0. ], &#39;y/test/score_precision&#39;: [ 0.6  0.6], &#39;y/test/score_recall&#39;: [ 0.6  0.6], &#39;y/test/score_accuracy&#39;: 0.6, &#39;y/test/score_recall_mean&#39;: 0.6}])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="class">
 <dt id="epac.map_reduce.engine.SomaWorkflowEngine">
-<em class="property">class </em><tt class="descclassname">epac.map_reduce.engine.</tt><tt class="descname">SomaWorkflowEngine</tt><big>(</big><em>tree_root</em>, <em>function_name='transform'</em>, <em>num_processes=-1</em>, <em>resource_id=''</em>, <em>login=''</em>, <em>pw=''</em>, <em>remove_finished_wf=True</em>, <em>remove_local_tree=True</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/engine.html#SomaWorkflowEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.engine.SomaWorkflowEngine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">epac.map_reduce.engine.</tt><tt class="descname">SomaWorkflowEngine</tt><big>(</big><em>tree_root</em>, <em>function_name='transform'</em>, <em>num_processes=-1</em>, <em>resource_id=''</em>, <em>login=''</em>, <em>pw=''</em>, <em>remove_finished_wf=True</em>, <em>remove_local_tree=True</em>, <em>mmap_mode='auto'</em>, <em>queue=None</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/engine.html#SomaWorkflowEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.engine.SomaWorkflowEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Using soma-workflow to run epac tree in parallel</p>
+<dl class="docutils">
+<dt>mmap_mode: {None, ‘r+’, ‘r’, ‘w+’, ‘c’, &#8216;auto&#8217;}, optional :</dt>
+<dd>&#8216;auto&#8217; means that the system determine if we use memory mapping or not.
+See numpy.load for the meaning of the other arguments.</dd>
+<dt>engine_info: list of JobInfo</dt>
+<dd>You can get engine_info when call SomaWorkflowEngine.run
+It works only on DRMS
+(Distributed Resource Management System) using DRMAA, but not for
+local machine</dd>
+</dl>
 <dl class="method">
 <dt id="epac.map_reduce.engine.SomaWorkflowEngine.run">
 <tt class="descname">run</tt><big>(</big><em>**Xy</em><big>)</big><a class="reference internal" href="../../modules/epac/map_reduce/engine.html#SomaWorkflowEngine.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#epac.map_reduce.engine.SomaWorkflowEngine.run" title="Permalink to this definition">¶</a></dt>
@@ -132,15 +142,16 @@ epac tree</dd>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## =======================================================</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sfw_engine</span> <span class="o">=</span> <span class="n">SomaWorkflowEngine</span><span class="p">(</span><span class="n">tree_root</span><span class="o">=</span><span class="n">tree_root_node</span><span class="p">,</span>
 <span class="gp">... </span>                                <span class="n">function_name</span><span class="o">=</span><span class="s">&quot;transform&quot;</span><span class="p">,</span>
-<span class="gp">... </span>                                <span class="n">num_processes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">... </span>                                <span class="n">num_processes</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="go">                                    remove_finished_wf=False)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span> <span class="o">=</span> <span class="n">sfw_engine</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
 <span class="go">light mode</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## Run reduce process</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c">## ==================</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tree_root_node</span><span class="o">.</span><span class="n">reduce</span><span class="p">()</span>
 <span class="go">ResultSet(</span>
-<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8},</span>
-<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.8  0.8], &#39;y/test/score_recall_mean/pval&#39;: [ 0.], &#39;y/test/score_recall/pval&#39;: [ 0.  0.], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.  0.], &#39;y/test/score_precision/pval&#39;: [ 0.  0.], &#39;y/test/score_precision&#39;: [ 0.8  0.8], &#39;y/test/score_recall&#39;: [ 0.8  0.8], &#39;y/test/score_accuracy&#39;: 0.8, &#39;y/test/score_recall_mean&#39;: 0.8}])</span>
+<span class="go">[{&#39;key&#39;: SelectKBest/SVC(C=1), &#39;y/test/score_f1&#39;: [ 0.6  0.6], &#39;y/test/score_recall_mean/pval&#39;: [ 0.5], &#39;y/test/score_recall/pval&#39;: [ 0.   0.5], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.   0.5], &#39;y/test/score_precision/pval&#39;: [ 0.5  0. ], &#39;y/test/score_precision&#39;: [ 0.6  0.6], &#39;y/test/score_recall&#39;: [ 0.6  0.6], &#39;y/test/score_accuracy&#39;: 0.6, &#39;y/test/score_recall_mean&#39;: 0.6},</span>
+<span class="go"> {&#39;key&#39;: SelectKBest/SVC(C=3), &#39;y/test/score_f1&#39;: [ 0.6  0.6], &#39;y/test/score_recall_mean/pval&#39;: [ 0.5], &#39;y/test/score_recall/pval&#39;: [ 0.   0.5], &#39;y/test/score_accuracy/pval&#39;: [ 0.], &#39;y/test/score_f1/pval&#39;: [ 0.   0.5], &#39;y/test/score_precision/pval&#39;: [ 0.5  0. ], &#39;y/test/score_precision&#39;: [ 0.6  0.6], &#39;y/test/score_recall&#39;: [ 0.6  0.6], &#39;y/test/score_accuracy&#39;: 0.6, &#39;y/test/score_recall_mean&#39;: 0.6}])</span>
 </pre></div>
 </div>
 </dd></dl>

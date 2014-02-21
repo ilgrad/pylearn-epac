@@ -90,32 +90,33 @@
 <a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name"><a title="epac.workflow.base.BaseNode" class="py-name" href="#" onclick="return doclink('link-12', 'BaseNode', 'link-7');">BaseNode</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">node</tt> </tt>
 <a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-op">(</tt><tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"fit"</tt><tt class="py-op">)</tt> </tt>
-<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">            <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"transform"</tt><tt class="py-op">)</tt> </tt>
-<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"predict"</tt><tt class="py-op">)</tt> </tt>
-<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">            <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">              <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"transform"</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">              <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"predict"</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">              <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-13" class="py-name"><a title="epac.sklearn_plugins.estimators.Estimator" class="py-name" href="#" onclick="return doclink('link-13', 'Estimator', 'link-11');">Estimator</a></tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
 <a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-op">(</tt><tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"fit"</tt><tt class="py-op">)</tt> </tt>
-<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">            <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"transform"</tt><tt class="py-op">)</tt> </tt>
-<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">            <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">              <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"transform"</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">              <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-14" class="py-name"><a title="epac.sklearn_plugins.estimators.Estimator" class="py-name" href="#" onclick="return doclink('link-14', 'Estimator', 'link-11');">Estimator</a></tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
 <a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-op">(</tt><tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"fit"</tt><tt class="py-op">)</tt> </tt>
-<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">            <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"predict"</tt><tt class="py-op">)</tt> </tt>
-<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">            <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">              <tt class="py-keyword">and</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"predict"</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">              <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-15" class="py-name"><a title="epac.sklearn_plugins.estimators.Estimator" class="py-name" href="#" onclick="return doclink('link-15', 'Estimator', 'link-11');">Estimator</a></tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
 <a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-string">"transform"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-16" class="py-name"><a title="epac.workflow.wrappers.TransformNode" class="py-name" href="#" onclick="return doclink('link-16', 'TransformNode', 'link-3');">TransformNode</a></tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
 <a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
-<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">ValueError</tt><tt class="py-op">(</tt><tt class="py-string">"Fail to find a wrapper for %s. "</tt>\ </tt>
-<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">                <tt class="py-string">"It should implement methods in one of below cases:\n"</tt>\ </tt>
-<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">                <tt class="py-string">"(-) fit and transform,\n"</tt>\ </tt>
-<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">                <tt class="py-string">"(-) fit and predict,\n"</tt> \ </tt>
-<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">                <tt class="py-string">"(-) transform.\n"</tt> <tt class="py-op">%</tt> </tt>
-<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">                <tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">__class__</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
-</div></div><a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"> </tt>
-<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
-<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">doctest</tt> </tt>
-<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">    <tt class="py-name">doctest</tt><tt class="py-op">.</tt><tt class="py-name">testmod</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">ValueError</tt><tt class="py-op">(</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">                <tt class="py-string">"Fail to find a wrapper for %s. "</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">                <tt class="py-string">"It should implement methods in one of below cases:\n"</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">                <tt class="py-string">"(-) fit and transform,\n"</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">                <tt class="py-string">"(-) fit and predict,\n"</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">                <tt class="py-string">"(-) transform.\n"</tt> <tt class="py-op">%</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">                <tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">__class__</tt><tt class="py-op">.</tt><tt class="py-name">__name__</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">doctest</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">    <tt class="py-name">doctest</tt><tt class="py-op">.</tt><tt class="py-name">testmod</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -148,7 +149,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Oct  2 09:49:17 2013
+    Generated by Epydoc 3.0.1 on Fri Feb 21 15:24:55 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

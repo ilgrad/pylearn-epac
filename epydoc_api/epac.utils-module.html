@@ -85,6 +85,43 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="epac.utils-module.html#estimate_dataset_size" class="summary-sig-name">estimate_dataset_size</a>(<span class="summary-sig-arg">**Xy</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#estimate_dataset_size">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="epac.utils-module.html#copy_parameters" class="summary-sig-name">copy_parameters</a>(<span class="summary-sig-arg">from_obj</span>,
+        <span class="summary-sig-arg">to_obj</span>,
+        <span class="summary-sig-arg">exclude_parameters</span>)</span><br />
+      Example
+-------
+from epac.utils import copy_parameters</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#copy_parameters">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="get_next_number"></a><span class="summary-sig-name">get_next_number</span>(<span class="summary-sig-arg">str_value</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#get_next_number">source&nbsp;code</a></span>
@@ -326,7 +363,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="epac.utils-module.html#export_resultset_csv" class="summary-sig-name">export_resultset_csv</a>(<span class="summary-sig-arg">results</span>,
-        <span class="summary-sig-arg">filename</span>)</span><br />
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">delimiter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span><br />
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_resultset_csv">source&nbsp;code</a></span>
@@ -344,7 +382,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="epac.utils-module.html#export_leaves_csv" class="summary-sig-name">export_leaves_csv</a>(<span class="summary-sig-arg">tree_root</span>,
-        <span class="summary-sig-arg">filename</span>)</span><br />
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">delimiter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span><br />
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_leaves_csv">source&nbsp;code</a></span>
@@ -361,9 +400,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="epac.utils-module.html#export_csv" class="summary-sig-name">export_csv</a>(<span class="summary-sig-arg">tree</span>,
+          <td><span class="summary-sig"><a href="epac.utils-module.html#export_csv" class="summary-sig-name">export_csv</a>(<span class="summary-sig-arg">tree_root</span>,
         <span class="summary-sig-arg">results</span>,
-        <span class="summary-sig-arg">filename</span>)</span><br />
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">delimiter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span><br />
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_csv">source&nbsp;code</a></span>
@@ -434,6 +474,44 @@ Save a dictionary to a directory.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="epac.utils-module.html#save_dataset_path" class="summary-sig-name">save_dataset_path</a>(<span class="summary-sig-arg">dataset_dir</span>,
+        <span class="summary-sig-arg">**Xy_path</span>)</span><br />
+      Save a dictionary to a directory
+Save a numpy dictionary (with path only) to a directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#save_dataset_path">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="epac.utils-module.html#save_dataset" class="summary-sig-name">save_dataset</a>(<span class="summary-sig-arg">dataset_dir</span>,
+        <span class="summary-sig-arg">**Xy</span>)</span><br />
+      Save a dictionary to a directory
+Save a dictionary to a directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#save_dataset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="is_need_mem"></a><span class="summary-sig-name">is_need_mem</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#is_need_mem">source&nbsp;code</a></span>
@@ -450,11 +528,28 @@ Save a dictionary to a directory.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="epac.utils-module.html#load_dictionary" class="summary-sig-name">load_dictionary</a>(<span class="summary-sig-arg">dataset_dir</span>)</span><br />
+          <td><span class="summary-sig"><a href="epac.utils-module.html#load_dataset" class="summary-sig-name">load_dataset</a>(<span class="summary-sig-arg">dataset_dir</span>,
+        <span class="summary-sig-arg">mmap_mode</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">auto</code><code class="variable-quote">'</code></span>)</span><br />
       Load a dictionary
-Load a dictionary from save_dictionary</td>
+Load a dictionary from save_dataset</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="epac.utils-pysrc.html#load_dictionary">source&nbsp;code</a></span>
+            <span class="codelink"><a href="epac.utils-pysrc.html#load_dataset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="trim_filepath"></a><span class="summary-sig-name">trim_filepath</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="epac.utils-pysrc.html#trim_filepath">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -521,6 +616,15 @@ lists: list of list
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a href="epac.utils-module.html#errmsg" class="summary-name">errmsg</a> = <code title="'''Falling back to pickle. There may be problem when running soma-work\
+flow on cluster using EPAC
+'''"><code class="variable-quote">'</code><code class="variable-string">Falling back to pickle. There may be problem when ru</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'epac'"><code class="variable-quote">'</code><code class="variable-string">epac</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
@@ -543,6 +647,83 @@ lists: list of list
   </td>
 </tr>
 </table>
+<a name="estimate_dataset_size"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">estimate_dataset_size</span>(<span class="sig-arg">**Xy</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="epac.utils-pysrc.html#estimate_dataset_size">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+
+Example
+-------
+from epac.utils import estimate_dataset_size
+import numpy as np
+X = np.random.random((1,1000))
+y = np.random.random((1,1000))
+Xy = {&quot;X&quot;:X, &quot;y&quot;:y}
+estimate_dataset_size(**Xy)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="copy_parameters"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">copy_parameters</span>(<span class="sig-arg">from_obj</span>,
+        <span class="sig-arg">to_obj</span>,
+        <span class="sig-arg">exclude_parameters</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="epac.utils-pysrc.html#copy_parameters">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Example
+-------
+from epac.utils import copy_parameters
+
+class CA:
+    def __init__(self, c, d):
+        self.c = c
+        self.d = d
+    def test_method(self):
+        pass
+
+ca1 = CA(c=1, d=1)
+ca2 = CA(c=2, d=2)
+print ca1.__dict__
+print ca2.__dict__
+copy_parameters(ca1, ca2, exclude_parameters=[&quot;d&quot;])
+# exclude_parameters can be a dict whose keys are exclude_parameters
+# copy_parameters(ca1, ca2, exclude_parameters={&quot;d&quot;:1})
+print ca1.c
+print ca1.d
+print ca2.c
+print ca2.d
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="dict_diff"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -618,7 +799,8 @@ Example
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">export_resultset_csv</span>(<span class="sig-arg">results</span>,
-        <span class="sig-arg">filename</span>)</span>
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">delimiter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="epac.utils-pysrc.html#export_resultset_csv">source&nbsp;code</a></span>&nbsp;
@@ -637,6 +819,10 @@ results: ResultSet to export
 
 filename: Relative or absolute path to the CSV file
     If the file doesn't exist, create it
+
+delimiter: separator between each value of the csv file
+    Caution : using ' ' as delimitor can result in messed-up files
+              as there are spaces in the result arrays
 
 Example
 -------
@@ -669,7 +855,8 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">export_leaves_csv</span>(<span class="sig-arg">tree_root</span>,
-        <span class="sig-arg">filename</span>)</span>
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">delimiter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="epac.utils-pysrc.html#export_leaves_csv">source&nbsp;code</a></span>&nbsp;
@@ -688,6 +875,10 @@ tree_root: Workflow in study
 
 filename: Relative or absolute path to the CSV file
     If the file doesn't exist, create it
+
+delimiter: separator between each value of the csv file
+    Caution : using ' ' as delimitor can result in messed-up files
+              as there are spaces in the result arrays
 
 Example
 -------
@@ -720,9 +911,10 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">export_csv</span>(<span class="sig-arg">tree</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">export_csv</span>(<span class="sig-arg">tree_root</span>,
         <span class="sig-arg">results</span>,
-        <span class="sig-arg">filename</span>)</span>
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">delimiter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="epac.utils-pysrc.html#export_csv">source&nbsp;code</a></span>&nbsp;
@@ -737,12 +929,16 @@ bottom-up(reduce) operation to a CSV file
 
 Parameters
 ----------
-tree: Workflow in study
+tree_root: Workflow in study
 
 results: list or ResultSet to export
 
 filename: Relative or absolute path to the CSV file
     If the file doesn't exist, create it
+
+delimiter: separator between each value of the csv file
+    Caution : using ' ' as delimitor can result in messed-up files
+              as there are spaces in the result arrays
 
 Example
 -------
@@ -752,11 +948,11 @@ Example
 &gt;&gt;&gt; from epac.utils import export_csv
 &gt;&gt;&gt; import tempfile
 &gt;&gt;&gt; _, filename1 = tempfile.mkstemp(suffix=&quot;.csv&quot;)
-&gt;&gt;&gt; X, y = datasets.make_classification(n_samples=12, n_features=10, n_informative=2, random_state=1)
+&gt;&gt;&gt; X, y = datasets.make_classification(n_samples=12, n_features=10,                                             n_informative=2, random_state=1)
 &gt;&gt;&gt; multi = Methods(SVM(C=1), SVM(C=10))
 &gt;&gt;&gt; result_run = multi.run(X=X, y=y)
 &gt;&gt;&gt; export_csv(multi, result_run, filename1)
-&gt;&gt;&gt; with open(filename1, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+&gt;&gt;&gt; with open(filename1, 'rb') as csvfile:  #doctest: +NORMALIZE_WHITESPACE
 ...     print csvfile.read()
 key;y/true;y/pred
 LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
@@ -766,7 +962,7 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
 &gt;&gt;&gt; _, filename2 = tempfile.mkstemp(suffix=&quot;.csv&quot;)
 &gt;&gt;&gt; result_reduce = multi.reduce()
 &gt;&gt;&gt; export_csv(multi, result_reduce, filename2)
-&gt;&gt;&gt; with open(filename2, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+&gt;&gt;&gt; with open(filename2, 'rb') as csvfile:  #doctest: +NORMALIZE_WHITESPACE
 ...     print csvfile.read()
 key;y/true;y/pred
 LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
@@ -893,28 +1089,117 @@ save_dictionary(&quot;/tmp/save_datasets_data&quot;, **Xy)
   </dl>
 </td></tr></table>
 </div>
-<a name="load_dictionary"></a>
+<a name="save_dataset_path"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">load_dictionary</span>(<span class="sig-arg">dataset_dir</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">save_dataset_path</span>(<span class="sig-arg">dataset_dir</span>,
+        <span class="sig-arg">**Xy_path</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.utils-pysrc.html#load_dictionary">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="epac.utils-pysrc.html#save_dataset_path">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Save a dictionary to a directory
+Save a numpy dictionary (with path only) to a directory.
+
+Example
+-------
+from sklearn import datasets
+import numpy as np
+from epac.utils import save_dataset_path
+X, y = datasets.make_classification(n_samples=500,
+                                    n_features=500,
+                                    n_informative=2,
+                                    random_state=1)
+path_X = &quot;/tmp/data_X&quot;
+path_y = &quot;/tmp/data_y&quot;
+np.save(path_X, X)
+np.save(path_y, y)
+
+Xy = dict(X=path_X, y=path_y)
+save_dataset_path(&quot;/tmp/save_datasets_data&quot;, **Xy)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="save_dataset"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">save_dataset</span>(<span class="sig-arg">dataset_dir</span>,
+        <span class="sig-arg">**Xy</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="epac.utils-pysrc.html#save_dataset">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+Save a dictionary to a directory
+Save a dictionary to a directory. This dictionary may contain
+numpy array, numpy.memmap
+
+Example
+-------
+from sklearn import datasets
+from epac.utils import save_dataset
+X, y = datasets.make_classification(n_samples=500,
+                                    n_features=500,
+                                    n_informative=2,
+                                    random_state=1)
+Xy = dict(X=X, y=y)
+save_dataset(&quot;/tmp/save_datasets_data&quot;, **Xy)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="load_dataset"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">load_dataset</span>(<span class="sig-arg">dataset_dir</span>,
+        <span class="sig-arg">mmap_mode</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">auto</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="epac.utils-pysrc.html#load_dataset">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
   <pre class="literalblock">
 Load a dictionary
-Load a dictionary from save_dictionary
+Load a dictionary from save_dataset
+
+Parameters
+----------
+dataset_dir: str
+    the directory where you want to load your dataset
+
+mmap_mode: {None, &#8216;r+&#8217;, &#8216;r&#8217;, &#8216;w+&#8217;, &#8216;c&#8217;, 'auto'}, optional :
+    'auto' means that the system determine if we use memory mapping or not.
+    See numpy.load for the meaning of the other arguments.
 
 Example
 -------
-from epac.utils import load_dictionary
-Xy = load_dictionary(&quot;/tmp/save_datasets_data&quot;)
+from epac.utils import load_dataset
+from epac.configuration import conf
+conf.MEMM_THRESHOLD = 100
+Xy = load_dataset(&quot;/tmp/save_datasets_data&quot;)
 
 </pre>
   <dl class="fields">
@@ -961,7 +1246,7 @@ Example
 &gt;&gt;&gt; for nb in xrange(0, 7):
 ...     print &quot;nb=&quot;, nb
 ...     print get_list_from_lists(lists, nb)
-... 
+...
 nb= 0
 [1, 2, 3, 3]
 nb= 1
@@ -979,6 +1264,45 @@ nb= 6
 
 </pre>
   <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="errmsg"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">errmsg</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'''</code><code class="variable-string">Falling back to pickle. There may be problem when running soma-work</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">flow on cluster using EPAC</code>
+<code class="variable-string"></code><code class="variable-quote">'''</code>
+</pre></td></tr></table>
+</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1009,7 +1333,7 @@ nb= 6
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Oct  2 09:49:16 2013
+    Generated by Epydoc 3.0.1 on Fri Feb 21 15:24:54 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

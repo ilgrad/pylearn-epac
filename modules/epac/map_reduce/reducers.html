@@ -57,6 +57,7 @@
 <span class="sd">@author: edouard.duchesnay@cea.fr</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">binom_test</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.results</span> <span class="kn">import</span> <span class="n">Result</span>
@@ -92,7 +93,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    </span>
+
 <span class="sd">    select_regexp: srt</span>
 <span class="sd">      A string to select items (defaults &quot;test&quot;). It must match two items:</span>
 <span class="sd">      &quot;true/test&quot; and &quot;pred/test&quot;.</span>
@@ -109,9 +110,9 @@
 <span class="sd">    &gt;&gt;&gt; result = result.items()</span>
 <span class="sd">    &gt;&gt;&gt; result.sort()</span>
 <span class="sd">    &gt;&gt;&gt; result</span>
-<span class="sd">    [(&#39;key&#39;, &#39;SVC&#39;), (&#39;y/test/score_accuracy&#39;, 0.75), (&#39;y/test/score_f1&#39;, array([ 0.66666667,  0.8       ])), (&#39;y/test/score_precision&#39;, array([ 1.        ,  0.66666667])), (&#39;y/test/score_recall&#39;, array([ 0.5,  1. ])), (&#39;y/test/score_recall_mean&#39;, 0.75)]</span>
+<span class="sd">    [(&#39;key&#39;, &#39;SVC&#39;), (&#39;y/test/recall_mean_pvalue&#39;, 0.625), (&#39;y/test/recall_pvalues&#39;, array([ 0.5 ,  0.25])), (&#39;y/test/score_accuracy&#39;, 0.75), (&#39;y/test/score_f1&#39;, array([ 0.66666667,  0.8       ])), (&#39;y/test/score_precision&#39;, array([ 1.        ,  0.66666667])), (&#39;y/test/score_recall&#39;, array([ 0.5,  1. ])), (&#39;y/test/score_recall_mean&#39;, 0.75)]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">select_regexp</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">TEST</span><span class="p">,</span>
                  <span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span> <span class="o">=</span> <span class="n">select_regexp</span>
@@ -120,12 +121,12 @@
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span><span class="p">:</span>
             <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">key3</span> <span class="k">for</span> <span class="n">key3</span> <span class="ow">in</span> <span class="n">result</span>
-                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key3</span><span class="p">))]</span>
+                      <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key3</span><span class="p">))]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">inputs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;Need to find exactly two results to compute a score.&quot;</span>
-            <span class="s">&quot; Found </span><span class="si">%i</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">inputs</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;Need to find exactly two results to compute a &quot;</span>
+                           <span class="s">&quot;score. Found </span><span class="si">%i</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">inputs</span><span class="p">))</span>
         <span class="n">key_true</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">TRUE</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">key_pred</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">PREDICTION</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">y_true</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">key_true</span><span class="p">]</span>
@@ -136,13 +137,43 @@
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">])</span>
-        <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">precision_recall_fscore_support</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">precision_recall_fscore_support</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span>
+                                                      <span class="n">y_pred</span><span class="p">,</span>
+                                                      <span class="n">average</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+        <span class="c"># Compute p-value of recall for each class</span>
+        <span class="k">def</span> <span class="nf">recall_test</span><span class="p">(</span><span class="n">recall</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">apriori_p</span><span class="p">):</span>
+            <span class="n">n_success</span> <span class="o">=</span> <span class="n">recall</span> <span class="o">*</span> <span class="n">n_trials</span>
+            <span class="n">pval</span> <span class="o">=</span> <span class="n">binom_test</span><span class="p">(</span><span class="n">n_success</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_trials</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">apriori_p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">recall</span> <span class="o">&gt;</span> <span class="n">apriori_p</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">pval</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pval</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>  <span class="c"># Number of classes</span>
+        <span class="n">n_obs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+        <span class="n">prior_p</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">/</span><span class="n">s</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c"># A priori probability of each class</span>
+        <span class="n">r_pvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">class_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">):</span>
+            <span class="n">n_trials</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">class_index</span><span class="p">]</span>
+            <span class="c">#print &quot;Class {class_index}: {n_success} success on {n_trials} trials&quot;.format(n_success=n_success, n_trials=n_trials, class_index=class_index)</span>
+            <span class="n">r_pvalues</span><span class="p">[</span><span class="n">class_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">recall_test</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">class_index</span><span class="p">],</span>
+                                                 <span class="n">n_trials</span><span class="p">,</span>
+                                                 <span class="n">prior_p</span><span class="p">[</span><span class="n">class_index</span><span class="p">])</span>
+
+        <span class="c"># Compute p-value of mean recall</span>
+        <span class="n">mean_r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">mean_r_pvalue</span> <span class="o">=</span> <span class="n">binom_test</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">mean_r</span> <span class="o">*</span> <span class="n">n_obs</span><span class="p">),</span> <span class="n">n</span><span class="o">=</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">p</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+
         <span class="n">key</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">key_pop</span><span class="p">(</span><span class="n">key_pred</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_PRECISION</span><span class="p">)]</span> <span class="o">=</span> <span class="n">p</span>
         <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span>
-        <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL_MEAN</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL_PVALUES</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r_pvalues</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL_MEAN</span><span class="p">)]</span> <span class="o">=</span> <span class="n">mean_r</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL_MEAN_PVALUE</span><span class="p">)]</span> <span class="o">=</span> <span class="n">mean_r_pvalue</span>
         <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_F1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">f1</span>
-        <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_ACCURACY</span><span class="p">)]</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_ACCURACY</span><span class="p">)]</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span>
+                                                                 <span class="n">y_pred</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep</span><span class="p">:</span>
             <span class="n">out</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span>
@@ -163,8 +194,8 @@
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span><span class="p">:</span>
             <span class="n">select_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span>
-                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))]</span>
-                <span class="c">#if re.search(self.select_regexp) != -1]</span>
+                           <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_regexp</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))]</span>
+                           <span class="c">#if re.search(self.select_regexp) != -1]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">select_keys</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">())</span>
@@ -187,8 +218,8 @@
         <span class="kn">from</span> <span class="nn">epac.workflow.pipeline</span> <span class="kn">import</span> <span class="n">Pipe</span>
         <span class="c">#  Pump-up results</span>
         <span class="n">cv_result_set</span> <span class="o">=</span> <span class="n">result</span>
-        <span class="n">key_val</span> <span class="o">=</span> <span class="p">[(</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">(),</span> <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NodeBestSearchRefit</span><span class="o">.</span><span class="n">score</span><span class="p">])</span> \
-                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">cv_result_set</span><span class="p">]</span>
+        <span class="n">key_val</span> <span class="o">=</span> <span class="p">[(</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">(),</span> <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NodeBestSearchRefit</span><span class="o">.</span><span class="n">score</span><span class="p">])</span>
+                   <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">cv_result_set</span><span class="p">]</span>
         <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">key_val</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">scores_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>\
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeBestSearchRefit</span><span class="o">.</span><span class="n">arg_max</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
@@ -196,13 +227,17 @@
         <span class="n">best_key</span> <span class="o">=</span> <span class="n">key_val</span><span class="p">[</span><span class="n">idx_best</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="c"># Find nodes that match the best</span>
         <span class="n">nodes_dict</span> <span class="o">=</span> \
-            <span class="p">{</span><span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">():</span> \
-            <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeBestSearchRefit</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">walk_true_nodes</span><span class="p">()</span> \
-            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">()</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)}</span>
-        <span class="n">to_refit</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">nodes_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">wrapped_node</span> \
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)])</span>
+            <span class="p">{</span><span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">():</span>
+             <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">NodeBestSearchRefit</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">walk_true_nodes</span><span class="p">()</span>
+             <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">()</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)}</span>
+        <span class="n">to_refit</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">nodes_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">wrapped_node</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)])</span>
         <span class="n">best_params</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span> <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">,</span> <span class="nb">eval</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">to_refit</span><span class="p">,</span> <span class="n">best_params</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
 </pre></div>
 
           </div>

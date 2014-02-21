@@ -98,6 +98,7 @@
     <li> <strong class="uidlink"><a href="epac.map_reduce.reducers-module.html">epac.map_reduce.reducers</a></strong>: <em class="summary">Created on Thu Mar 14 16:12:26 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.map_reduce.results-module.html">epac.map_reduce.results</a></strong>: <em class="summary">Created on Fri May 17 16:37:54 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.map_reduce.split_input-module.html">epac.map_reduce.split_input</a></strong>: <em class="summary">Created on Wed Jun 26 17:26:09 2013</em>    </li>
+    <li> <strong class="uidlink"><a href="epac.map_reduce.wfdescriptors-module.html">epac.map_reduce.wfdescriptors</a></strong>: <em class="summary">Created on Fri Oct 18 10:42:47 2013</em>    </li>
     </ul>
     </li>
     <li> <strong class="uidlink"><a href="epac.sklearn_plugins-module.html">epac.sklearn_plugins</a></strong>: <em class="summary">Created on Tue Mar 19 15:45:21 2013</em>
@@ -109,12 +110,15 @@
     <li class="private"> <strong class="uidlink"><a href="epac.stores-module.html" onclick="show_private();">epac.stores</a></strong>: <em class="summary">Created on Thu Mar 14 14:54:35 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests-module.html">epac.tests</a></strong>
     <ul>
-    <li> <strong class="uidlink"><a href="epac.tests.benchmark_mem-module.html">epac.tests.benchmark_mem</a></strong>: <em class="summary">Created on Wed Aug  7 14:47:17 2013</em>    </li>
+    <li> <strong class="uidlink"><a href="epac.tests.test_cv_best_search_refit_parallel_reduce-module.html">epac.tests.test_cv_best_search_refit_parallel_reduce</a></strong>: <em class="summary">Created on Mon Oct 14 10:43:39 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_dump_class_definition_sfw-module.html">epac.tests.test_dump_class_definition_sfw</a></strong>: <em class="summary">Created on Mon Sep 16 09:37:58 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_multi_processes-module.html">epac.tests.test_multi_processes</a></strong>: <em class="summary">Created on 20 June 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_persistence-module.html">epac.tests.test_persistence</a></strong>: <em class="summary">Created on Sun May 19 20:32:20 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_primitives-module.html">epac.tests.test_primitives</a></strong>: <em class="summary">Created on Sun May 19 19:29:17 2013</em>    </li>
+    <li> <strong class="uidlink"><a href="epac.tests.test_store-module.html">epac.tests.test_store</a></strong>: <em class="summary">Created on Thu Oct 10 15:55:05 2013</em>    </li>
+    <li> <strong class="uidlink"><a href="epac.tests.test_swf_engineinfo-module.html">epac.tests.test_swf_engineinfo</a></strong>: <em class="summary">Created on Wed Oct  9 10:43:51 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_swf_wd-module.html">epac.tests.test_swf_wd</a></strong>: <em class="summary">Created on Tue Sep 17 17:07:47 2013</em>    </li>
+    <li> <strong class="uidlink"><a href="epac.tests.test_warm_start_methods-module.html">epac.tests.test_warm_start_methods</a></strong>: <em class="summary">Created on Mon Oct  7 11:44:30 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_workflow-module.html">epac.tests.test_workflow</a></strong>: <em class="summary">Created on Sat Mar 16 19:19:48 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.utils-module.html">epac.tests.utils</a></strong>: <em class="summary">Created on 20 June 2013</em>    </li>
     <li> <strong class="uidlink"><a href="epac.tests.wfexamples2test-module.html">epac.tests.wfexamples2test</a></strong>: <em class="summary">Created on Tue Jun 11 11:13:20 2013</em>    </li>
@@ -458,9 +462,10 @@ which is a dictionary of nodes.
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="epac-module.html#export_csv" class="summary-sig-name">export_csv</a>(<span class="summary-sig-arg">tree</span>,
+          <td><span class="summary-sig"><a href="epac-module.html#export_csv" class="summary-sig-name">export_csv</a>(<span class="summary-sig-arg">tree_root</span>,
         <span class="summary-sig-arg">results</span>,
-        <span class="summary-sig-arg">filename</span>)</span><br />
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">delimiter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span><br />
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_csv">source&nbsp;code</a></span>
@@ -478,7 +483,8 @@ which is a dictionary of nodes.
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="epac-module.html#export_resultset_csv" class="summary-sig-name">export_resultset_csv</a>(<span class="summary-sig-arg">results</span>,
-        <span class="summary-sig-arg">filename</span>)</span><br />
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">delimiter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span><br />
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_resultset_csv">source&nbsp;code</a></span>
@@ -496,7 +502,8 @@ which is a dictionary of nodes.
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="epac-module.html#export_leaves_csv" class="summary-sig-name">export_leaves_csv</a>(<span class="summary-sig-arg">tree_root</span>,
-        <span class="summary-sig-arg">filename</span>)</span><br />
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">delimiter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span><br />
       Export the results to a CSV file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.utils-pysrc.html#export_leaves_csv">source&nbsp;code</a></span>
@@ -817,9 +824,10 @@ Examples
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">export_csv</span>(<span class="sig-arg">tree</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">export_csv</span>(<span class="sig-arg">tree_root</span>,
         <span class="sig-arg">results</span>,
-        <span class="sig-arg">filename</span>)</span>
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">delimiter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="epac.utils-pysrc.html#export_csv">source&nbsp;code</a></span>&nbsp;
@@ -834,12 +842,16 @@ bottom-up(reduce) operation to a CSV file
 
 Parameters
 ----------
-tree: Workflow in study
+tree_root: Workflow in study
 
 results: list or ResultSet to export
 
 filename: Relative or absolute path to the CSV file
     If the file doesn't exist, create it
+
+delimiter: separator between each value of the csv file
+    Caution : using ' ' as delimitor can result in messed-up files
+              as there are spaces in the result arrays
 
 Example
 -------
@@ -849,11 +861,11 @@ Example
 &gt;&gt;&gt; from epac.utils import export_csv
 &gt;&gt;&gt; import tempfile
 &gt;&gt;&gt; _, filename1 = tempfile.mkstemp(suffix=&quot;.csv&quot;)
-&gt;&gt;&gt; X, y = datasets.make_classification(n_samples=12, n_features=10, n_informative=2, random_state=1)
+&gt;&gt;&gt; X, y = datasets.make_classification(n_samples=12, n_features=10,                                             n_informative=2, random_state=1)
 &gt;&gt;&gt; multi = Methods(SVM(C=1), SVM(C=10))
 &gt;&gt;&gt; result_run = multi.run(X=X, y=y)
 &gt;&gt;&gt; export_csv(multi, result_run, filename1)
-&gt;&gt;&gt; with open(filename1, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+&gt;&gt;&gt; with open(filename1, 'rb') as csvfile:  #doctest: +NORMALIZE_WHITESPACE
 ...     print csvfile.read()
 key;y/true;y/pred
 LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
@@ -863,7 +875,7 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
 &gt;&gt;&gt; _, filename2 = tempfile.mkstemp(suffix=&quot;.csv&quot;)
 &gt;&gt;&gt; result_reduce = multi.reduce()
 &gt;&gt;&gt; export_csv(multi, result_reduce, filename2)
-&gt;&gt;&gt; with open(filename2, 'rb') as csvfile:  # doctest: +NORMALIZE_WHITESPACE
+&gt;&gt;&gt; with open(filename2, 'rb') as csvfile:  #doctest: +NORMALIZE_WHITESPACE
 ...     print csvfile.read()
 key;y/true;y/pred
 LinearSVC(C=1);[1 0 0 1 0 0 1 0 1 1 0 1];[0 0 0 1 0 0 1 0 1 0 0 1]
@@ -883,7 +895,8 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">export_resultset_csv</span>(<span class="sig-arg">results</span>,
-        <span class="sig-arg">filename</span>)</span>
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">delimiter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="epac.utils-pysrc.html#export_resultset_csv">source&nbsp;code</a></span>&nbsp;
@@ -902,6 +915,10 @@ results: ResultSet to export
 
 filename: Relative or absolute path to the CSV file
     If the file doesn't exist, create it
+
+delimiter: separator between each value of the csv file
+    Caution : using ' ' as delimitor can result in messed-up files
+              as there are spaces in the result arrays
 
 Example
 -------
@@ -934,7 +951,8 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">export_leaves_csv</span>(<span class="sig-arg">tree_root</span>,
-        <span class="sig-arg">filename</span>)</span>
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">delimiter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">;</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="epac.utils-pysrc.html#export_leaves_csv">source&nbsp;code</a></span>&nbsp;
@@ -953,6 +971,10 @@ tree_root: Workflow in study
 
 filename: Relative or absolute path to the CSV file
     If the file doesn't exist, create it
+
+delimiter: separator between each value of the csv file
+    Caution : using ' ' as delimitor can result in messed-up files
+              as there are spaces in the result arrays
 
 Example
 -------
@@ -1005,7 +1027,7 @@ LinearSVC(C=10);[1 0 0 1 0 0 1 0 1 1 0 1];[1 0 0 1 0 0 1 0 1 1 0 1]
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Oct  2 09:49:16 2013
+    Generated by Epydoc 3.0.1 on Fri Feb 21 15:24:54 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

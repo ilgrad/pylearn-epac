@@ -163,7 +163,6 @@
         <span class="k">return</span> <span class="p">[(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="n">signature</span><span class="p">)]</span>
 
 
-
 <span class="c">## ======================================= ##</span>
 <span class="c">## == Workflow Node base abstract class == ##</span>
 <span class="c">## ======================================= ##</span>
@@ -184,6 +183,7 @@
         <span class="c"># with the same signature.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signature_args</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># dict of args to build the node signature</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_top_down</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">()</span>
@@ -254,7 +254,7 @@
 <span class="sd">        key: str</span>
 
 <span class="sd">        regexp: str</span>
-<span class="sd">            string with wild-cards: &quot;*&quot; to allow several matches. </span>
+<span class="sd">            string with wild-cards: &quot;*&quot; to allow several matches.</span>
 <span class="sd">            It return KEY STRING LIST instead of nodes.</span>
 
 <span class="sd">        Example</span>
@@ -307,8 +307,8 @@
             <span class="k">return</span> <span class="bp">None</span>
         <span class="k">elif</span> <span class="n">regexp</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">regexp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;.*&quot;</span><span class="p">)</span><span class="o">.</span>\
-                             <span class="n">replace</span><span class="p">(</span><span class="s">&quot;(&quot;</span><span class="p">,</span> <span class="s">&quot;\(&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;)&quot;</span><span class="p">,</span> <span class="s">&quot;\)&quot;</span><span class="p">))</span>
+                <span class="n">regexp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;.*&quot;</span><span class="p">)</span><span class="o">.</span>
+                                    <span class="n">replace</span><span class="p">(</span><span class="s">&quot;(&quot;</span><span class="p">,</span> <span class="s">&quot;\(&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;)&quot;</span><span class="p">,</span> <span class="s">&quot;\)&quot;</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">regexp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">()):</span>
                 <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">()]</span>
             <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -321,7 +321,7 @@
             <span class="k">return</span> <span class="n">nodes</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Provide at least a key for exact match&quot;</span>
-            <span class="s">&quot;or a regexp for wild card matches&quot;</span><span class="p">)</span>
+                             <span class="s">&quot;or a regexp for wild card matches&quot;</span><span class="p">)</span>
 </div>
     <span class="k">def</span> <span class="nf">get_path_from_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get path iterator from root.</span>
@@ -419,7 +419,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">args_str</span> <span class="o">=</span> <span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signature_args</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-                             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_args</span><span class="p">])</span>
+                                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_args</span><span class="p">])</span>
             <span class="n">args_str</span> <span class="o">=</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="n">args_str</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="n">args_str</span>
 </div>
@@ -523,15 +523,18 @@
             <span class="n">debug</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span>
             <span class="n">debug</span><span class="o">.</span><span class="n">Xy</span> <span class="o">=</span> <span class="n">Xy</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">initialization</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>  <span class="c">## Performe some initialization</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialization</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>  <span class="c"># Performe some initialization</span>
         <span class="n">Xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
-            <span class="c"># Call children func_name down to leaves</span>
-            <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">top_down</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children_top_down</span><span class="p">()]</span>
-            <span class="n">Xy</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span> <span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save_results</span><span class="p">(</span><span class="n">ResultSet</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_top_down</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+                <span class="c"># Call children func_name down to leaves</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">top_down</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
+                       <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children_top_down</span><span class="p">()]</span>
+                <span class="n">Xy</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ret</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(),</span> <span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_results</span><span class="p">(</span><span class="n">ResultSet</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">Xy</span>
 </div>
     <span class="k">def</span> <span class="nf">get_children_top_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -554,7 +557,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="c"># 1) Build sub-aggregates over children</span>
             <span class="n">children_result_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">store_results</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span>
-                <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
+                                   <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
             <span class="n">result_set</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="o">*</span><span class="n">children_result_set</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">result_set</span><span class="p">)</span>
@@ -568,7 +571,7 @@
     <span class="c"># -------------------------------- #</span>
     <span class="c"># -- I/O persistance operations -- #</span>
     <span class="c"># -------------------------------- #</span>
-    <span class="k">def</span> <span class="nf">save_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">memm</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Save ResultSet</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">store</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_store</span><span class="p">()</span>
@@ -578,7 +581,7 @@
         <span class="sd">&quot;&quot;&quot; Load ResultSet</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_store</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">RESULT_SET</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-                    <span class="n">key_push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">conf</span><span class="o">.</span><span class="n">RESULT_SET</span><span class="p">))</span>
+            <span class="n">key_push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">conf</span><span class="o">.</span><span class="n">RESULT_SET</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;default&quot;</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;deprecated save_state&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
@@ -628,12 +631,12 @@
             <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">store</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_store</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">store</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span>
         <span class="n">store</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key_push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">conf</span><span class="o">.</span><span class="n">STORE_STORE_PREFIX</span><span class="p">),</span>
-                       <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">)</span>     
-                
+                   <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">save_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;I/O (persistance) operation: save single node states ie.: store&quot;&quot;&quot;</span>
         <span class="n">store</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key_push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_key</span><span class="p">(),</span> <span class="n">conf</span><span class="o">.</span><span class="n">STORE_STORE_PREFIX</span><span class="p">),</span>
-                       <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">)</span>
+                   <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s">&quot;bin&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseNode.merge_tree_store"><a class="viewcode-back" href="../../../api/workflow/base.html#epac.workflow.base.BaseNode.merge_tree_store">[docs]</a>    <span class="k">def</span> <span class="nf">merge_tree_store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">another_tree_root</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Merge all the stores from another_tree_root</span>

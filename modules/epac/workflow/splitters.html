@@ -78,10 +78,12 @@
 <span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">_list_indices</span><span class="p">,</span> <span class="n">dict_diff</span><span class="p">,</span> <span class="n">_sub_dict</span>
 <span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">get_list_from_lists</span>
+<span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">copy_parameters</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.results</span> <span class="kn">import</span> <span class="n">Result</span><span class="p">,</span> <span class="n">ResultSet</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.reducers</span> <span class="kn">import</span> <span class="n">CVBestSearchRefitPReducer</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.reducers</span> <span class="kn">import</span> <span class="n">ClassificationReport</span><span class="p">,</span> <span class="n">PvalPerms</span>
 <span class="kn">from</span> <span class="nn">epac.configuration</span> <span class="kn">import</span> <span class="n">conf</span>
+<span class="kn">from</span> <span class="nn">epac</span> <span class="kn">import</span> <span class="n">Pipe</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="c">## ======================================================================== ##</span>
@@ -111,7 +113,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_results</span><span class="p">()</span>
         <span class="c"># 1) Build sub-aggregates over children</span>
         <span class="n">children_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">store_results</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span>
-            <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
+                            <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
         <span class="n">result_set</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="o">*</span><span class="n">children_results</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result_set</span>
@@ -156,6 +158,12 @@
 <span class="sd">    cv_type: string</span>
 <span class="sd">        Values: &quot;stratified&quot;, &quot;random&quot;, &quot;loo&quot;. Default &quot;stratified&quot;.</span>
 
+<span class="sd">    cv_key: string</span>
+<span class="sd">        Name of the variable used to compute the sub-dataset indices.</span>
+<span class="sd">        If cv_type is &quot;random&quot; or &quot;loo&quot;, only the size of its first dimension is used.</span>
+<span class="sd">        If cv_type is &quot;stratified&quot;, the values are the labels used in stratification.</span>
+<span class="sd">        Default: &quot;y&quot;.</span>
+
 <span class="sd">    random_state : int or RandomState</span>
 <span class="sd">        Pseudo-random number generator state used for random sampling.</span>
 
@@ -174,19 +182,22 @@
 <span class="sd">    ...                                     n_informative=2,</span>
 <span class="sd">    ...                                     random_state=1)</span>
 <span class="sd">    &gt;&gt;&gt; cv = CV(Methods(LDA(), SVM()))</span>
-<span class="sd">    &gt;&gt;&gt; res = cv.run(X=X, y=y)    </span>
+<span class="sd">    &gt;&gt;&gt; res = cv.run(X=X, y=y)</span>
 <span class="sd">    &gt;&gt;&gt; print cv.reduce()</span>
 <span class="sd">    ResultSet(</span>
-<span class="sd">    [{&#39;key&#39;: LDA, &#39;y/test/score_precision&#39;: [ 0.55555556  0.54545455], &#39;y/test/score_recall&#39;: [ 0.5  0.6], &#39;y/test/score_accuracy&#39;: 0.55, &#39;y/test/score_f1&#39;: [ 0.52631579  0.57142857], &#39;y/test/score_recall_mean&#39;: 0.55},</span>
-<span class="sd">     {&#39;key&#39;: LinearSVC, &#39;y/test/score_precision&#39;: [ 0.53846154  0.57142857], &#39;y/test/score_recall&#39;: [ 0.7  0.4], &#39;y/test/score_accuracy&#39;: 0.55, &#39;y/test/score_f1&#39;: [ 0.60869565  0.47058824], &#39;y/test/score_recall_mean&#39;: 0.55}])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    [{&#39;key&#39;: LDA, &#39;y/test/score_precision&#39;: [ 0.33333333  0.36363636], &#39;y/test/score_recall&#39;: [ 0.3  0.4], &#39;y/test/score_accuracy&#39;: 0.35, &#39;y/test/score_f1&#39;: [ 0.31578947  0.38095238], &#39;y/test/score_recall_mean&#39;: 0.35},</span>
+<span class="sd">     {&#39;key&#39;: LinearSVC, &#39;y/test/score_precision&#39;: [ 0.5  0.5], &#39;y/test/score_recall&#39;: [ 0.6  0.4], &#39;y/test/score_accuracy&#39;: 0.5, &#39;y/test/score_f1&#39;: [ 0.54545455  0.44444444], &#39;y/test/score_recall_mean&#39;: 0.5}])</span>
+
+<span class="sd">     &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">cv_type</span><span class="o">=</span><span class="s">&quot;stratified&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                 <span class="n">cv_type</span><span class="o">=</span><span class="s">&quot;stratified&quot;</span><span class="p">,</span> <span class="n">cv_key</span><span class="o">=</span><span class="s">&quot;y&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(),</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CV</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span> <span class="o">=</span> <span class="n">n_folds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cv_type</span> <span class="o">=</span> <span class="n">cv_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv_key</span> <span class="o">=</span> <span class="n">cv_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span> <span class="o">=</span> <span class="n">reducer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span> <span class="o">=</span> <span class="n">CRSlicer</span><span class="p">(</span><span class="n">signature_name</span><span class="o">=</span><span class="s">&quot;CV&quot;</span><span class="p">,</span>
                                <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -212,22 +223,22 @@
 
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
         <span class="c"># Set the slicing</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s">&quot;y&quot;</span> <span class="ow">in</span> <span class="n">Xy</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;y&quot; should be provided&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_key</span> <span class="ow">in</span> <span class="n">Xy</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; should be provided&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_key</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_type</span> <span class="o">==</span> <span class="s">&quot;stratified&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;n_folds&quot; should be set&#39;</span><span class="p">)</span>
             <span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">StratifiedKFold</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">Xy</span><span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">],</span> <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">Xy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_key</span><span class="p">],</span> <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_type</span> <span class="o">==</span> <span class="s">&quot;random&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;&quot;n_folds&quot; should be set&#39;</span><span class="p">)</span>
             <span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">KFold</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Xy</span><span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
-                           <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Xy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_folds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_folds</span><span class="p">,</span>
+                                  <span class="n">random_state</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_type</span> <span class="o">==</span> <span class="s">&quot;loo&quot;</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">LeaveOneOut</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="n">LeaveOneOut</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Xy</span><span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sclices</span> <span class="o">=</span> <span class="n">LeaveOneOut</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">Xy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">Xy</span>
 
     <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -349,7 +360,7 @@
         <span class="n">leaves_key</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">get_key</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">walk_leaves</span><span class="p">()]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leaves_key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">leaves_key</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Some methods are identical, they could not be &quot;</span>
-                    <span class="s">&quot;differentiated according to their arguments&quot;</span><span class="p">)</span>
+                             <span class="s">&quot;differentiated according to their arguments&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Xy</span>
@@ -357,17 +368,43 @@
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_results</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="c"># 1) Build sub-aggregates over children</span>
         <span class="n">children_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">store_results</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span>
-            <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
+                            <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="o">*</span><span class="n">children_results</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span>
 
+</div>
+<span class="k">class</span> <span class="nc">WarmStartMethods</span><span class="p">(</span><span class="n">Methods</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run like methods but with previous state for initialization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">nodes</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WarmStartMethods</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_top_down</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
+        <span class="n">prev_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">rets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">cpXy</span> <span class="o">=</span> <span class="n">Xy</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">prev_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">):</span>
+                <span class="c"># from_obj, to_obj, exclude_parameters</span>
+                <span class="n">copy_parameters</span><span class="p">(</span><span class="n">from_obj</span><span class="o">=</span><span class="n">prev_node</span><span class="o">.</span><span class="n">wrapped_node</span><span class="p">,</span>
+                                <span class="n">to_obj</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">wrapped_node</span><span class="p">,</span>
+                                <span class="n">exclude_parameters</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">signature_args</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">top_down</span><span class="p">(</span><span class="o">**</span><span class="n">cpXy</span><span class="p">)</span>
+            <span class="n">rets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+            <span class="n">prev_node</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">Xy</span> <span class="o">=</span> <span class="n">rets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">rets</span>
+        <span class="k">return</span> <span class="n">Xy</span>
+
+
 <span class="c"># -------------------------------- #</span>
 <span class="c"># -- Slicers                    -- #</span>
 <span class="c"># -------------------------------- #</span>
 
-</div>
+
 <span class="k">class</span> <span class="nc">VirtualList</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
@@ -450,8 +487,8 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apply_on</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_on</span> <span class="o">=</span> <span class="p">[</span><span class="n">apply_on</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;apply_on must be a string or a &quot;</span>\
-                <span class="s">&quot;list of strings or None&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;apply_on must be a string or a &quot;</span>
+                             <span class="s">&quot;list of strings or None&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">set_sclices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slices</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -460,7 +497,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span>\
                 <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slices</span><span class="p">}</span>
+                 <span class="k">else</span> <span class="n">slices</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">slices</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> \
                 <span class="n">slices</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">slices</span>
@@ -482,21 +519,21 @@
                     <span class="n">Xy</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">data_key</span><span class="p">]]</span>
         <span class="c"># only for cross-validation</span>
         <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">TRAIN</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-            <span class="ow">and</span> <span class="n">conf</span><span class="o">.</span><span class="n">TEST</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">Xy</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">KW_SPLIT_TRAIN_TEST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
-                <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>
-                    <span class="n">dat</span> <span class="o">=</span> <span class="n">Xy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">sample_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_or_row</span><span class="p">:</span>
-                                <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
-                                    <span class="n">dat</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
-                                    <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">],</span> <span class="p">:]</span>
+                <span class="ow">and</span> <span class="n">conf</span><span class="o">.</span><span class="n">TEST</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">Xy</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">KW_SPLIT_TRAIN_TEST</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="n">data_keys</span><span class="p">:</span>
+                <span class="n">dat</span> <span class="o">=</span> <span class="n">Xy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">data_key</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">sample_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_or_row</span><span class="p">:</span>
+                            <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
+                                <span class="n">dat</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
-                                <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
+                                <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">],</span> <span class="p">:]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">Xy</span><span class="p">[</span><span class="n">key_push</span><span class="p">(</span><span class="n">data_key</span><span class="p">,</span> <span class="n">sample_set</span><span class="p">)]</span> <span class="o">=</span> \
+                            <span class="n">dat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">sample_set</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">Xy</span>
 
 
@@ -525,11 +562,10 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indices_of_groups</span><span class="p">,</span> <span class="n">col_or_row</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CRSplitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indices_of_groups</span> <span class="o">=</span> <span class="n">indices_of_groups</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span> <span class="o">=</span> <span class="n">CRSlicer</span><span class="p">(</span>
-            <span class="n">signature_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>\
-            <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>\
-            <span class="n">apply_on</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">col_or_row</span><span class="o">=</span><span class="n">col_or_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slicer</span> <span class="o">=</span> <span class="n">CRSlicer</span><span class="p">(</span><span class="n">signature_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                               <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">apply_on</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                               <span class="n">col_or_row</span><span class="o">=</span><span class="n">col_or_row</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">uni_indices_of_groups</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key_indices_of_groups</span> <span class="ow">in</span> <span class="n">indices_of_groups</span><span class="p">:</span>
@@ -560,8 +596,8 @@
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">slices</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uni_indices_of_groups</span><span class="p">:</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices_of_groups</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span> \
-                        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">list_data</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices_of_groups</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span>
+                                 <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">list_data</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">slices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -587,7 +623,7 @@
 
 <span class="sd">    indices_of_groups: dictionary</span>
 <span class="sd">        group index for data</span>
-<span class="sd">    </span>
+
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
 <span class="sd">    See Example in ColumnSplitter</span>
@@ -621,8 +657,7 @@
 <span class="sd">    ...         print &quot;X=&quot;, X.shape</span>
 <span class="sd">    ...         print &quot;Y=&quot;, Y.shape</span>
 <span class="sd">    ...         return {&quot;X&quot;: X, &quot;Y&quot;: Y}</span>
-<span class="sd">    ... </span>
-<span class="sd">    &gt;&gt;&gt; </span>
+<span class="sd">    ...</span>
 <span class="sd">    &gt;&gt;&gt; n_samples = 10</span>
 <span class="sd">    &gt;&gt;&gt; n_xfeatures = 11</span>
 <span class="sd">    &gt;&gt;&gt; n_yfeatures = 12</span>
@@ -668,7 +703,7 @@
 <span class="sd">    *********************************</span>
 <span class="sd">    &gt;&gt;&gt; print &quot;Split Y&quot;</span>
 <span class="sd">    Split Y</span>
-<span class="sd">    &gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)    </span>
+<span class="sd">    &gt;&gt;&gt; res = column_splitter.run(X=X, Y=Y)</span>
 <span class="sd">    ---------------------</span>
 <span class="sd">    X= (10, 11)</span>
 <span class="sd">    Y= (10, 3)</span>
@@ -733,8 +768,8 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indices_of_groups</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ColumnSplitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span>
-                                            <span class="n">indices_of_groups</span><span class="p">,</span>
-                                            <span class="n">col_or_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                                             <span class="n">indices_of_groups</span><span class="p">,</span>
+                                             <span class="n">col_or_row</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">CVBestSearchRefitParallel</span><span class="p">(</span><span class="n">Wrapper</span><span class="p">):</span>
@@ -773,10 +808,10 @@
 <span class="sd">    ...     for C in C_values for kernel in kernels])</span>
 <span class="sd">    &gt;&gt;&gt; wf = CVBestSearchRefitParallel(methods, n_folds=n_folds_nested)</span>
 <span class="sd">    &gt;&gt;&gt; wf.run(X=X, y=y)</span>
-<span class="sd">    [[{&#39;y/test/pred&#39;: array([0, 0, 0, 0, 1, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 0, 1, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 0, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 0, 0, 0, 1, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 0, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 0, 0, 1, 0, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 0, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 0, 0, 1, 0, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 1, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 0, 0, 1, 0, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 1, 0]), &#39;y/train/pred&#39;: array([0, 1, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}], [{&#39;y/test/pred&#39;: array([1, 1, 0, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 1, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 0, 0, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 0]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 0, 0, 0, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 1, 1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 0, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 0, 0, 1, 1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 0, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 0, 0, 1, 1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 1, 0, 1, 0, 1])}]]</span>
+<span class="sd">    [[{&#39;y/test/pred&#39;: array([0, 0, 1, 0, 0, 0]), &#39;y/train/pred&#39;: array([0, 0, 0, 0, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([1, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([0, 0, 1, 1, 0, 1]), &#39;y/test/true&#39;: array([1, 0, 0, 1, 0, 1])}], [{&#39;y/test/pred&#39;: array([0, 1, 1, 0, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 0, 0, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 0, 0, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 1, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 0, 0, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 0, 1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 0, 0, 1, 1]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}, {&#39;y/test/pred&#39;: array([0, 1, 1, 0, 1, 0]), &#39;y/train/pred&#39;: array([1, 0, 0, 1, 0, 1]), &#39;y/test/true&#39;: array([0, 0, 1, 1, 0, 1])}]]</span>
 <span class="sd">    &gt;&gt;&gt; wf.reduce()</span>
 <span class="sd">    ResultSet(</span>
-<span class="sd">    [{&#39;key&#39;: CVBestSearchRefitParallel, &#39;best_params&#39;: [{&#39;kernel&#39;: &#39;linear&#39;, &#39;C&#39;: 2, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: [1 0 0 1 0 0 1 0 1 1 0 1], &#39;y/pred&#39;: [0 0 0 1 0 0 1 0 1 0 0 1]}])</span>
+<span class="sd">    [{&#39;key&#39;: CVBestSearchRefitParallel, &#39;best_params&#39;: [{&#39;kernel&#39;: &#39;rbf&#39;, &#39;C&#39;: 0.1, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: [1 0 0 1 0 0 1 0 1 1 0 1], &#39;y/pred&#39;: [1 0 0 1 0 0 1 0 1 1 0 1]}])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -790,9 +825,9 @@
         <span class="n">arg_max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;arg_max&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s">&quot;arg_max&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="bp">True</span>
         <span class="kn">from</span> <span class="nn">epac.workflow.splitters</span> <span class="kn">import</span> <span class="n">CV</span>
         <span class="c"># methods = Methods(*tasks)</span>
-        <span class="n">cv_node</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>\
-                    <span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>\
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">cv_node</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                     <span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">cv_node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arg_max</span> <span class="o">=</span> <span class="n">arg_max</span>
@@ -823,7 +858,7 @@
 
     <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">store_results</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="n">children_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">store_results</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="k">for</span>
-            <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
+                            <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">ResultSet</span><span class="p">(</span><span class="o">*</span><span class="n">children_results</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">:</span>
             <span class="n">to_refit</span><span class="p">,</span> <span class="n">best_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
@@ -873,13 +908,13 @@
 <span class="sd">    ...     for C in C_values for kernel in kernels])</span>
 <span class="sd">    &gt;&gt;&gt; wf = CVBestSearchRefit(methods, n_folds=n_folds_nested)</span>
 <span class="sd">    &gt;&gt;&gt; wf.transform(X=X, y=y)</span>
-<span class="sd">    {&#39;best_params&#39;: [{&#39;kernel&#39;: &#39;linear&#39;, &#39;C&#39;: 2, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), &#39;y/pred&#39;: array([0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1])}</span>
+<span class="sd">    {&#39;best_params&#39;: [{&#39;kernel&#39;: &#39;rbf&#39;, &#39;C&#39;: 0.1, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), &#39;y/pred&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1])}</span>
 <span class="sd">    &gt;&gt;&gt; wf.reduce()</span>
 <span class="sd">    &gt;&gt;&gt; wf.run(X=X, y=y)</span>
-<span class="sd">    {&#39;best_params&#39;: [{&#39;kernel&#39;: &#39;linear&#39;, &#39;C&#39;: 2, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), &#39;y/pred&#39;: array([0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1])}</span>
+<span class="sd">    {&#39;best_params&#39;: [{&#39;kernel&#39;: &#39;rbf&#39;, &#39;C&#39;: 0.1, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]), &#39;y/pred&#39;: array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1])}</span>
 <span class="sd">    &gt;&gt;&gt; wf.reduce()</span>
 <span class="sd">    ResultSet(</span>
-<span class="sd">    [{&#39;key&#39;: CVBestSearchRefit, &#39;best_params&#39;: [{&#39;kernel&#39;: &#39;linear&#39;, &#39;C&#39;: 2, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: [1 0 0 1 0 0 1 0 1 1 0 1], &#39;y/pred&#39;: [0 0 0 1 0 0 1 0 1 0 0 1]}])</span>
+<span class="sd">    [{&#39;key&#39;: CVBestSearchRefit, &#39;best_params&#39;: [{&#39;kernel&#39;: &#39;rbf&#39;, &#39;C&#39;: 0.1, &#39;name&#39;: &#39;SVC&#39;}], &#39;y/true&#39;: [1 0 0 1 0 0 1 0 1 1 0 1], &#39;y/pred&#39;: [1 0 0 1 0 0 1 0 1 1 0 1]}])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -893,13 +928,14 @@
         <span class="n">arg_max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;arg_max&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s">&quot;arg_max&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="bp">True</span>
         <span class="kn">from</span> <span class="nn">epac.workflow.splitters</span> <span class="kn">import</span> <span class="n">CV</span>
         <span class="c">#methods = Methods(*tasks)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="n">CV</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ClassificationReport</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">arg_max</span> <span class="o">=</span> <span class="n">arg_max</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is deprecated. Please use </span><span class="si">%s</span><span class="s"> instead.&quot;</span> <span class="o">%</span> \
-                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>\
-                         <span class="n">CVBestSearchRefitParallel</span><span class="o">.</span><span class="n">__name__</span><span class="p">),</span>
-                        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+<span class="c">#        warnings.warn(&quot;%s is deprecated. Please use %s instead.&quot; % \</span>
+<span class="c">#                        (self.__class__.__name__,\</span>
+<span class="c">#                         CVBestSearchRefitParallel.__name__),</span>
+<span class="c">#                        category=DeprecationWarning)</span>
 
     <span class="k">def</span> <span class="nf">get_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
@@ -923,16 +959,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">top_down</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
         <span class="c">#  Pump-up results</span>
         <span class="n">cv_result_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">store_results</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-        <span class="n">key_val</span> <span class="o">=</span> <span class="p">[(</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">(),</span> <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">])</span> \
-                <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">cv_result_set</span><span class="p">]</span>
+        <span class="n">key_val</span> <span class="o">=</span> <span class="p">[(</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">(),</span> <span class="n">result</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">])</span>
+                   <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">cv_result_set</span><span class="p">]</span>
         <span class="n">scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">key_val</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">scores_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg_max</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
         <span class="n">idx_best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scores</span> <span class="o">==</span> <span class="n">scores_opt</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">best_key</span> <span class="o">=</span> <span class="n">key_val</span><span class="p">[</span><span class="n">idx_best</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="c"># Find nodes that match the best</span>
-        <span class="n">nodes_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">():</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">walk_true_nodes</span><span class="p">()</span> \
-            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">()</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)}</span>
-        <span class="n">to_refit</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">nodes_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">wrapped_node</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)])</span>
+        <span class="n">nodes_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">():</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">walk_true_nodes</span><span class="p">()</span>
+                      <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">get_signature</span><span class="p">()</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)}</span>
+        <span class="n">to_refit</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">nodes_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">wrapped_node</span>
+                          <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">)])</span>
         <span class="n">best_params</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span> <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">best_key</span><span class="p">,</span> <span class="nb">eval</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">to_refit</span><span class="p">,</span> <span class="n">best_params</span>
 
