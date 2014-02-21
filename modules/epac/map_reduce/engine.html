@@ -73,12 +73,9 @@
 <span class="kn">from</span> <span class="nn">epac.configuration</span> <span class="kn">import</span> <span class="n">conf</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.split_input</span> <span class="kn">import</span> <span class="n">SplitNodesInput</span>
 <span class="kn">from</span> <span class="nn">epac.map_reduce.inputs</span> <span class="kn">import</span> <span class="n">NodesInput</span>
-<span class="kn">from</span> <span class="nn">epac.map_reduce.exports</span> <span class="kn">import</span> <span class="n">save_job_list</span>
-<span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">estimate_dataset_size</span>
-<span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">save_dataset</span>
 
-
-
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">from</span> <span class="nn">epac.utils</span> <span class="kn">import</span> <span class="n">save_dictionary</span>
 
 
 <span class="k">class</span> <span class="nc">Engine</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -201,27 +198,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_root</span>
 
 </div>
-<span class="k">class</span> <span class="nc">JobInfo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mem_cost</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vmem_cost</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_cost</span> <span class="o">=</span> <span class="bp">None</span>
-
-
 <div class="viewcode-block" id="SomaWorkflowEngine"><a class="viewcode-back" href="../../../api/map_reduce/engine.html#epac.map_reduce.engine.SomaWorkflowEngine">[docs]</a><span class="k">class</span> <span class="nc">SomaWorkflowEngine</span><span class="p">(</span><span class="n">LocalEngine</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Using soma-workflow to run epac tree in parallel</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    mmap_mode: {None, ‘r+’, ‘r’, ‘w+’, ‘c’, &#39;auto&#39;}, optional :</span>
-<span class="sd">        &#39;auto&#39; means that the system determine if we use memory mapping or not.</span>
-<span class="sd">        See numpy.load for the meaning of the other arguments.</span>
-
-<span class="sd">    engine_info: list of JobInfo</span>
-<span class="sd">        You can get engine_info when call SomaWorkflowEngine.run</span>
-<span class="sd">        It works only on DRMS</span>
-<span class="sd">        (Distributed Resource Management System) using DRMAA, but not for</span>
-<span class="sd">        local machine</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">dataset_relative_path</span> <span class="o">=</span> <span class="s">&quot;./dataset&quot;</span>
     <span class="n">open_me_by_soma_workflow_gui</span> <span class="o">=</span> <span class="s">&quot;open_me_by_soma_workflow_gui&quot;</span>
@@ -234,9 +212,7 @@
                  <span class="n">login</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span>
                  <span class="n">pw</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span>
                  <span class="n">remove_finished_wf</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                 <span class="n">remove_local_tree</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                 <span class="n">mmap_mode</span><span class="o">=</span><span class="s">&quot;auto&quot;</span><span class="p">,</span>
-                 <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                 <span class="n">remove_local_tree</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">tree_root</span><span class="o">=</span><span class="n">tree_root</span><span class="p">,</span>
                                                  <span class="n">function_name</span><span class="o">=</span><span class="n">function_name</span><span class="p">,</span>
                                                  <span class="n">num_processes</span><span class="o">=</span><span class="n">num_processes</span><span class="p">)</span>
@@ -247,9 +223,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pw</span> <span class="o">=</span> <span class="n">pw</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_finished_wf</span> <span class="o">=</span> <span class="n">remove_finished_wf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_local_tree</span> <span class="o">=</span> <span class="n">remove_local_tree</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mmap_mode</span> <span class="o">=</span> <span class="n">mmap_mode</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine_info</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">_save_job_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">working_directory</span><span class="p">,</span>
@@ -291,66 +264,6 @@
             <span class="n">jobi</span> <span class="o">=</span> <span class="n">jobi</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">keysfile_list</span>
 
-    <span class="k">def</span> <span class="nf">_create_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                     <span class="n">keysfile_list</span><span class="p">,</span>
-                     <span class="n">is_run_local</span><span class="p">,</span>
-                     <span class="n">ft_working_directory</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">soma_workflow.client</span> <span class="kn">import</span> <span class="n">Job</span>
-        <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">nodesfile</span> <span class="ow">in</span> <span class="n">keysfile_list</span><span class="p">:</span>
-            <span class="n">command</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;epac_mapper&quot;</span><span class="p">)</span>
-            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--datasets&quot;</span><span class="p">)</span>
-            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span>
-                           <span class="o">+</span> <span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span>
-                           <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span><span class="p">)</span>
-            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--keysfile&quot;</span><span class="p">)</span>
-            <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="n">nodesfile</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mmap_mode</span><span class="p">:</span>
-                <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--mmap_mode&quot;</span><span class="p">)</span>
-                <span class="n">command</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mmap_mode</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_run_local</span><span class="p">:</span>
-                <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">command</span><span class="p">,</span>
-                          <span class="n">referenced_input_files</span><span class="o">=</span><span class="p">[</span><span class="n">ft_working_directory</span><span class="p">],</span>
-                          <span class="n">referenced_output_files</span><span class="o">=</span><span class="p">[</span><span class="n">ft_working_directory</span><span class="p">],</span>
-                          <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac_job_key=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodesfile</span><span class="p">),</span>
-                          <span class="n">working_directory</span><span class="o">=</span><span class="n">ft_working_directory</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">command</span><span class="p">,</span>
-                          <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac_job_key=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodesfile</span><span class="p">),</span>
-                          <span class="n">working_directory</span><span class="o">=</span><span class="n">ft_working_directory</span><span class="p">)</span>
-            <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">jobs</span>
-
-    <span class="k">def</span> <span class="nf">get_engine_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">wf_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        get all the job information when only use DRMAA on DRMS</span>
-<span class="sd">        (Distributed Resource Management System).</span>
-<span class="sd">        When it is on local machine,</span>
-<span class="sd">        the return value (engine_info) is an empty list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">engine_info</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">workflow_elements_status</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">workflow_elements_status</span><span class="p">(</span><span class="n">wf_id</span><span class="p">)</span>
-        <span class="n">jobs_status</span> <span class="o">=</span> <span class="n">workflow_elements_status</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">job_status</span> <span class="ow">in</span> <span class="n">jobs_status</span><span class="p">:</span>
-            <span class="n">job_info</span> <span class="o">=</span> <span class="n">JobInfo</span><span class="p">()</span>
-            <span class="n">res_string</span> <span class="o">=</span> <span class="n">job_status</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">res_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">res_string</span> <span class="o">=</span> <span class="n">res_string</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">item_string</span> <span class="ow">in</span> <span class="n">res_string</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="s">&quot;vmem=&quot;</span> <span class="ow">in</span> <span class="n">item_string</span><span class="p">:</span>
-                        <span class="n">key_value</span> <span class="o">=</span> <span class="n">item_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
-                        <span class="n">job_info</span><span class="o">.</span><span class="n">vmem_cost</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">key_value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                    <span class="c"># Be careful, don&#39;t change order between &quot;vmem=&quot; and &quot;mem=&quot;</span>
-                    <span class="k">elif</span> <span class="s">&quot;mem=&quot;</span> <span class="ow">in</span> <span class="n">item_string</span><span class="p">:</span>
-                        <span class="n">key_value</span> <span class="o">=</span> <span class="n">item_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
-                        <span class="n">job_info</span><span class="o">.</span><span class="n">mem_cost</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">key_value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                    <span class="k">elif</span> <span class="s">&quot;walltime=&quot;</span> <span class="ow">in</span> <span class="n">item_string</span><span class="p">:</span>
-                        <span class="n">key_value</span> <span class="o">=</span> <span class="n">item_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
-                        <span class="n">job_info</span><span class="o">.</span><span class="n">time_cost</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">key_value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="n">engine_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">job_info</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">engine_info</span>
-
 <div class="viewcode-block" id="SomaWorkflowEngine.run"><a class="viewcode-back" href="../../../api/map_reduce/engine.html#epac.map_reduce.engine.SomaWorkflowEngine.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Run soma-workflow without gui</span>
 
@@ -377,8 +290,7 @@
 <span class="sd">        &gt;&gt;&gt; ## =======================================================</span>
 <span class="sd">        &gt;&gt;&gt; sfw_engine = SomaWorkflowEngine(tree_root=tree_root_node,</span>
 <span class="sd">        ...                                 function_name=&quot;transform&quot;,</span>
-<span class="sd">        ...                                 num_processes=3,</span>
-<span class="sd">                                            remove_finished_wf=False)</span>
+<span class="sd">        ...                                 num_processes=3)</span>
 <span class="sd">        &gt;&gt;&gt; tree_root_node = sfw_engine.run(**Xy)</span>
 <span class="sd">        light mode</span>
 <span class="sd">        &gt;&gt;&gt; ## Run reduce process</span>
@@ -419,7 +331,7 @@
         <span class="c">## ===============================================</span>
         <span class="c"># np.savez(os.path.join(tmp_work_dir_path,</span>
         <span class="c"># SomaWorkflowEngine.dataset_relative_path), **Xy)</span>
-        <span class="n">save_dataset</span><span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
+        <span class="n">save_dictionary</span><span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
         <span class="n">store</span> <span class="o">=</span> <span class="n">StoreFs</span><span class="p">(</span><span class="n">dirpath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">tmp_work_dir_path</span><span class="p">,</span>
             <span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">tree_root_relative_path</span><span class="p">))</span>
@@ -431,13 +343,30 @@
         <span class="n">split_node_input</span> <span class="o">=</span> <span class="n">SplitNodesInput</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_root</span><span class="p">,</span>
                                            <span class="n">num_processes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_processes</span><span class="p">)</span>
         <span class="n">nodesinput_list</span> <span class="o">=</span> <span class="n">split_node_input</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">node_input</span><span class="p">)</span>
-        <span class="n">keysfile_list</span> <span class="o">=</span> <span class="n">save_job_list</span><span class="p">(</span><span class="n">tmp_work_dir_path</span><span class="p">,</span> <span class="n">nodesinput_list</span><span class="p">)</span>
-
+        <span class="n">keysfile_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_job_list</span><span class="p">(</span><span class="n">tmp_work_dir_path</span><span class="p">,</span>
+                                            <span class="n">nodesinput_list</span><span class="p">)</span>
         <span class="c">## Build soma-workflow</span>
         <span class="c">## ===================</span>
-        <span class="n">jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_jobs</span><span class="p">(</span><span class="n">keysfile_list</span><span class="p">,</span>
-                                 <span class="n">is_run_local</span><span class="p">,</span>
-                                 <span class="n">ft_working_directory</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_run_local</span><span class="p">:</span>
+            <span class="n">jobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Job</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s">u&quot;epac_mapper&quot;</span><span class="p">,</span>
+                                 <span class="s">u&#39;--datasets&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                 <span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">),</span>
+                                 <span class="s">u&#39;--keysfile&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                 <span class="p">(</span><span class="n">nodesfile</span><span class="p">)],</span>
+                        <span class="n">referenced_input_files</span><span class="o">=</span><span class="p">[</span><span class="n">ft_working_directory</span><span class="p">],</span>
+                        <span class="n">referenced_output_files</span><span class="o">=</span><span class="p">[</span><span class="n">ft_working_directory</span><span class="p">],</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac_job_key=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodesfile</span><span class="p">),</span>
+                        <span class="n">working_directory</span><span class="o">=</span><span class="n">ft_working_directory</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">nodesfile</span> <span class="ow">in</span> <span class="n">keysfile_list</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">jobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Job</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s">u&quot;epac_mapper&quot;</span><span class="p">,</span>
+                                 <span class="s">u&#39;--datasets&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                 <span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">),</span>
+                                 <span class="s">u&#39;--keysfile&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                                 <span class="p">(</span><span class="n">nodesfile</span><span class="p">)],</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac_job_key=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodesfile</span><span class="p">),</span>
+                        <span class="n">working_directory</span><span class="o">=</span><span class="n">ft_working_directory</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">nodesfile</span> <span class="ow">in</span> <span class="n">keysfile_list</span><span class="p">]</span>
         <span class="n">soma_workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span><span class="n">jobs</span><span class="o">=</span><span class="n">jobs</span><span class="p">)</span>
 
         <span class="n">controller</span> <span class="o">=</span> <span class="n">WorkflowController</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resource_id</span><span class="p">,</span>
@@ -446,14 +375,10 @@
         <span class="c">## run soma-workflow</span>
         <span class="c">## =================</span>
         <span class="n">wf_id</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">submit_workflow</span><span class="p">(</span><span class="n">workflow</span><span class="o">=</span><span class="n">soma_workflow</span><span class="p">,</span>
-                                           <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac workflow&quot;</span><span class="p">,</span>
-                                           <span class="n">queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+                                           <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac workflow&quot;</span><span class="p">)</span>
         <span class="n">Helper</span><span class="o">.</span><span class="n">transfer_input_files</span><span class="p">(</span><span class="n">wf_id</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
         <span class="n">Helper</span><span class="o">.</span><span class="n">wait_workflow</span><span class="p">(</span><span class="n">wf_id</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
         <span class="n">Helper</span><span class="o">.</span><span class="n">transfer_output_files</span><span class="p">(</span><span class="n">wf_id</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">engine_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_engine_info</span><span class="p">(</span><span class="n">controller</span><span class="p">,</span> <span class="n">wf_id</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_finished_wf</span><span class="p">:</span>
             <span class="n">controller</span><span class="o">.</span><span class="n">delete_workflow</span><span class="p">(</span><span class="n">wf_id</span><span class="p">)</span>
         <span class="c">## read result tree</span>
@@ -492,9 +417,7 @@
         <span class="c">## ===============================================</span>
 <span class="c">#        np.savez(os.path.join(tmp_work_dir_path,</span>
 <span class="c">#                 SomaWorkflowEngine.dataset_relative_path), **Xy)</span>
-        <span class="n">db_size</span> <span class="o">=</span> <span class="n">estimate_dataset_size</span><span class="p">(</span><span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
-        <span class="n">db_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span>  <span class="c"># convert it into mega byte</span>
-        <span class="n">save_dataset</span><span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
+        <span class="n">save_dictionary</span><span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">,</span> <span class="o">**</span><span class="n">Xy</span><span class="p">)</span>
         <span class="n">store</span> <span class="o">=</span> <span class="n">StoreFs</span><span class="p">(</span><span class="n">dirpath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">tmp_work_dir_path</span><span class="p">,</span>
             <span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">tree_root_relative_path</span><span class="p">))</span>
@@ -509,9 +432,16 @@
                                             <span class="n">nodesinput_list</span><span class="p">)</span>
         <span class="c">## Build soma-workflow</span>
         <span class="c">## ===================</span>
-        <span class="n">jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_jobs</span><span class="p">(</span><span class="n">keysfile_list</span><span class="p">,</span>
-                                 <span class="n">is_run_local</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                                 <span class="n">ft_working_directory</span><span class="o">=</span><span class="n">ft_working_directory</span><span class="p">)</span>
+        <span class="n">jobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Job</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s">u&quot;epac_mapper&quot;</span><span class="p">,</span>
+                             <span class="s">u&#39;--datasets&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                             <span class="p">(</span><span class="n">SomaWorkflowEngine</span><span class="o">.</span><span class="n">dataset_relative_path</span><span class="p">),</span>
+                             <span class="s">u&#39;--keysfile&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span>
+                             <span class="p">(</span><span class="n">nodesfile</span><span class="p">)],</span>
+                    <span class="n">referenced_input_files</span><span class="o">=</span><span class="p">[</span><span class="n">ft_working_directory</span><span class="p">],</span>
+                    <span class="n">referenced_output_files</span><span class="o">=</span><span class="p">[</span><span class="n">ft_working_directory</span><span class="p">],</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s">&quot;epac_job_key=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nodesfile</span><span class="p">),</span>
+                    <span class="n">working_directory</span><span class="o">=</span><span class="n">ft_working_directory</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">nodesfile</span> <span class="ow">in</span> <span class="n">keysfile_list</span><span class="p">]</span>
         <span class="n">soma_workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span><span class="n">jobs</span><span class="o">=</span><span class="n">jobs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">soma_workflow_dirpath</span> <span class="ow">and</span> <span class="n">soma_workflow_dirpath</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
             <span class="n">out_soma_workflow_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>

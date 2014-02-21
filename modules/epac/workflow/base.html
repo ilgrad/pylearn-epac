@@ -78,6 +78,16 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">or</span> <span class="n">basename</span>
 
+<span class="k">def</span> <span class="nf">key_join</span><span class="p">(</span><span class="o">*</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">conf</span><span class="o">.</span><span class="n">SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">key_contain_item</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="n">item</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">key_strip_item</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">conf</span><span class="o">.</span><span class="n">SEP</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">key_split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">item</span><span class="p">])</span>
+
 
 <span class="k">def</span> <span class="nf">key_pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Split the key into head / tail.</span>

@@ -69,22 +69,7 @@ object --+
 </pre>
 
 <hr />
-<pre class="literalblock">
-Using soma-workflow to run epac tree in parallel
-
-Parameters
-----------
-mmap_mode: {None, &#8216;r+&#8217;, &#8216;r&#8217;, &#8216;w+&#8217;, &#8216;c&#8217;, 'auto'}, optional :
-    'auto' means that the system determine if we use memory mapping or not.
-    See numpy.load for the meaning of the other arguments.
-
-engine_info: list of JobInfo
-    You can get engine_info when call SomaWorkflowEngine.run
-    It works only on DRMS
-    (Distributed Resource Management System) using DRMAA, but not for
-    local machine
-
-</pre>
+<p>Using soma-workflow to run epac tree in parallel</p>
 
 <!-- ==================== NESTED CLASSES ==================== -->
 <a name="section-NestedClasses"></a>
@@ -142,9 +127,7 @@ engine_info: list of JobInfo
         <span class="summary-sig-arg">login</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">pw</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">remove_finished_wf</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">remove_local_tree</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">mmap_mode</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">auto</code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">queue</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">remove_local_tree</span>=<span class="summary-sig-default">True</span>)</span><br />
       x.__init__(...) initializes x; see help(type(x)) for signature</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.map_reduce.engine-pysrc.html#SomaWorkflowEngine.__init__">source&nbsp;code</a></span>
@@ -167,45 +150,6 @@ engine_info: list of JobInfo
       Write job list into working_directory as 0.job, 1.job, etc.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="epac.map_reduce.engine-pysrc.html#SomaWorkflowEngine._save_job_list">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="_create_jobs"></a><span class="summary-sig-name">_create_jobs</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">keysfile_list</span>,
-        <span class="summary-sig-arg">is_run_local</span>,
-        <span class="summary-sig-arg">ft_working_directory</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="epac.map_reduce.engine-pysrc.html#SomaWorkflowEngine._create_jobs">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="epac.map_reduce.engine.SomaWorkflowEngine-class.html#get_engine_info" class="summary-sig-name">get_engine_info</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">controller</span>,
-        <span class="summary-sig-arg">wf_id</span>)</span><br />
-      get all the job information when only use DRMAA on DRMS (Distributed 
-      Resource Management System).</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="epac.map_reduce.engine-pysrc.html#SomaWorkflowEngine.get_engine_info">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -409,9 +353,7 @@ engine_info: list of JobInfo
         <span class="sig-arg">login</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
         <span class="sig-arg">pw</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
         <span class="sig-arg">remove_finished_wf</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">remove_local_tree</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">mmap_mode</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">auto</code><code class="variable-quote">'</code></span>,
-        <span class="sig-arg">queue</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">remove_local_tree</span>=<span class="sig-default">True</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -472,29 +414,6 @@ Example
   </dl>
 </td></tr></table>
 </div>
-<a name="get_engine_info"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_engine_info</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">controller</span>,
-        <span class="sig-arg">wf_id</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="epac.map_reduce.engine-pysrc.html#SomaWorkflowEngine.get_engine_info">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>get all the job information when only use DRMAA on DRMS (Distributed 
-  Resource Management System). When it is on local machine, the return 
-  value (engine_info) is an empty list</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
 <a name="run"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -536,8 +455,7 @@ Example
 &gt;&gt;&gt; ## =======================================================
 &gt;&gt;&gt; sfw_engine = SomaWorkflowEngine(tree_root=tree_root_node,
 ...                                 function_name=&quot;transform&quot;,
-...                                 num_processes=3,
-                                    remove_finished_wf=False)
+...                                 num_processes=3)
 &gt;&gt;&gt; tree_root_node = sfw_engine.run(**Xy)
 light mode
 &gt;&gt;&gt; ## Run reduce process
@@ -609,7 +527,7 @@ see the directory of &quot;examples/run_somaworkflow_gui.py&quot; in epac
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb 21 15:24:54 2014
+    Generated by Epydoc 3.0.1 on Fri Feb 21 15:43:46 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

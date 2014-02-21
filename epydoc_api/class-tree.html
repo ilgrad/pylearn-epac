@@ -62,8 +62,6 @@ score_func : callable
     Function taking two arrays X and y, and returning a pair of arrays
     (scores, pvalues).</em>
     </li>
-    <li> <strong class="uidlink"><a href="epac.map_reduce.engine.JobInfo-class.html">epac.map_reduce.engine.JobInfo</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_dump_class_definition_sfw.MySVC-class.html">epac.tests.test_dump_class_definition_sfw.MySVC</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="epac.workflow.factory.NodeFactory-class.html">epac.workflow.factory.NodeFactory</a></strong>
@@ -83,24 +81,6 @@ score_func : callable
       <em class="summary">Reducer that computes p-values of stattistics.</em>
     </li>
     </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="epac.map_reduce.wfdescriptors.SharePathSomaWorkflowDescriptor-class.html">epac.map_reduce.wfdescriptors.SharePathSomaWorkflowDescriptor</a></strong>:
-      <em class="summary">Example
--------
-# =======================================================================
-# Configuration on computing resource
-#   (which means cluster, or distributed resource management system DRMS)
-#   ! Replace $HOME as the working directory on computing resource
-#     1 Define a translation file, for example, in $HOME/translation_example as
-#         ```
-#         tr_soma_workflow_shared_dir $HOME/soma_workflow_shared_dir
-#         ```
-#     2 Add an option in soma-workflow configuration
-#         for example, $HOME/.soma-workflow.cfg
-#         ```
-#         PATH_TRANSLATION_FILES = EPAC{$HOME/translation_example}
-#         ```
-# =======================================================================</em>
     </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_warm_start_methods.TOY_CLF-class.html">epac.tests.test_warm_start_methods.TOY_CLF</a></strong>
     </li>
@@ -208,12 +188,6 @@ wrapped_node.transform to BaseNode.transform</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="epac.map_reduce.wfdescriptors.BashWorkflowDescriptor-class.html">epac.map_reduce.wfdescriptors.BashWorkflowDescriptor</a></strong>:
-      <em class="summary">Parameters
-----------
-dataset_dir_path: string
-    The path which the saved dataset located.</em>
-    </li>
     <li> <strong class="uidlink">_abcoll.Container</strong>
     <ul>
     <li> <strong class="uidlink">_abcoll.Sequence</strong>:
@@ -299,12 +273,6 @@ which is a dictionary of nodes.</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="epac.map_reduce.wfdescriptors.SomaWorkflowDescriptor-class.html">epac.map_reduce.wfdescriptors.SomaWorkflowDescriptor</a></strong>:
-      <em class="summary">Parameters
-----------
-dataset_dir_path: string
-    The path which the saved dataset located.</em>
-    </li>
     <li> <strong class="uidlink"><a href="epac.map_reduce.split_input.SplitInput-class.html">epac.map_reduce.split_input.SplitInput</a></strong>
     <ul>
     <li> <strong class="uidlink"><a href="epac.map_reduce.split_input.SplitNodesInput-class.html">epac.map_reduce.split_input.SplitNodesInput</a></strong>:
@@ -330,15 +298,13 @@ dataset_dir_path: string
     </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_primitives.TestCV-class.html">epac.tests.test_primitives.TestCV</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="epac.tests.test_primitives.TestCVBestSearchRefit-class.html">epac.tests.test_primitives.TestCVBestSearchRefit</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_workflow.TestCVBestSearchRefit-class.html">epac.tests.test_workflow.TestCVBestSearchRefit</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="epac.tests.test_primitives.TestCVBestSearchRefit-class.html">epac.tests.test_primitives.TestCVBestSearchRefit</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_cv_best_search_refit_parallel_reduce.TestCVBestSearchRefitParallelReduce-class.html">epac.tests.test_cv_best_search_refit_parallel_reduce.TestCVBestSearchRefitParallelReduce</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_dump_class_definition_sfw.TestDumpClass-class.html">epac.tests.test_dump_class_definition_sfw.TestDumpClass</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="epac.tests.test_swf_engineinfo.TestGetSWFEngineInfo-class.html">epac.tests.test_swf_engineinfo.TestGetSWFEngineInfo</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_primitives.TestMethods-class.html">epac.tests.test_primitives.TestMethods</a></strong>
     </li>
@@ -350,9 +316,9 @@ dataset_dir_path: string
     </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_store.TestStore-class.html">epac.tests.test_store.TestStore</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="epac.tests.test_warm_start_methods.TestWorkFlow-class.html">epac.tests.test_warm_start_methods.TestWorkFlow</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="epac.tests.test_persistence.TestWorkFlow-class.html">epac.tests.test_persistence.TestWorkFlow</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="epac.tests.test_warm_start_methods.TestWorkFlow-class.html">epac.tests.test_warm_start_methods.TestWorkFlow</a></strong>
     </li>
     </ul>
     </li>
@@ -442,7 +408,7 @@ This can be splited by split_input.</em>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb 21 15:24:54 2014
+    Generated by Epydoc 3.0.1 on Fri Feb 21 15:43:44 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -818,9 +818,10 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CVBestSearchRefitParallel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">wrapped_node</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
         <span class="c">#### &#39;y/test/score_recall_mean&#39;</span>
-        <span class="n">default_score</span> <span class="o">=</span> <span class="s">&quot;y&quot;</span> <span class="o">+</span> <span class="n">conf</span><span class="o">.</span><span class="n">SEP</span> <span class="o">+</span> \
-                        <span class="n">conf</span><span class="o">.</span><span class="n">TEST</span> <span class="o">+</span> <span class="n">conf</span><span class="o">.</span><span class="n">SEP</span> <span class="o">+</span> \
-                        <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL_MEAN</span>
+        <span class="n">default_score</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">SCORE_RECALL_MEAN</span>
+<span class="c">#        default_score = &quot;y&quot; + conf.SEP + \</span>
+<span class="c">#                        conf.TEST + conf.SEP + \</span>
+<span class="c">#                        conf.SCORE_RECALL_MEAN</span>
         <span class="n">score</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;score&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s">&quot;score&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">default_score</span>
         <span class="n">arg_max</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;arg_max&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s">&quot;arg_max&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="bp">True</span>
         <span class="kn">from</span> <span class="nn">epac.workflow.splitters</span> <span class="kn">import</span> <span class="n">CV</span>

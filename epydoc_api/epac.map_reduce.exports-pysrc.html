@@ -199,49 +199,10 @@ epac.workflow.wrappers.Wrapper.get_signature" class="py-name" href="#" onclick="
 <a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">keysfile_list</tt> </tt>
 </div><a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"> </tt>
 <a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
-<a name="save_job_list"></a><div id="save_job_list-def"><a name="L138"></a><tt class="py-lineno">138</tt> <a class="py-toggle" href="#" id="save_job_list-toggle" onclick="return toggle('save_job_list');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="epac.map_reduce.exports-module.html#save_job_list">save_job_list</a><tt class="py-op">(</tt><tt class="py-param">working_directory</tt><tt class="py-op">,</tt> </tt>
-<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">                   <tt class="py-param">nodesinput_list</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-</div><div id="save_job_list-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="save_job_list-expanded"><a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt class="py-docstring">'''Write job list into working_directory as 0.job, 1.job, etc.</tt> </tt>
-<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"><tt class="py-docstring">    Parameters</tt> </tt>
-<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"><tt class="py-docstring">    ----------</tt> </tt>
-<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"><tt class="py-docstring">    working_directory: string</tt> </tt>
-<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">        directory to write job list</tt> </tt>
-<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"><tt class="py-docstring">    nodesinput_list: list of NodesInput</tt> </tt>
-<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring">        This is for parallel computing for each element in the list.</tt> </tt>
-<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">        All of them are saved separately in working_directory.</tt> </tt>
-<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"><tt class="py-docstring">    Example</tt> </tt>
-<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"><tt class="py-docstring">    -------</tt> </tt>
-<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-docstring">    &gt;&gt;&gt; from epac.map_reduce.exports import save_job_list</tt> </tt>
-<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">    &gt;&gt;&gt; nodesinput_list = [{'Perms/Perm(nb=0)': 'Perms/Perm(nb=0)'},</tt> </tt>
-<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">    ...                    {'Perms/Perm(nb=1)': 'Perms/Perm(nb=1)'},</tt> </tt>
-<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">    ...                    {'Perms/Perm(nb=2)': 'Perms/Perm(nb=2)'}]</tt> </tt>
-<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">    &gt;&gt;&gt; working_directory =  "/tmp"</tt> </tt>
-<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring">    &gt;&gt;&gt; save_job_list(working_directory, nodesinput_list)</tt> </tt>
-<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">    ['./0.job', './1.job', './2.job']</tt> </tt>
-<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
-<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">    <tt class="py-name">keysfile_list</tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">    <tt class="py-name">jobi</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
-<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">nodesinput</tt> <tt class="py-keyword">in</tt> <tt class="py-name">nodesinput_list</tt><tt class="py-op">:</tt> </tt>
-<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-name">keysfile</tt> <tt class="py-op">=</tt> <tt class="py-string">"."</tt> <tt class="py-op">+</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">sep</tt> <tt class="py-op">+</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">jobi</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-string">"."</tt> <tt class="py-op">+</tt> <tt id="link-37" class="py-name"><a title="epac.configuration.conf" class="py-name" href="#" onclick="return doclink('link-37', 'conf', 'link-6');">conf</a></tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="epac.configuration.conf.SUFFIX_JOB" class="py-name" href="#" onclick="return doclink('link-38', 'SUFFIX_JOB', 'link-35');">SUFFIX_JOB</a></tt> </tt>
-<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-name">keysfile_list</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="epac.workflow.splitters.VirtualList.append" class="py-name" href="#" onclick="return doclink('link-39', 'append', 'link-22');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">keysfile</tt><tt class="py-op">)</tt> </tt>
-<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt class="py-comment"># print "in_working_directory="+in_working_directory</tt> </tt>
-<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">        <tt class="py-comment"># print "keysfile="+keysfile</tt> </tt>
-<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-name">abs_keysfile</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">working_directory</tt><tt class="py-op">,</tt> <tt class="py-name">keysfile</tt><tt class="py-op">)</tt> </tt>
-<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-name">f</tt> <tt class="py-op">=</tt> <tt class="py-name">open</tt><tt class="py-op">(</tt><tt class="py-name">abs_keysfile</tt><tt class="py-op">,</tt> <tt class="py-string">'w'</tt><tt class="py-op">)</tt> </tt>
-<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">key_signature</tt> <tt class="py-keyword">in</tt> <tt class="py-name">nodesinput</tt><tt class="py-op">:</tt> </tt>
-<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">            <tt class="py-name">f</tt><tt class="py-op">.</tt><tt class="py-name">write</tt><tt class="py-op">(</tt><tt class="py-string">"%s\n"</tt> <tt class="py-op">%</tt> <tt class="py-name">key_signature</tt><tt class="py-op">)</tt> </tt>
-<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">.</tt><tt class="py-name">close</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">jobi</tt> <tt class="py-op">=</tt> <tt class="py-name">jobi</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt> </tt>
-<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">keysfile_list</tt> </tt>
-</div><a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"> </tt>
-<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"> </tt>
-<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
-<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">doctest</tt> </tt>
-<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">    <tt class="py-name">doctest</tt><tt class="py-op">.</tt><tt class="py-name">testmod</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">doctest</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt class="py-name">doctest</tt><tt class="py-op">.</tt><tt class="py-name">testmod</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -274,7 +235,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb 21 15:24:55 2014
+    Generated by Epydoc 3.0.1 on Fri Feb 21 15:43:46 2014
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
