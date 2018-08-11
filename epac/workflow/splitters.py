@@ -470,7 +470,7 @@ class CRSlicer(Slicer):
         if conf.TRAIN in self.slices.keys() \
                 and conf.TEST in self.slices.keys():
             Xy[conf.KW_SPLIT_TRAIN_TEST] = True
-            for data_key in data_keys:
+            for data_key in list(data_keys):
                 dat = Xy.pop(data_key)
                 for sample_set in self.slices:
                     if len(dat.shape) == 2:
