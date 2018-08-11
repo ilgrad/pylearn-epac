@@ -1,6 +1,0 @@
-numpy>=1.14.5
-joblib>=0.11
-scikit-learn>=0.19.0
-scipy>=1.0.0
-six>=1.11.0
-dill>=0.2.7.1
