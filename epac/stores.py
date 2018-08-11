@@ -18,9 +18,6 @@ from abc import abstractmethod
 from epac.configuration import conf
 from epac.map_reduce.results import ResultSet
 
-# Import dill if installed and recent enough, otherwise falls back to pickle
-from distutils.version import LooseVersion as V
-
 class TagObject:
     def __init__(self):
         self.hash_id = os.urandom(32)
