@@ -13,21 +13,6 @@ from epac.configuration import conf
 from epac.map_reduce.results import ResultSet
 from epac.workflow.base import key_push
 
-# Import dill if installed and recent enough, otherwise falls back to pickle
-import sys
-from distutils.version import LooseVersion as V
-try:
-    errmsg = "Falling back to pickle. "\
-             "There may be problem when running soma-workflow on cluster "\
-             "using EPAC\n"
-    import dill as pickle
-    if V(pickle.__version__) < V("0.2a"):
-        sys.stderr.write("warning: dill version is too old to use. " + errmsg)
-except ImportError:
-    import pickle
-    sys.stderr.write("warning: Cannot import dill. " + errmsg)
-
-
 ## ================================= ##
 ## == Wrapper node == ##
 ## ================================= ##
