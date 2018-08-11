@@ -26,8 +26,6 @@ __version__ = '0.10-git'
 
 from .sklearn_plugins import *
 
-import __check_build
-
 __all__ = ['BaseNode',
            'Pipe',
            'Perms',
