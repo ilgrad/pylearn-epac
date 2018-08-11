@@ -51,7 +51,7 @@ cv_svm_swf = CV(Methods(*[SVC(kernel="linear"),
 from epac import LocalEngine
 local_engine = LocalEngine(cv_svm_local, num_processes=2)
 cv_svm = local_engine.run(X=X, y=y)
-print cv_svm.reduce()
+print(cv_svm.reduce())
 
 from epac import SomaWorkflowEngine
 swf_engine = SomaWorkflowEngine(cv_svm_swf,
@@ -60,4 +60,4 @@ swf_engine = SomaWorkflowEngine(cv_svm_swf,
                                 #login="jl237561",
                                 remove_finished_wf=False)
 cv_svm = swf_engine.run(**Xy)
-print cv_svm.reduce()
+print(cv_svm.reduce())

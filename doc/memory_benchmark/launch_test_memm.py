@@ -65,7 +65,7 @@ def print_process_mem_cost(process_name, delay=10):
             max_mem_cost = mem_cost
         time.sleep(delay)
         # print "memory cost = ", mem_cost
-    print "max memory cost = ", max_mem_cost
+    print("max memory cost = ", max_mem_cost)
 
 
 ###################################
@@ -103,16 +103,16 @@ if directory:
 
 for n_features in n_features_list:
     for memmap in list_memmap:
-        print "\n"
-        print "==========================="
-        print "------ %i features -------" % n_features
+        print("\n")
+        print("===========================")
+        print("------ %i features -------" % n_features)
         for is_on_cluster in cluster_list:
             for n_proc in n_proc_list:
-                print "======= New try ============"
-                print "n_features = ", n_features
-                print "memmap enabled = ", memmap
-                print "number of processes =", n_proc
-                print "running on cluster =", is_on_cluster
+                print("======= New try ============")
+                print("n_features = ", n_features)
+                print("memmap enabled = ", memmap)
+                print("number of processes =", n_proc)
+                print("running on cluster =", is_on_cluster)
                 process_name = "test_memmapping.py"
                 start_time = datetime.datetime.now()
 #                print "Starting time = ", repr(start_time)
@@ -147,12 +147,12 @@ for n_features in n_features_list:
                                      filename)
                     os.system(cmd)
                 finished_time = datetime.datetime.now()
-#                print "Finishing time = ", repr(finished_time)
-                print "Time cost=", repr((finished_time - start_time).seconds)
-                print "------------- Results ------------------"
+                #print "Finishing time = ", repr(finished_time)
+                print("Time cost=", repr((finished_time - start_time).seconds))
+                print("------------- Results ------------------")
                 # Get back all the results of the test
                 with open(filename, 'r+') as results:
-                    print results.read()
+                    print(results.read())
                 # Clear file from this try
                 open(filename, 'w+').close()
 

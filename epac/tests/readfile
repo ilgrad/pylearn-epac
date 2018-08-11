@@ -13,9 +13,9 @@ import sys
 import os
 
 if __name__ == "__main__":
-    print os.getcwd()
+    print(os.getcwd())
     filename = sys.argv[1]
     fin = open(filename, "rb")
     key_lines = fin.readlines()
-    print key_lines
+    print(key_lines)
     fin.close()

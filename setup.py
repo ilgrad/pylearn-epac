@@ -15,9 +15,9 @@ def read(fname):
 
 setup(
     name="epac",
-    version='0.10-git',
+    version='0.10-1',
     author="Check contributors on https://github.com/neurospin/pylearn-epac",
-    author_emai="edouard.duchesnay@cea.fr",
+    author_email="edouard.duchesnay@cea.fr",
     description=("Embarrassingly Parallel Array Computing: EPAC is a machine learning workflow builder."),
     license="To define",
     keywords="machine learning, cross validation, permutation, parallel computing",
@@ -30,11 +30,18 @@ setup(
               'epac.tests'],
     scripts=commands,
     long_description=read('README.md'),
+    python_requires='>=3.6',
+    install_requires=[
+        'numpy>=1.14.5',
+        'joblib>=0.11',
+        'scikit-learn>=0.19.0',
+        'scipy>=1.0.0',
+        'six>=1.11.0',
+        'dill>=0.2.7.1',
+    ],
+
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Machine learning"
     ],
-    extras_require={
-        'machine_learning': ['sklearn']
-    },
 )

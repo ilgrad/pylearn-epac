@@ -9,7 +9,7 @@ Created on Mon Jan 21 19:55:46 2013
 
 from sklearn import datasets
 from sklearn.svm import LinearSVC as SVM
-from sklearn.lda import LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.feature_selection import SelectKBest
 X, y = datasets.make_classification(n_samples=12, n_features=10,
                                     n_informative=2, random_state=1)
@@ -32,7 +32,7 @@ pipe.run(X=X, y=y)
 # the leaf nodes
 
 for leaf in pipe.walk_leaves():
-    print leaf.load_results()
+    print(leaf.load_results())
 
 # The result of each branch of the tree is stored in the corresponding leaf.
 # An iteration on all the leaves of a tree can return all the results
@@ -55,7 +55,7 @@ export_leaves_csv(pipe, 'my_result_run.csv')
 from epac import Methods
 multi = Methods(SVM(C=1), SVM(C=10))
 multi.run(X=X, y=y)
-print multi.reduce()
+print(multi.reduce())
 
 # Reduce format outputs into "ResultSet" which is a dict-like structure
 # which contains the "keys" of the methods that have beeen used.
@@ -72,7 +72,7 @@ export_resultset_csv(multi.reduce(), 'my_result_reduce.csv')
 svms = Methods(*[SVM(loss=loss, C=C)
                  for loss in ("l1", "l2") for C in [1, 10]])
 svms.run(X=X, y=y)
-print svms.reduce()
+print(svms.reduce())
 
 # Parallelize sequential Pipeline: Anova(k best selection) + SVM.
 #    Methods    Methods (Splitter)
@@ -82,7 +82,7 @@ print svms.reduce()
 # SVM SVM SVM   Classifiers (Estimator)
 anovas_svm = Methods(*[Pipe(SelectKBest(k=k), SVM()) for k in [1, 5, 10]])
 anovas_svm.run(X=X, y=y)
-print anovas_svm.reduce()
+print(anovas_svm.reduce())
 
 
 # Cross-validation
@@ -98,7 +98,7 @@ print anovas_svm.reduce()
 from epac import CV, Methods
 cv = CV(Methods(LDA(), SVM()))
 cv.run(X=X, y=y)
-print cv.reduce()
+print(cv.reduce())
 
 
 # Model selection using CV
@@ -111,7 +111,7 @@ from epac import Pipe, CVBestSearchRefit, Methods
 # CV + Grid search of a simple classifier
 wf = CVBestSearchRefit(Methods(SVM(C=1), SVM(C=10)))
 wf.run(X=X, y=y)
-print wf.reduce()
+print(wf.reduce())
 
 # Feature selection combined with SVM and LDA
 # CVBestSearchRefit
@@ -124,7 +124,7 @@ print wf.reduce()
 #    LDA()          SVM() ...          Classifiers (Estimator)
 pipelines = Methods(*[Pipe(SelectKBest(k=k), Methods(LDA(), SVM()))
                       for k in [1, 5]])
-print [n for n in pipelines.walk_leaves()]
+print([n for n in pipelines.walk_leaves()])
 best_cv = CVBestSearchRefit(pipelines)
 best_cv.run(X=X, y=y)
 best_cv.reduce()

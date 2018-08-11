@@ -67,12 +67,12 @@ def create_mmat(nrows, ncols, default_values=None, dir=None,
                             dtype='float32',
                             mode='w+',
                             shape=(nrows, ncols))
-        for i in xrange(nrows):
+        for i in range(nrows):
             if not default_values:
                 mem_mat[i, :] = np.random.random(size=ncols)
             elif type(default_values) is list:
                 insert_row = np.zeros(ncols)
-                for j in xrange(len(insert_row)):
+                for j in range(len(insert_row)):
                     pos = random.randint(0, len(default_values) - 1)
                     insert_row[j] = default_values[pos]
                 mem_mat[i, :] = insert_row
@@ -196,18 +196,16 @@ class TestMemMapping(unittest.TestCase):
 
             # Printing information about the jobs
             time.sleep(2)
-            print ''
+            print('')
             sum_memory = 0
             max_time_cost = 0
             for job_info in swf_engine.engine_info:
-                print "mem_cost=", job_info.mem_cost, \
-                      ", vmem_cost=", job_info.vmem_cost, \
-                      ", time_cost=", job_info.time_cost
+                print("mem_cost = {0}, vmem_cost = {1}, time_cost = {2}".format(job_info.mem_cost, job_info.vmem_cost, job_info.time_cost))
                 sum_memory += job_info.mem_cost
                 if max_time_cost < job_info.time_cost:
                     max_time_cost = job_info.time_cost
-            print "sum_memory =", sum_memory
-            print "max_time_cost =", max_time_cost
+            print("sum_memory = ", sum_memory)
+            print("max_time_cost = ", max_time_cost)
         else:
             # Running on the local machine
             from epac import LocalEngine
@@ -215,8 +213,8 @@ class TestMemMapping(unittest.TestCase):
             cv_svm = local_engine.run(**Xy)
 
         cv_svm_reduce = cv_svm.reduce()
-        print "\n -> Reducing results"
-        print cv_svm_reduce
+        print("\n -> Reducing results")
+        print(cv_svm_reduce)
 
         # Creating the directory to save results, if it doesn't exist
         dirname = 'tmp_save_tree/'
@@ -238,7 +236,7 @@ class TestMemMapping(unittest.TestCase):
 
             with open(os.path.join(directory, "tmp_save_results"), 'w+') \
                     as filename:
-                print filename.name
+                print(filename.name)
                 pickle.dump(cv_svm_reduce, filename)
 
         else:
@@ -254,13 +252,13 @@ class TestMemMapping(unittest.TestCase):
 
                 ## 5.2) Comparing results to the results for one process
                 ## ===================================================
-                print "\nComparing %i proc with one proc" % self.n_proc
+                print("\nComparing %i proc with one proc" % self.n_proc)
                 self.assertTrue(compare_two_node(cv_svm, cv_svm_one_proc))
                 self.assertTrue(isequal(cv_svm_reduce, cv_svm_reduce_one_proc))
             except KeyError:
-                print "Warning: "
-                print "No previous tree detected, no possible "\
-                    "comparison of results"
+                print("Warning: ")
+                print("No previous tree detected, no possible "\
+                    "comparison of results")
 
 
 if __name__ == "__main__":

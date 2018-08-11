@@ -52,19 +52,19 @@ def do_all(options):
                n_perms=options.n_perms,
                permute="y",
                random_state=random_state)
-    print "Time ellapsed, tree construction:", time.time() - time_start
+    print("Time ellapsed, tree construction:", time.time() - time_start)
 
     ## 3) Run Workflow
     ## ===============
     time_fit_predict = time.time()
     wf.run(X=X, y=y)
-    print "Time ellapsed, fit predict:",  time.time() - time_fit_predict
+    print("Time ellapsed, fit predict:",  time.time() - time_fit_predict)
     time_reduce = time.time()
 
     ## 4) Reduce Workflow
     ## ==================
-    print wf.reduce()
-    print "Time ellapsed, reduce:",   time.time() - time_reduce
+    print(wf.reduce())
+    print("Time ellapsed, reduce:",   time.time() - time_reduce)
 
 if __name__ == "__main__":
     # Set default values to parameters

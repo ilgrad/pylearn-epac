@@ -28,21 +28,21 @@ class TOY_CLF:
 
         min_err = 0
         if not (self.v_beta is None):
-            print "v_beta has been initialized as = ", self.v_beta
+            print("v_beta has been initialized as = ", self.v_beta)
             min_err = self._get_error(self.v_beta, self.v_lambda, X, y)
         else:
-            print "v_beta is None"
+            print("v_beta is None")
 
         # Search the beta which minimizes the error function
         # ==================================================
-        for i in xrange(10):
+        for i in range(10):
             v_beta = np.random.random(len_beta)
             err = self._get_error(v_beta, self.v_lambda, X, y)
             if (self.v_beta is None) or err < min_err:
                 self.v_beta = v_beta
                 min_err = err
 
-        print "Best v_beta =", self.v_beta
+        print("Best v_beta =", self.v_beta)
         pred_y = np.dot(X, self.v_beta)
         return {"y/pred": pred_y, "y/true": y, "best_beta": self.v_beta}
 
@@ -58,10 +58,10 @@ if __name__ == "__main__":
 
     ## 2) Build Methods
     ## ================================================
-    print "Methods ==================================="
+    print("Methods ===================================")
     methods = Methods(*[TOY_CLF(v_lambda=v_lambda)
                         for v_lambda in [2, 1]])
-    print methods.run(**Xy)
+    print(methods.run(**Xy))
 
     ## 3) Build WarmStartMethods like Methods
     ## ================================================
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     ##  3. Except v_lambda, WarmStartMethods copy all the other parameters
     ##     from TOY_CLF(v_lambda=2) to TOY_CLF(v_lambda=1) as initialization
     ##  4. Finally call TOY_CLF(v_lambda=1).transform
-    print "WarmStartMethods =========================="
+    print("WarmStartMethods ==========================")
     ps_methods = WarmStartMethods(*[TOY_CLF(v_lambda=v_lambda)
                                     for v_lambda in [2, 1]])
-    print ps_methods.run(**Xy)
+    print(ps_methods.run(**Xy))

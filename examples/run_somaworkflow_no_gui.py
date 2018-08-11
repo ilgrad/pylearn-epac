@@ -63,7 +63,7 @@ def do_all(options):
                n_perms=options.n_perms,
                permute="y",
                random_state=random_state)
-    print "Time ellapsed, tree construction:", time.time() - time_start
+    print("Time ellapsed, tree construction:", time.time() - time_start)
 
     ## 3) Run Workflow
     ## ===============
@@ -79,13 +79,13 @@ def do_all(options):
 #                        login="jl237561")
     # You can use soma_workflow_gui to track your progress
     wf = sfw_engine.run(X=X, y=y)
-    print "Time ellapsed, fit predict:",  time.time() - time_fit_predict
+    print ("Time ellapsed, fit predict:",  time.time() - time_fit_predict)
     time_reduce = time.time()
 
     ## 4) Reduce Workflow
     ## ==================
-    print wf.reduce()
-    print "Time ellapsed, reduce:",   time.time() - time_reduce
+    print(wf.reduce())
+    print("Time ellapsed, reduce:",   time.time() - time_reduce)
 
 if __name__ == "__main__":
     # Set default values to parameters

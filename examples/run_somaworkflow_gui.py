@@ -65,7 +65,7 @@ def do_all(options):
                n_perms=options.n_perms,
                permute="y",
                random_state=random_state)
-    print "Time ellapsed, tree construction:", time.time() - time_start
+    print("Time ellapsed, tree construction:", time.time() - time_start)
 
     ## 3) Export Workflow to soma_workflow_gui
     ## ===============
@@ -76,7 +76,7 @@ def do_all(options):
                                     num_processes=options.n_cores)
     sfw_engine.export_to_gui(options.soma_workflow_dir, X=X, y=y)
 
-    print "Time ellapsed, fit predict:",  time.time() - time_fit_predict
+    print("Time ellapsed, fit predict:",  time.time() - time_fit_predict)
 
 #    ## 6) Load Epac tree & Reduce
 #    ## ==========================
@@ -88,7 +88,7 @@ print wf.reduce()
 """ % options.soma_workflow_dir
     f.write(reduce_str)
     f.close()
-    print "#First run\n"\
+    print("#First run\n"\
         "soma_workflow_gui\n"\
         "\t(1)Open %s\n"\
         "\t(2)Submit\n"\
@@ -98,7 +98,7 @@ print wf.reduce()
         "#When done run:\npython %s" % (
             os.path.join(options.soma_workflow_dir,
                          sfw_engine.open_me_by_soma_workflow_gui),
-            reduce_filename)
+            reduce_filename))
 
 
 if __name__ == "__main__":

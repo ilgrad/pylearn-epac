@@ -9,8 +9,11 @@ Created on Thu May 23 15:21:35 2013
 
 from sklearn import datasets
 from sklearn.svm import LinearSVC as SVM
-from sklearn.lda import LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.feature_selection import SelectKBest
+from epac.map_reduce.reducers import PvalPerms
+import numpy
+
 X, y = datasets.make_classification(n_samples=100, n_features=200,
                                     n_informative=2)
 X = numpy.random.rand(*X.shape)

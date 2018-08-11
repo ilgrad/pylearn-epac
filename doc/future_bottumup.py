@@ -7,7 +7,7 @@ Created on Thu May 23 15:21:35 2013
 
 from sklearn import datasets
 from sklearn.svm import SVC
-from sklearn.lda import LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.feature_selection import SelectKBest
 X, y = datasets.make_classification(n_samples=12, n_features=10,
                                     n_informative=2)
@@ -99,9 +99,9 @@ keys_splited = [key_split(key, eval_args=True) for key in results_list.keys()]
 
 first = keys_splited[0]
 arg_grids = list() # list of [depth_idx, arg_idx, arg_name, [arg_values]]
-for i in xrange(len(first)):
+for i in range(len(first)):
     if len(first[i]) > 1: # has arguments
-        for arg_idx in xrange(len(first[i][1])):
+        for arg_idx in range(len(first[i][1])):
             arg_grids.append([i, arg_idx, first[i][1][arg_idx][0],
                               [first[i][1][arg_idx][1]]])
 
@@ -109,19 +109,19 @@ for i in xrange(len(first)):
 # An enumerate all possible arguments values
 for other in keys_splited[1:]:
     if len(first) != len(other):
-        print results_list.keys()
+        print(results_list.keys())
         raise ValueError("Results cannot be stacked: different depth")
-    for i in xrange(len(first)):
+    for i in range(len(first)):
         if first[i][0] != other[i][0]:
-            print results_list.keys()
+            print(results_list.keys())
             raise ValueError("Results cannot be stacked: nodes have different type")
         if len(first[i]) > 1 and len(first[i][1]) != len(other[i][1]):
-            print results_list.keys()
+            print(results_list.keys())
             raise ValueError("Results cannot be stacked: nodes have different length")
         if len(first[i]) > 1: # has arguments
-            for arg_idx in xrange(len(first[i][1])):
+            for arg_idx in range(len(first[i][1])):
                 if first[i][1][arg_idx][0] != other[i][1][arg_idx][0]:
-                    print results_list.keys()
+                    print(results_list.keys())
                     raise ValueError("Results cannot be stacked: nodes have"
                     "argument name")
                 values = [item for item in arg_grids if i==item[0] and \
