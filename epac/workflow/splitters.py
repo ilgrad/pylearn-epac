@@ -370,7 +370,7 @@ class VirtualList(collections.Sequence):
 
     def __iter__(self):
         """ Iterate over leaves"""
-        for i in xrange(self.size):
+        for i in range(self.size):
             yield self.__getitem__(i)
 
     def append(self, o):
